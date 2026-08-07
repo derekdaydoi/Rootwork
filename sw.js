@@ -1,17 +1,17 @@
 /* Rootwork service worker — v4 concept UI. */
-const CACHE = "rootwork-v4.1-2026-08-07";
+const CACHE = "rootwork-v4.3-2026-08-07";
 
 const ASSETS = [
   "./",
   "./index.html",
   "./app.js",
-  "./manifest.json",
+  "./manifest.json?v=4.2.0",
   "./rootwork-mark.svg",
-  "./icon-180.png",
-  "./icon-192.png",
-  "./icon-256.png",
-  "./icon-512.png",
-  "./icon-maskable-512.png",
+  "./icon-180.png?v=4.2.0",
+  "./icon-192.png?v=4.2.0",
+  "./icon-256.png?v=4.2.0",
+  "./icon-512.png?v=4.2.0",
+  "./icon-maskable-512.png?v=4.2.0",
   "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
   "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
 ];
