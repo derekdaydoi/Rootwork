@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Rootwork" />
-<link rel="icon" href="icon-256.png" />
-<link rel="apple-touch-icon" href="icon-180.png" />
-<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
-<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-256.png?v=4.4.0" />
+<link rel="apple-touch-icon" href="icon-180.png?v=4.4.0" />
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png?v=4.4.0" />
+<link rel="manifest" href="manifest.json?v=4.4.0" />
 <title>Rootwork</title>
 <style>
 :root{
@@ -475,6 +475,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
 .eyebrow{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:2px}
 .dash-title{margin:0;font-size:30px;line-height:1.05;letter-spacing:-1.25px;font-weight:780}
 .dash-date{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* Brand lockup is the app header: product identity first, not a greeting. */
+.brand-app-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.brand-app-lockup{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-app-icon{width:62px;height:62px;display:block;flex:none;border-radius:17px;object-fit:cover;filter:drop-shadow(0 5px 12px rgba(17,17,17,.10))}
+.brand-app-copy{min-width:0;display:grid;gap:2px}
+.brand-app-wordmark{font-size:28px;line-height:1;font-weight:820;letter-spacing:-1.45px;color:var(--ink);white-space:nowrap}
+.brand-app-wordmark span{color:var(--brand-mark)}
+.brand-app-tagline{font-size:9px;line-height:1.2;font-weight:720;letter-spacing:1.2px;color:var(--subtle);white-space:nowrap}
+.home-context{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 2px 16px;color:var(--muted);font-size:12px}
+.home-context strong{color:var(--brand);font-size:12px;font-weight:760}
 .screen-title{font-size:28px;letter-spacing:-1.1px;font-weight:780}
 .screen-sub{font-size:12px;margin-top:4px}
 .icon-btn.soft{background:rgba(255,253,248,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:rgba(214,207,194,.84);box-shadow:var(--shadow-1)}
@@ -541,6 +552,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
 .bottom-nav-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .fab{width:56px;height:56px;right:max(18px,calc((100vw - 620px)/2 + 18px));bottom:calc(env(safe-area-inset-bottom) + 104px);box-shadow:0 12px 30px rgba(47,125,88,.30)}
 .toast{bottom:calc(env(safe-area-inset-bottom) + 158px)}
+.app-copyright{display:flex;align-items:center;justify-content:center;gap:7px;margin:26px 0 4px;color:var(--subtle);font-size:10px;line-height:1.4;letter-spacing:.15px}
+.app-copyright .copyright-sep{opacity:.55}
 
 /* Day selector */
 .day-strip.compact{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:8px;border:1px solid rgba(214,207,194,.58);box-shadow:var(--shadow-1);background:rgba(255,253,248,.82);margin-bottom:14px}
@@ -631,6 +644,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
   .week-stat-grid{grid-template-columns:repeat(4,minmax(70px,1fr));overflow-x:auto}
   .mini-stat{min-width:70px}
   .progress-hero{gap:14px}
+  .brand-app-icon{width:58px;height:58px;border-radius:16px}
+  .brand-app-wordmark{font-size:26px}
+  .brand-app-tagline{font-size:8.5px;letter-spacing:1px}
   .next-action{align-items:flex-end}
   .next-action .btn{padding-left:12px;padding-right:12px}
   .fab{right:14px}
