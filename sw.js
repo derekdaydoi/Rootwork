@@ -1,16 +1,17 @@
-/* Rootwork service worker.
-   ĐỔI dòng CACHE mỗi lần deploy. Không đổi thì máy đang cài sẽ kẹt bản cũ
-   vĩnh viễn và không có cách nào ép cập nhật từ xa. */
-const CACHE = "rootwork-v3.1-2026-07-25";
+/* Rootwork service worker — v4 concept UI. */
+const CACHE = "rootwork-v4.0-2026-08-07";
 
 const ASSETS = [
   "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
+  "./rootwork-mark.svg",
+  "./icon-180.png",
   "./icon-192.png",
   "./icon-256.png",
   "./icon-512.png",
+  "./icon-maskable-512.png",
   "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
   "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
 ];
@@ -18,8 +19,6 @@ const ASSETS = [
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE)
-      // addAll fail toàn bộ nếu một file lỗi — thêm từng cái để một icon
-      // thiếu không làm hỏng cả lần cài.
       .then(cache => Promise.all(ASSETS.map(url => cache.add(url).catch(() => null))))
       .then(() => self.skipWaiting())
   );
@@ -33,11 +32,10 @@ self.addEventListener("activate", event => {
   );
 });
 
-/* Network-first cho file của app: mở app khi có mạng là thấy bản mới ngay.
-   Cache-first cho React trên CDN vì URL đã ghim theo phiên bản, không đổi. */
 self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
+
   if (new URL(request.url).hostname === "unpkg.com") {
     event.respondWith(
       caches.match(request).then(hit => hit || fetch(request).then(res => {
@@ -48,6 +46,7 @@ self.addEventListener("fetch", event => {
     );
     return;
   }
+
   event.respondWith(
     fetch(request)
       .then(res => {

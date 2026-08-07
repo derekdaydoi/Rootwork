@@ -1,85 +1,104 @@
-# Rootwork
+# Rootwork v4
 
-Công cụ cá nhân: OKR, lịch tuần và thói quen trong một chỗ. Chạy như web app,
-cài vào màn hình chính, dữ liệu nằm trên máy — không server, không tài khoản.
+Personal execution system: Objective → Key Result → Task, lịch ngày/tuần và routine trong một PWA local-first.
 
-**Phiên bản dữ liệu:** v3 · cập nhật 2026-07-25
+**UI release:** v4.0 · 2026-08-07  
+**Data schema:** v3 — tương thích dữ liệu Rootwork cũ.
 
----
+## Có gì mới trong v4
 
-## Cấu trúc
+- Dashboard mới bám mockup: Today progress, Next action, Objective pulse, Week pulse, Attention.
+- Bottom navigation 5 tab: Tổng quan · Hôm nay · Mục tiêu · Thói quen · Cả tuần.
+- Today view tách việc có giờ / linh hoạt / overdue + habit check.
+- Objective view có filter và mặc định mở KR để outcome nổi hơn task.
+- Routine view có weekly summary + trend 8 tuần từ chính routine log.
+- Week view dùng day cards + backlog thay cho calendar 7 cột dày thông tin.
+- Brand palette: Root Green / Graphite / Ivory và icon Rootwork dạng nhánh mềm.
+- Fix data-loss edge case: restore KR sẽ không xoá entry khỏi Trash nếu Objective gốc không còn.
+
+## File
 
 | File | Vai trò |
 |---|---|
-| `index.html` | Khung trang + toàn bộ CSS |
-| `app.js` | Toàn bộ logic ứng dụng (React, không cần build) |
-| `sw.js` | Service worker — cache offline, kiểm soát phiên bản |
-| `manifest.json` | Khai báo PWA: tên, icon, chế độ standalone |
-| `icon-192/256/512.png` | Icon dùng trong app |
-| `icon-1024.png` | Icon độ phân giải cao, để dành khi cần |
+| `index.html` | HTML + toàn bộ CSS |
+| `app.js` | React UI, domain logic, local storage |
+| `sw.js` | Service Worker / offline cache |
+| `manifest.json` | PWA manifest |
+| `rootwork-mark.svg` | Master vector logo mark |
+| `icon-180.png` | iOS home screen |
+| `icon-192.png` | PWA |
+| `icon-256.png` | PWA |
+| `icon-512.png` | PWA |
+| `icon-maskable-512.png` | Android maskable icon |
+| `icon-1024.png` | Master raster export |
 
-React nạp từ unpkg và được service worker cache lại. **Lần mở đầu tiên sau mỗi
-lần deploy cần có mạng**, sau đó chạy offline bình thường.
+React được load từ unpkg và cache sau lần mở đầu tiên. Không có build step.
 
-## Deploy
+## Deploy GitHub Pages
 
-1. Commit file lên nhánh `main`.
-2. **Đổi dòng `CACHE` trong `sw.js`** — ví dụ `rootwork-v3.2-2026-08-10`.
-   Bỏ qua bước này thì máy đang cài sẽ giữ bản cũ mãi mãi.
-3. Mở app khi có mạng, đóng hẳn, mở lại.
+1. Backup dữ liệu hiện tại trong Rootwork: **Menu → Xuất bản sao lưu**.
+2. Copy toàn bộ file trong folder này lên repo, thay file cũ.
+3. Commit vào branch đang deploy GitHub Pages (`main` nếu repo đang dùng main).
+4. Đảm bảo `sw.js` có cache version mới. Release này dùng:
 
-Nếu app không đổi sau khi deploy: service worker cũ đang giữ bản cũ.
-**Xuất bản sao lưu trước**, rồi Safari → Cài đặt → xoá dữ liệu website cho
-domain này → mở lại → Thêm vào màn hình chính → nạp lại bản sao lưu.
-
-## Sao lưu
-
-Menu ☰ → **Xuất bản sao lưu** ra tệp `.json`. Nạp lại bằng **Nạp bản sao lưu**.
-
-Dữ liệu chỉ nằm trong `localStorage` của một trình duyệt trên một máy. App có
-gọi `navigator.storage.persist()` để giảm rủi ro bị hệ điều hành dọn, nhưng đó
-không phải bảo đảm. **Xuất định kỳ.** Không commit tệp sao lưu lên repo —
-nó chứa toàn bộ nội dung cá nhân.
-
-## Mô hình dữ liệu
-
-```
-Objective ─┬─ deadline, archived
-           └─ Key Result ─┬─ metric { current, target, unit }  (tuỳ chọn)
-                          └─ Task
-Task độc lập  → mục "Phát sinh"
-Routine       → target n lần/tuần, log theo ngày
-Trash         → giữ 30 ngày rồi tự dọn
+```js
+const CACHE = "rootwork-v4.0-2026-08-07";
 ```
 
-**Ngày và giờ của task quyết định loại việc:**
+5. Mở site khi có mạng. Nếu PWA đang cài trên điện thoại, đóng hẳn app rồi mở lại 1–2 lần để service worker mới activate.
 
-| Ngày | Giờ | Nghĩa |
+### Nếu vẫn thấy UI cũ
+
+Ưu tiên thử theo thứ tự:
+
+1. Mở URL trực tiếp trong Safari/Chrome và refresh.
+2. Đóng PWA hoàn toàn rồi mở lại.
+3. Nếu service worker cũ vẫn bám cache: backup trước, xoá website data của domain rồi mở lại và Add to Home Screen.
+
+## Data
+
+Dữ liệu vẫn dùng key:
+
+```text
+rootwork:v1
+```
+
+và schema v3. Vì vậy update UI v4 **không yêu cầu migrate hay import lại** nếu deploy trên đúng domain/browser đang dùng.
+
+Mô hình lõi:
+
+```text
+Objective
+  └─ Key Result
+      └─ Task
+
+Loose Task / Backlog
+Routine
+Trash (30 ngày)
+```
+
+Task:
+
+| Date | Time | Meaning |
 |---|---|---|
-| — | — | Nằm trong kho, chưa xếp lịch |
-| có | — | Làm trong ngày đó, tự sắp xếp |
-| có | có | Giờ cố định, lên đầu danh sách |
+| none | none | Backlog / chưa xếp |
+| yes | none | Flexible trong ngày |
+| yes | yes | Fixed-time task |
 
-**Tiến độ Key Result:** có chỉ số thì tính theo `current / target`; không có
-chỉ số thì tính theo tỷ lệ task đã xong.
+KR progress:
 
-**Chuỗi thói quen** đếm số **tuần liên tiếp** đạt đủ target, không đếm ngày
-liên tiếp — vì target đặt theo tuần.
+- Có metric → `current / target`
+- Không metric → tỷ lệ task hoàn thành
 
-## Thao tác
+Routine streak tiếp tục tính theo **số tuần liên tiếp đạt weekly target**, không dùng daily streak.
 
-| Thao tác | Kết quả |
-|---|---|
-| Chạm một việc | Mở chi tiết |
-| Vuốt phải | Hoãn một ngày |
-| Vuốt trái | Xoá (vào thùng rác 30 ngày) |
-| Chạm tiêu đề Objective / KR | Sửa tại chỗ |
-| `1` `2` `3` `4` | Mục tiêu · Hôm nay · Thói quen · Cả tuần |
-| `N` | Thêm việc |
-| `Esc` | Về màn hình chính |
+## Giới hạn hiện tại
 
-## Giới hạn đã biết
+- Local-only, một browser/device; chưa có cloud sync.
+- Không notification hệ điều hành.
+- Chưa có recurring task engine.
+- Week planner chưa có drag & drop; thao tác vẫn qua task detail / quick add.
 
-- Một máy, một trình duyệt. Không đồng bộ giữa các thiết bị.
-- Không thông báo nhắc việc.
-- Không có việc lặp lại — phải tạo tay mỗi lần.
+## Backup
+
+Menu ở Dashboard → **Xuất bản sao lưu**. File JSON chứa dữ liệu cá nhân; không commit backup lên GitHub repo public.

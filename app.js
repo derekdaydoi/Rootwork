@@ -34,7 +34,8 @@ const PATHS = {
   upload: ["M12 15V4", "M7.5 8.5L12 4l4.5 4.5", "M4.5 19.5h15"],
   grid: ["M4 4.5h6.5v6.5H4z", "M13.5 4.5H20v6.5h-6.5z", "M4 13.5h6.5V20H4z", "M13.5 13.5H20V20h-6.5z"],
   repeat: ["M4 9.5A4.5 4.5 0 0 1 8.5 5h11", "M16 1.5L19.5 5 16 8.5", "M20 14.5a4.5 4.5 0 0 1-4.5 4.5h-11", "M8 22.5L4.5 19 8 15.5"],
-  plus: ["M12 5v14", "M5 12h14"]
+  plus: ["M12 5v14", "M5 12h14"],
+  home: ["M3.5 10.5L12 3.8l8.5 6.7", "M5.5 9.5v10h13v-10", "M9.5 19.5v-6h5v6"]
 };
 function Icon({ name, size, width, className, style }) {
   const d = PATHS[name] || [];
@@ -313,7 +314,7 @@ function EditableText({ value, onSave }) {
 function ScreenHeader({ title, subtitle, onBack, actions }) {
   return h("header", { className: "screen-head" },
     h("div", { className: "screen-head-left" },
-      h("button", { className: "back-btn", type: "button", onClick: onBack, "aria-label": "Quay lại" }, h(Icon, { name: "back", size: 22 })),
+      onBack && h("button", { className: "back-btn", type: "button", onClick: onBack, "aria-label": "Quay lại" }, h(Icon, { name: "back", size: 22 })),
       h("div", { style: { minWidth: 0 } },
         h("h1", { className: "screen-title" }, title),
         subtitle && h("div", { className: "screen-sub" }, subtitle))),
@@ -380,6 +381,56 @@ function Swipe({ onLeft, onRight, leftLabel, rightLabel, children }) {
       style: { transform: "translateX(" + dx + "px)" },
       onPointerDown: down, onPointerMove: move, onPointerUp: up, onPointerCancel: up
     }, children));
+}
+
+
+function RingProgress({ value, size }) {
+  const v = clamp(Number(value) || 0, 0, 100);
+  const dim = size || 86;
+  const r = 31, c = 2 * Math.PI * r;
+  return h("div", { className: "ring-wrap", style: { width: dim, height: dim } },
+    h("svg", { viewBox: "0 0 76 76", width: dim, height: dim, "aria-hidden": "true" },
+      h("circle", { className: "ring-track", cx: 38, cy: 38, r, fill: "none" }),
+      h("circle", { className: "ring-value", cx: 38, cy: 38, r, fill: "none",
+        strokeDasharray: c, strokeDashoffset: c * (1 - v / 100), transform: "rotate(-90 38 38)" })),
+    h("strong", null, v + "%"));
+}
+
+function TrendSpark({ values }) {
+  const list = Array.isArray(values) && values.length ? values : [0];
+  const w = 260, hgt = 74, pad = 6;
+  const max = 100, min = 0;
+  const pts = list.map((v, i) => {
+    const x = list.length === 1 ? w / 2 : pad + i * (w - pad * 2) / (list.length - 1);
+    const y = hgt - pad - (clamp(v, min, max) - min) / (max - min) * (hgt - pad * 2);
+    return x.toFixed(1) + "," + y.toFixed(1);
+  }).join(" ");
+  return h("svg", { className: "trend-spark", viewBox: "0 0 260 74", preserveAspectRatio: "none", "aria-hidden": "true" },
+    h("line", { x1: 0, y1: 68, x2: 260, y2: 68, className: "spark-base" }),
+    h("polyline", { points: pts, fill: "none", className: "spark-line" }));
+}
+
+function BottomNav({ view, setView }) {
+  const items = [
+    { id: "home", label: "Tổng quan", icon: "home" },
+    { id: "today", label: "Hôm nay", icon: "calendar" },
+    { id: "targets", label: "Mục tiêu", icon: "target" },
+    { id: "routines", label: "Thói quen", icon: "repeat" },
+    { id: "week", label: "Cả tuần", icon: "grid" }
+  ];
+  return h("nav", { className: "bottom-nav", "aria-label": "Điều hướng chính" },
+    items.map(item => h("button", { key: item.id, type: "button",
+      className: "bottom-nav-item" + (view === item.id ? " on" : ""),
+      onClick: () => setView(item.id), "aria-current": view === item.id ? "page" : undefined },
+      h(Icon, { name: item.icon, size: 20, width: 1.8 }),
+      h("span", null, item.label))));
+}
+
+function MiniStat({ label, value, sub }) {
+  return h("div", { className: "mini-stat" },
+    h("strong", null, value),
+    h("span", null, label),
+    sub && h("small", null, sub));
 }
 
 /* ===================== app ===================== */
@@ -498,10 +549,10 @@ function App() {
   const openNew = preset => setSheet({ mode: "new", presetDate: preset === undefined ? iso(new Date()) : preset });
 
   let content;
-  if (view === "targets") content = h(TargetsView, { data, mutate, onBack: goHome, openTask });
-  else if (view === "today") content = h(TodayView, { data, mutate, onBack: goHome, openWeek: () => setView("week"), openTask, openNew });
-  else if (view === "week") content = h(WeekView, { data, mutate, onBack: () => setView("today"), weekOffset, setWeekOffset, openTask, openNew });
-  else if (view === "routines") content = h(RoutinesView, { data, mutate, onBack: goHome });
+  if (view === "targets") content = h(TargetsView, { data, mutate, openTask });
+  else if (view === "today") content = h(TodayView, { data, mutate, openWeek: () => setView("week"), openTask, openNew });
+  else if (view === "week") content = h(WeekView, { data, mutate, weekOffset, setWeekOffset, openTask, openNew });
+  else if (view === "routines") content = h(RoutinesView, { data, mutate });
   else if (view === "trash") content = h(TrashView, { data, mutate, onBack: goHome });
   else content = h(HomeView, { data, storageError, setView, menuOpen, setMenuOpen, exportData, importData });
 
@@ -510,6 +561,7 @@ function App() {
       view !== "home" && storageError && h("div", { className: "notice danger" },
         h("div", null, h("strong", null, "Dữ liệu chưa được lưu"), h("p", null, storageError))),
       content),
+    view !== "trash" && h(BottomNav, { view, setView }),
     h("button", { className: "fab", type: "button", onClick: () => openNew(), title: "Thêm việc (phím N)", "aria-label": "Thêm việc" }),
     sheet && h(TaskSheet, { data, mutate, spec: sheet, onClose: () => setSheet(null) }),
     undo && h("div", { className: "toast", role: "status" },
@@ -523,77 +575,96 @@ function HomeView({ data, storageError, setView, menuOpen, setMenuOpen, exportDa
   const metrics = weekMetrics(data, monday);
   const today = iso(new Date());
   const flat = flattenTasks(data);
-  const todayTasks = flat.filter(t => t.date === today);
-  const todayDone = todayTasks.filter(t => t.done).length;
-  const unscheduled = flat.filter(t => !t.date && !t.done).length;
+  const todayTasks = sortDay(flat.filter(t => t.date === today));
+  const pending = todayTasks.filter(t => !t.done);
+  const done = todayTasks.length - pending.length;
+  const percent = todayTasks.length ? Math.round(done / todayTasks.length * 100) : 0;
+  const now = new Date().toTimeString().slice(0, 5);
+  const next = pending.find(t => t.time && t.time >= now) || pending.find(t => t.priority === "high") || pending[0] || null;
+  const overdue = overdueTasks(data);
+  const unscheduled = flat.filter(t => !t.date && !t.done);
+  const objectives = data.objectives.filter(o => !o.archived);
+  const featured = objectives.slice().sort((a, b) => {
+    if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+    if (a.deadline) return -1; if (b.deadline) return 1;
+    return objectivePercent(b) - objectivePercent(a);
+  })[0] || null;
   const routineHits = data.routines.filter(r => r.log[today]).length;
   const bestStreak = data.routines.reduce((m, r) => Math.max(m, weekStreak(r)), 0);
-  const objectives = data.objectives.filter(o => !o.archived);
-  const overdueHigh = overdueTasks(data).filter(t => t.priority === "high");
-
-  let caption;
-  if (!todayTasks.length) caption = unscheduled ? unscheduled + " việc đang chờ xếp lịch" : "Chưa có việc nào cho hôm nay";
-  else {
-    const highLeft = todayTasks.filter(t => t.priority === "high" && !t.done).length;
-    const left = todayTasks.length - todayDone;
-    caption = highLeft ? highLeft + " việc ưu tiên cao còn lại" : left ? left + " việc còn lại" : "Đã xong hết hôm nay";
-    if (unscheduled) caption += " · " + unscheduled + " chưa xếp";
-  }
-  const card = (title, number, sub, cap, pct, target) =>
-    h("button", { type: "button", className: "hub-card", onClick: () => setView(target) },
-      h("div", { className: "hub-card-head" },
-        h("div", { className: "hub-title" }, title),
-        h(Icon, { name: "arrow", size: 22, className: "arrow" })),
-      h("div", { className: "hub-number" }, number, sub && h("small", null, sub)),
-      h("div", { className: "hub-caption" }, cap),
-      h(SegmentBar, { percent: pct }));
+  const highPct = metrics.high.length ? Math.round(metrics.highDone / metrics.high.length * 100) : 100;
+  const rhythm = Math.round(metrics.percent * .5 + highPct * .3 + metrics.routinePercent * .2);
+  const attention = [];
+  if (overdue.length) attention.push({ tone: "danger", title: overdue.length + " việc đã quá hạn", text: "Xử lý lịch hoặc bỏ những việc không còn đáng làm.", action: "week" });
+  if (unscheduled.length) attention.push({ tone: "warning", title: unscheduled.length + " việc chưa xếp lịch", text: "Đưa chúng vào một ngày cụ thể hoặc giữ trong backlog.", action: "week" });
+  const near = objectives.filter(o => { const d = daysFromToday(o.deadline); return d !== null && d >= 0 && d <= 7 && objectivePercent(o) < 100; });
+  if (near.length) attention.push({ tone: "warning", title: near.length + " mục tiêu còn ≤ 7 ngày", text: "Kiểm tra lại KR và việc còn lại trước deadline.", action: "targets" });
 
   return h(Fragment, null,
-    h("header", { className: "home-top" },
+    h("header", { className: "dashboard-head" },
       h("div", null,
-        h("h1", { className: "brand-title" }, "Root", h("em", null, "work")),
-        h("div", { className: "today-label" }, formatToday())),
-      h("div", { className: "home-actions" },
-        h("div", { className: "week-score", title: "Tỷ lệ hoàn thành trong tuần" }, metrics.percent, h("span", null, "%")),
-        h("div", { className: "menu-wrap" },
-          h("button", { type: "button", className: "icon-btn", onClick: () => setMenuOpen(!menuOpen), "aria-label": "Mở menu", "aria-expanded": menuOpen },
-            h(Icon, { name: "menu" })),
-          menuOpen && h(Fragment, null,
-            h("div", { className: "backdrop-lite", onClick: () => setMenuOpen(false) }),
-            h("div", { className: "menu-card" },
-              h("button", { type: "button", onClick: () => { setMenuOpen(false); setView("week"); } }, h(Icon, { name: "grid" }), "Xem cả tuần"),
-              h("button", { type: "button", onClick: () => { setMenuOpen(false); setView("targets"); } }, h(Icon, { name: "target" }), "Mục tiêu"),
-              h("button", { type: "button", onClick: () => { setMenuOpen(false); setView("routines"); } }, h(Icon, { name: "repeat" }), "Thói quen"),
-              h("div", { className: "menu-sep" }),
-              h("button", { type: "button", onClick: () => { setMenuOpen(false); setView("trash"); } },
-                h(Icon, { name: "trash" }), "Đã xoá gần đây", data.trash.length ? " · " + data.trash.length : ""),
-              h("button", { type: "button", onClick: exportData }, h(Icon, { name: "download" }), "Xuất bản sao lưu"),
-              h("label", null, h(Icon, { name: "upload" }), "Nạp bản sao lưu",
-                h("input", {
-                  type: "file", accept: "application/json,.json", className: "sr-only",
-                  onChange: e => { importData(e.target.files && e.target.files[0]); e.target.value = ""; }
-                }))))))),
+        h("div", { className: "eyebrow" }, "Chào mày"),
+        h("h1", { className: "dash-title" }, "Hôm nay"),
+        h("div", { className: "dash-date" }, formatToday())),
+      h("div", { className: "menu-wrap" },
+        h("button", { type: "button", className: "icon-btn soft", onClick: () => setMenuOpen(!menuOpen), "aria-label": "Mở menu", "aria-expanded": menuOpen }, h(Icon, { name: "menu" })),
+        menuOpen && h(Fragment, null,
+          h("div", { className: "backdrop-lite", onClick: () => setMenuOpen(false) }),
+          h("div", { className: "menu-card" },
+            h("button", { type: "button", onClick: () => { setMenuOpen(false); setView("trash"); } }, h(Icon, { name: "trash" }), "Đã xoá gần đây", data.trash.length ? " · " + data.trash.length : ""),
+            h("div", { className: "menu-sep" }),
+            h("button", { type: "button", onClick: exportData }, h(Icon, { name: "download" }), "Xuất bản sao lưu"),
+            h("label", null, h(Icon, { name: "upload" }), "Nạp bản sao lưu",
+              h("input", { type: "file", accept: "application/json,.json", className: "sr-only",
+                onChange: e => { importData(e.target.files && e.target.files[0]); e.target.value = ""; } })))))),
+
     storageError && h("div", { className: "notice danger" },
       h("div", null, h("strong", null, "Dữ liệu chưa được lưu"), h("p", null, storageError))),
-    overdueHigh.length > 0 && h("div", { className: "notice warning" },
-      h("div", null,
-        h("strong", null, overdueHigh.length + " việc ưu tiên cao đã quá ngày"),
-        h("p", null, "Rootwork không tự dời lịch. Mở lịch tuần để quyết định việc nào còn đáng làm.")),
-      h("div", { className: "notice-actions" }, h("button", { className: "btn sm", onClick: () => setView("week") }, "Xử lý"))),
-    h("section", { className: "hub-grid", "aria-label": "Khu vực chính" },
-      card("Mục tiêu", objectives.length, null,
-        objectives.length ? overallPercent(data) + "% tiến độ trung bình" : "Chưa có objective đang chạy",
-        overallPercent(data), "targets"),
-      card("Hôm nay", todayDone, " / " + todayTasks.length, caption,
-        todayTasks.length ? Math.round(todayDone / todayTasks.length * 100) : 0, "today"),
-      card("Thói quen", routineHits, " / " + data.routines.length,
-        data.routines.length ? "chuỗi dài nhất " + bestStreak + " tuần đạt mục tiêu" : "Chưa theo dõi thói quen nào",
-        data.routines.length ? Math.round(routineHits / data.routines.length * 100) : 0, "routines")),
-    h("footer", { className: "home-foot" },
-      h("span", null, "© " + new Date().getFullYear() + " derekdaydoi · Dữ liệu lưu trên thiết bị này"),
-      h("span", { className: "shortcut-hint" },
-        h("kbd", null, "1"), " Mục tiêu · ", h("kbd", null, "2"), " Hôm nay · ",
-        h("kbd", null, "3"), " Thói quen · ", h("kbd", null, "N"), " Thêm việc")));
+
+    h("section", { className: "dash-card progress-card" },
+      h("div", { className: "section-kicker" }, "Tiến độ hôm nay"),
+      h("div", { className: "progress-hero" },
+        h(RingProgress, { value: percent }),
+        h("div", { className: "progress-copy" },
+          h("div", { className: "progress-fraction" }, done + " / " + todayTasks.length),
+          h("div", { className: "progress-label" }, "việc hoàn thành"),
+          h("p", null, pending.length ? "Còn " + pending.length + " việc để khép ngày theo kế hoạch." : "Không còn việc nào đang chờ hôm nay."))),
+      next && h("div", { className: "next-action" },
+        h("div", null,
+          h("span", null, "Việc tiếp theo"),
+          h("strong", null, next.time ? next.time + " · " + next.title : next.title),
+          h("small", null, next.source + (next.krTitle ? " · " + next.krTitle : ""))),
+        h("button", { className: "btn primary sm", onClick: () => setView("today") }, "Bắt đầu"))),
+
+    featured && h("section", { className: "dash-card objective-pulse", onClick: () => setView("targets"), role: "button", tabIndex: 0 },
+      h("div", { className: "card-headline" },
+        h("div", null, h("div", { className: "section-kicker" }, "Mục tiêu gần hạn"), h("h2", null, featured.title)),
+        h("strong", { className: "accent-number" }, objectivePercent(featured) + "%")),
+      h(Progress, { value: objectivePercent(featured) }),
+      h("div", { className: "objective-pulse-meta" },
+        h("span", null, featured.deadline ? "Hạn " + dateDisplay(featured.deadline) : "Chưa đặt hạn"),
+        h("span", null, (featured.krs || []).length + " key result"))),
+
+    h("section", { className: "dash-card" },
+      h("div", { className: "section-kicker" }, "Tuần này"),
+      h("div", { className: "week-stat-grid" },
+        h(MiniStat, { value: metrics.done + "/" + metrics.total, label: "Hoàn thành", sub: "việc" }),
+        h(MiniStat, { value: routineHits + "/" + data.routines.length, label: "Thói quen", sub: "hôm nay" }),
+        h(MiniStat, { value: metrics.highDone + "/" + metrics.high.length, label: "Tập trung", sub: "ưu tiên cao" }),
+        h(MiniStat, { value: rhythm, label: "Điểm nhịp", sub: "0–100" })),
+      h("button", { className: "text-action", onClick: () => setView("week") }, "Xem cả tuần", h(Icon, { name: "arrow", size: 17 }))),
+
+    h("section", { className: "dash-card attention-card" },
+      h("div", { className: "card-headline" },
+        h("div", null, h("div", { className: "section-kicker" }, "Cần chú ý"), h("h2", null, attention.length ? attention.length + " điểm cần quyết định" : "Mọi thứ đang gọn")),
+        bestStreak > 0 && h("span", { className: "streak-badge" }, bestStreak + " tuần streak")),
+      attention.length === 0
+        ? h("p", { className: "muted-copy" }, "Không có overdue, backlog hoặc deadline gần cần xử lý.")
+        : h("div", { className: "attention-list" }, attention.slice(0, 3).map((a, i) =>
+            h("button", { key: i, className: "attention-row " + a.tone, onClick: () => setView(a.action) },
+              h("span", { className: "attention-dot" }),
+              h("span", { className: "attention-copy" }, h("strong", null, a.title), h("small", null, a.text)),
+              h(Icon, { name: "chevron", size: 17 })))))
+  );
 }
 
 /* ===================== task row ===================== */
@@ -731,61 +802,53 @@ function TaskSheet({ data, mutate, spec, onClose }) {
 /* ===================== today ===================== */
 function TodayView({ data, mutate, onBack, openWeek, openTask, openNew }) {
   const today = iso(new Date());
+  const monday = startOfWeek(new Date());
+  const weekDates = DOW.map((_, i) => iso(addDays(monday, i)));
+  const [picked, setPicked] = useState(today);
   const flat = flattenTasks(data);
-  const todayTasks = sortDay(flat.filter(t => t.date === today));
-  const done = todayTasks.filter(t => t.done).length;
-  const percent = todayTasks.length ? Math.round(done / todayTasks.length * 100) : 0;
-  const overdue = overdueTasks(data);
-  const unscheduled = flat.filter(t => !t.date && !t.done);
-
+  const tasks = sortDay(flat.filter(t => t.date === picked));
+  const fixed = tasks.filter(t => t.time);
+  const flexible = tasks.filter(t => !t.time);
+  const done = tasks.filter(t => t.done).length;
+  const overdue = picked === today ? overdueTasks(data) : [];
+  const pickedFuture = picked > today;
   const toggleRoutine = id => mutate(d => {
+    if (pickedFuture) return;
     const r = d.routines.find(i => i.id === id);
     if (!r) return;
-    if (r.log[today]) delete r.log[today]; else r.log[today] = true;
+    if (r.log[picked]) delete r.log[picked]; else r.log[picked] = true;
   });
-  const bumpAll = () => mutate(d => {
-    overdue.forEach(t => { const r = taskRef(d, t); if (r) r.date = today; });
-  }, { undoLabel: "Đã dời " + overdue.length + " việc sang hôm nay" });
+  const section = (label, list, empty) => h(Fragment, null,
+    h("div", { className: "group-label" }, label),
+    h("div", { className: "group day-task-group" }, list.length
+      ? list.map(t => h(TaskRow, { key: (t.loose ? "l" : "t") + t.id, task: t, mutate, showSource: true, onOpen: () => openTask(t) }))
+      : h("div", { className: "row quiet-row" }, h("div", { className: "row-main" }, h("div", { className: "row-value" }, empty)))));
 
   return h(Fragment, null,
-    h(ScreenHeader, { title: "Hôm nay", subtitle: formatToday(), onBack,
-      actions: h("button", { className: "btn", onClick: openWeek }, "Cả tuần", h(Icon, { name: "arrow", size: 18 })) }),
-    h("section", { className: "today-hero" },
-      h("div", { className: "today-count" },
-        h("b", null, done), h("span", null, "/ " + todayTasks.length + " việc đã xong")),
-      h("div", { className: "today-bar" }, h("span", { style: { width: percent + "%" } }))),
-    overdue.length > 0 && h("div", { className: "notice warning" },
-      h("div", null,
-        h("strong", null, overdue.length + " việc đã quá ngày"),
-        h("p", null, "Dời tất cả sang hôm nay, hoặc mở lịch tuần để chọn từng việc.")),
-      h("div", { className: "notice-actions" },
-        h("button", { className: "btn sm", onClick: bumpAll }, "Dời hết"),
-        h("button", { className: "btn sm", onClick: openWeek }, "Chọn tay"))),
-    todayTasks.length === 0
-      ? h(EmptyState, {
-          title: "Hôm nay chưa có việc nào.",
-          text: unscheduled.length ? unscheduled.length + " việc đang chờ trong kho chưa xếp lịch." : "Thêm một việc, hoặc xếp lịch từ mục tiêu.",
-          action: h("div", { className: "inline wrap", style: { justifyContent: "center" } },
-            h("button", { className: "btn primary", onClick: () => openNew(today) }, "Thêm việc hôm nay"),
-            unscheduled.length > 0 && h("button", { className: "btn", onClick: openWeek }, "Xếp lịch"))
-        })
-      : h("div", { className: "group" },
-          todayTasks.map(t => h(TaskRow, { key: (t.loose ? "l" : "t") + t.id, task: t, mutate, showSource: true, onOpen: () => openTask(t) }))),
+    h(ScreenHeader, { title: picked === today ? "Hôm nay" : dateLong(picked),
+      subtitle: done + " / " + tasks.length + " việc đã xong",
+      actions: h("button", { className: "icon-btn soft", onClick: () => openNew(picked), "aria-label": "Thêm việc" }, h(Icon, { name: "plus" })) }),
+    h("nav", { className: "day-strip compact", "aria-label": "Chọn ngày trong tuần" },
+      DOW.map((day, i) => { const date = weekDates[i]; return h("button", { key: date, type: "button",
+        className: "day-pick" + (date === picked ? " on" : "") + (date === today ? " today" : ""),
+        onClick: () => setPicked(date), "aria-pressed": date === picked },
+        h("span", { className: "day-pick-dow" }, day), h("span", { className: "day-pick-num" }, addDays(monday, i).getDate())); })),
+    section("Việc có giờ cố định", fixed, "Không có lịch cố định."),
+    section("Việc linh hoạt", flexible, "Không có việc linh hoạt trong ngày này."),
+    overdue.length > 0 && h(Fragment, null,
+      h("div", { className: "group-label danger-label" }, "Quá hạn · " + overdue.length),
+      h("div", { className: "group overdue-group" }, overdue.map(t => h(TaskRow, { key: "o" + t.id, task: t, mutate, showSource: true, onOpen: () => openTask(t) })))),
     data.routines.length > 0 && h(Fragment, null,
-      h("div", { className: "group-label" }, "Thói quen hôm nay"),
-      h("section", { className: "panel" },
+      h("div", { className: "group-label" }, "Thói quen " + (picked === today ? "hôm nay" : dateDisplay(picked))),
+      h("section", { className: "panel habit-check-panel" },
         h("div", { className: "routine-pills" }, data.routines.map(r => {
-          const on = Boolean(r.log[today]);
-          return h("button", { key: r.id, type: "button", className: "routine-pill" + (on ? " on" : ""),
+          const on = Boolean(r.log[picked]);
+          return h("button", { key: r.id, type: "button", disabled: pickedFuture,
+            className: "routine-pill" + (on ? " on" : "") + (pickedFuture ? " future" : ""),
             onClick: () => toggleRoutine(r.id), "aria-pressed": on },
             h("i", null, on && h(Icon, { name: "check", size: 12, width: 3 })), r.name);
-        })))),
-    unscheduled.length > 0 && todayTasks.length > 0 && h("section", { className: "panel" },
-      h("div", { className: "panel-head" },
-        h("div", null,
-          h("h2", { className: "panel-title" }, unscheduled.length + " việc chưa xếp lịch"),
-          h("div", { className: "panel-sub" }, "Chúng không xuất hiện trong ngày nào cho tới khi mày chọn ngày.")),
-        h("button", { className: "btn sm", onClick: openWeek }, "Xếp lịch"))));
+        })) ))
+  );
 }
 
 /* ===================== targets ===================== */
@@ -793,40 +856,40 @@ function TargetsView({ data, mutate, onBack, openTask }) {
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [openMap, setOpenMap] = useState({});
-  const [showArchived, setShowArchived] = useState(false);
-  const list = data.objectives.filter(o => showArchived ? o.archived : !o.archived);
-  const archivedCount = data.objectives.filter(o => o.archived).length;
-
+  const [filter, setFilter] = useState("all");
+  const [openMap, setOpenMap] = useState(() => {
+    const m = {}; data.objectives.filter(o => !o.archived).forEach(o => { m[o.id] = true; }); return m;
+  });
+  const visible = data.objectives.filter(o => {
+    const pct = objectivePercent(o);
+    if (filter === "active") return !o.archived && pct < 100;
+    if (filter === "done") return !o.archived && pct >= 100;
+    if (filter === "archived") return o.archived;
+    return !o.archived;
+  });
   const add = () => {
-    const t = title.trim();
-    if (!t) return;
+    const t = title.trim(); if (!t) return;
     mutate(d => d.objectives.push({ id: uid(), title: t, deadline: isIsoDate(deadline) ? deadline : null, archived: false, krs: [] }));
     setTitle(""); setDeadline(""); setAdding(false);
   };
   return h(Fragment, null,
-    h(ScreenHeader, { title: showArchived ? "Đã lưu trữ" : "Mục tiêu", onBack,
-      actions: !showArchived && h("button", { className: "btn primary", onClick: () => setAdding(true) }, "Objective mới") }),
-    archivedCount > 0 && h("button", { className: "btn sm", style: { marginBottom: 16 }, onClick: () => setShowArchived(!showArchived) },
-      showArchived ? "Về mục tiêu đang chạy" : "Xem " + archivedCount + " mục tiêu đã lưu trữ"),
-    list.length === 0 && !adding && h(EmptyState, {
-      title: showArchived ? "Chưa lưu trữ mục tiêu nào." : "Mục tiêu trước, việc sau.",
-      text: showArchived ? "" : "Tạo Objective, thêm Key Result, đặt chỉ số đo, rồi mới sinh task.",
-      action: !showArchived && h("button", { className: "btn primary", onClick: () => setAdding(true) }, "Objective đầu tiên")
-    }),
-    adding && h("div", { className: "panel" },
-      h("div", { className: "inline wrap" },
-        h("input", { className: "txt grow", autoFocus: true, placeholder: "Tên objective", value: title,
-          onChange: e => setTitle(e.target.value),
-          onKeyDown: e => { if (e.key === "Enter") add(); if (e.key === "Escape") setAdding(false); } }),
-        h("input", { className: "txt", type: "date", value: deadline, style: { width: "auto" }, "aria-label": "Hạn",
-          onChange: e => setDeadline(e.target.value) }),
-        h("button", { className: "btn primary", onClick: add }, "Thêm"),
-        h("button", { className: "btn ghost", onClick: () => { setAdding(false); setTitle(""); setDeadline(""); } }, "Huỷ"))),
-    list.map(o => h(ObjectiveCard, {
-      key: o.id, objective: o, mutate, openTask,
-      open: Boolean(openMap[o.id]), setOpen: () => setOpenMap(p => ({ ...p, [o.id]: !p[o.id] }))
-    })));
+    h(ScreenHeader, { title: "Mục tiêu", subtitle: data.objectives.filter(o => !o.archived).length + " objective đang theo dõi",
+      actions: h("button", { className: "icon-btn soft", onClick: () => setAdding(true), "aria-label": "Objective mới" }, h(Icon, { name: "plus" })) }),
+    h("div", { className: "filter-tabs" },
+      [["all","Tất cả"],["active","Đang thực hiện"],["done","Đã đạt"],["archived","Lưu trữ"]].map(([id,label]) =>
+        h("button", { key:id, className:"filter-tab"+(filter===id?" on":""), onClick:()=>setFilter(id) }, label))),
+    adding && h("div", { className: "panel add-objective-panel" },
+      h("input", { className: "txt", autoFocus: true, placeholder: "Tên objective", value: title, onChange: e => setTitle(e.target.value),
+        onKeyDown: e => { if (e.key === "Enter") add(); if (e.key === "Escape") setAdding(false); } }),
+      h("div", { className: "inline wrap", style: { marginTop: 10 } },
+        h("input", { className: "txt grow", type: "date", value: deadline, "aria-label": "Hạn", onChange: e => setDeadline(e.target.value) }),
+        h("button", { className: "btn primary", onClick: add }, "Tạo objective"),
+        h("button", { className: "btn ghost", onClick: () => setAdding(false) }, "Huỷ"))),
+    visible.length === 0 && !adding && h(EmptyState, { title: filter === "done" ? "Chưa có objective đạt 100%." : "Chưa có objective ở nhóm này.",
+      text: filter === "all" || filter === "active" ? "Tạo Objective, đặt Key Result đo được, rồi mới sinh task." : "" }),
+    h("div", { className: "objective-stack" }, visible.map(o => h(ObjectiveCard, { key: o.id, objective: o, mutate, openTask,
+      open: Boolean(openMap[o.id]), setOpen: () => setOpenMap(p => ({ ...p, [o.id]: !p[o.id] })) })))
+  );
 }
 
 function ObjectiveCard({ objective, mutate, open, setOpen, openTask }) {
@@ -973,63 +1036,44 @@ function WeekView({ data, mutate, onBack, weekOffset, setWeekOffset, openTask, o
   const today = iso(new Date());
   const flat = flattenTasks(data);
   const unscheduled = flat.filter(t => !t.date && !t.done);
-  const carry = weekOffset === 0 ? overdueTasks(data).filter(t => !dates.includes(t.date)) : [];
   const metrics = weekMetrics(data, monday);
-  const clearDate = task => mutate(d => { const r = taskRef(d, task); if (r) { r.date = null; r.time = null; } });
-
+  const highPct = metrics.high.length ? Math.round(metrics.highDone / metrics.high.length * 100) : 100;
+  const rhythm = Math.round(metrics.percent * .55 + highPct * .25 + metrics.routinePercent * .20);
+  const carry = weekOffset === 0 ? overdueTasks(data).filter(t => !dates.includes(t.date)) : [];
   return h(Fragment, null,
-    h(ScreenHeader, { title: "Cả tuần", onBack }),
-    h("div", { className: "week-toolbar" },
-      h("div", { className: "week-range" }, formatRange(monday)),
-      h("div", { className: "week-nav" },
-        h("button", { className: "btn sm", onClick: () => setWeekOffset(weekOffset - 1), "aria-label": "Tuần trước" },
-          h(Icon, { name: "back", size: 18 })),
-        h("button", { className: "btn sm", onClick: () => setWeekOffset(0) }, "Tuần này"),
-        h("button", { className: "btn sm", onClick: () => setWeekOffset(weekOffset + 1), "aria-label": "Tuần sau" },
-          h(Icon, { name: "chevron", size: 18 })))),
-    h("section", { className: "metrics", "aria-label": "Tổng quan tuần" },
-      h("div", { className: "metric" }, h("div", { className: "metric-label" }, "Hoàn thành"),
-        h("div", { className: "metric-value" }, metrics.done, h("small", null, " / ", metrics.total))),
-      h("div", { className: "metric" }, h("div", { className: "metric-label" }, "Ưu tiên cao"),
-        h("div", { className: "metric-value" }, metrics.highDone, h("small", null, " / ", metrics.high.length))),
-      h("div", { className: "metric" }, h("div", { className: "metric-label" }, "Thói quen"),
-        h("div", { className: "metric-value" }, metrics.routinePercent, h("small", null, "%")))),
-    carry.length > 0 && h(Fragment, null,
-      h("div", { className: "group-label" }, "Đã quá ngày · " + carry.length),
-      h("div", { className: "group" },
-        h("div", { className: "row" },
-          h("div", { className: "row-main" },
-            h("div", { className: "row-value", style: { whiteSpace: "normal" } },
-              "Vuốt phải để hoãn một ngày, vuốt trái để xoá, chạm để chọn ngày cụ thể.")),
-          h("button", { className: "btn sm", onClick: () => mutate(d => carry.forEach(t => {
-            const r = taskRef(d, t); if (r) r.date = today;
-          }), { undoLabel: "Đã dời " + carry.length + " việc" }) }, "Dời hết")),
-        carry.map(t => h(TaskRow, { key: (t.loose ? "l" : "t") + t.id, task: t, mutate, showSource: true, onOpen: () => openTask(t) })))),
-    h("div", { className: "group-label" }, "Chưa xếp lịch · " + unscheduled.length),
-    h("div", { className: "group" },
-      unscheduled.length === 0
-        ? h("div", { className: "row" }, h("div", { className: "row-main" },
-            h("div", { className: "row-value" }, "Không còn việc nào chờ xếp.")))
-        : unscheduled.map(t => h(TaskRow, { key: (t.loose ? "l" : "t") + t.id, task: t, mutate, showSource: true, onOpen: () => openTask(t) }))),
-    h("div", { className: "group-label" }, "Lịch tuần"),
-    h("section", { className: "week-grid" }, DOW.map((day, i) => {
-      const date = dates[i];
-      const tasks = sortDay(flat.filter(t => t.date === date));
-      return h("article", { className: "day-column" + (date === today ? " today" : ""), key: date },
-        h("div", { className: "day-head" },
-          h("span", { className: "day-name" }, day),
-          h("span", { className: "day-num" }, addDays(monday, i).getDate())),
-        h("div", { className: "day-body" },
-          tasks.length === 0
-            ? h("div", { className: "day-empty" }, "—")
-            : tasks.map(t => h("div", { className: "week-task", key: (t.loose ? "l" : "t") + t.id, onClick: () => openTask(t) },
-                h(Check, { done: t.done, onClick: () => mutate(d => { const r = taskRef(d, t); if (r) r.done = !r.done; }) }),
-                t.time && h("span", { className: "time-badge" }, t.time),
-                h("div", { className: "week-task-name" + (t.done ? " done" : t.priority === "high" ? " hi" : "") }, t.title),
-                h("button", { className: "row-del", title: "Trả về kho chưa xếp", "aria-label": "Trả về kho chưa xếp",
-                  onClick: e => { e.stopPropagation(); clearDate(t); } }, h(Icon, { name: "undo", size: 16 })))),
-          h("button", { className: "day-add", onClick: () => openNew(date) }, "Thêm việc")));
-    })));
+    h(ScreenHeader, { title: "Cả tuần", subtitle: formatRange(monday),
+      actions: h("button", { className: "icon-btn soft", onClick: () => openNew(today), "aria-label": "Thêm việc" }, h(Icon, { name: "plus" })) }),
+    h("div", { className: "week-nav centered" },
+      h("button", { className: "btn sm", onClick: () => setWeekOffset(weekOffset - 1), "aria-label": "Tuần trước" }, h(Icon, { name: "back", size: 18 })),
+      h("button", { className: "btn sm", onClick: () => setWeekOffset(0) }, "Tuần này"),
+      h("button", { className: "btn sm", onClick: () => setWeekOffset(weekOffset + 1), "aria-label": "Tuần sau" }, h(Icon, { name: "chevron", size: 18 }))),
+    h("section", { className: "dash-card week-overview" },
+      h("div", { className: "section-kicker" }, "Tổng quan"),
+      h("div", { className: "week-stat-grid" },
+        h(MiniStat, { value: metrics.total, label: "Tổng việc" }),
+        h(MiniStat, { value: metrics.done, label: "Hoàn thành", sub: metrics.percent + "%" }),
+        h(MiniStat, { value: metrics.highDone + "/" + metrics.high.length, label: "Ưu tiên cao" }),
+        h(MiniStat, { value: rhythm, label: "Điểm nhịp" }))),
+    carry.length > 0 && h("div", { className: "notice warning" },
+      h("div", null, h("strong", null, carry.length + " việc từ trước đang quá hạn"), h("p", null, "Chúng chưa thuộc tuần này nhưng vẫn cần một quyết định."))),
+    h("div", { className: "group-label" }, "Kế hoạch theo ngày"),
+    h("section", { className: "week-card-grid" }, DOW.map((day, i) => {
+      const date = dates[i]; const tasks = sortDay(flat.filter(t => t.date === date)); const done = tasks.filter(t => t.done).length;
+      return h("article", { className: "week-day-card" + (date === today ? " today" : ""), key: date },
+        h("div", { className: "week-day-top" },
+          h("div", null, h("strong", null, day + " " + addDays(monday, i).getDate()), h("span", null, tasks.length + " việc")),
+          h("span", { className: "day-ratio" }, done + "/" + tasks.length)),
+        h("div", { className: "dot-progress" }, Array.from({ length: Math.min(5, Math.max(tasks.length, 1)) }, (_, j) => h("span", { key:j, className:j<Math.min(done,5)?"on":"" }))),
+        h("div", { className: "week-mini-list" }, tasks.slice(0, 3).map(t => h("button", { key:t.id, onClick:()=>openTask(t), className:"week-mini-task"+(t.done?" done":"") },
+          t.time && h("b", null, t.time), h("span", null, t.title)))),
+        tasks.length > 3 && h("small", { className: "more-count" }, "+" + (tasks.length - 3) + " việc khác"),
+        h("button", { className: "day-add", onClick: () => openNew(date) }, "+ Thêm việc"));
+    })),
+    h("div", { className: "group-label" }, "Việc chưa lên kế hoạch · " + unscheduled.length),
+    h("div", { className: "group backlog-group" }, unscheduled.length
+      ? unscheduled.map(t => h(TaskRow, { key:(t.loose?"l":"t")+t.id, task:t, mutate, showSource:true, onOpen:()=>openTask(t) }))
+      : h("div", { className:"row quiet-row" }, h("div", { className:"row-main" }, h("div", { className:"row-value" }, "Backlog đang trống."))))
+  );
 }
 
 /* ===================== routines ===================== */
@@ -1041,76 +1085,49 @@ function RoutinesView({ data, mutate, onBack }) {
   const weekDates = DOW.map((_, i) => iso(addDays(monday, i)));
   const [picked, setPicked] = useState(today);
   const pickedFuture = picked > today;
-
   const add = () => {
-    const n = value.trim();
-    if (!n) return;
-    mutate(d => d.routines.push({ id: uid(), name: n, target: 3, log: {} }));
-    setValue(""); setAdding(false);
+    const n = value.trim(); if (!n) return;
+    mutate(d => d.routines.push({ id: uid(), name: n, target: 3, log: {} })); setValue(""); setAdding(false);
   };
-  const toggle = (id, date) => {
-    if (date > today) return;
-    mutate(d => {
-      const r = d.routines.find(i => i.id === id);
-      if (!r) return;
-      if (r.log[date]) delete r.log[date]; else r.log[date] = true;
-    });
-  };
+  const toggle = (id, date) => { if (date > today) return; mutate(d => { const r = d.routines.find(i => i.id === id); if (!r) return;
+    if (r.log[date]) delete r.log[date]; else r.log[date] = true; }); };
+  const achieved = data.routines.filter(r => weekDates.reduce((s,d)=>s+(r.log[d]?1:0),0) >= (r.target||3)).length;
+  const bestStreak = data.routines.reduce((m,r)=>Math.max(m,weekStreak(r)),0);
+  const trend = Array.from({ length: 8 }, (_, k) => {
+    const m = addDays(monday, (k - 7) * 7); let hit=0,target=0;
+    data.routines.forEach(r => { target += r.target || 3; DOW.forEach((_,i)=>{ if(r.log[iso(addDays(m,i))]) hit++; }); });
+    return target ? clamp(Math.round(hit/target*100),0,100) : 0;
+  });
   return h(Fragment, null,
-    h(ScreenHeader, { title: "Thói quen", onBack,
-      actions: h("button", { className: "btn primary", onClick: () => setAdding(true) }, "Thói quen mới") }),
-    data.routines.length > 0 && h("nav", { className: "day-strip", "aria-label": "Chọn ngày" },
-      DOW.map((day, i) => {
-        const date = weekDates[i];
-        const future = date > today;
-        return h("button", { key: date, type: "button", disabled: future,
-          className: "day-pick" + (date === picked ? " on" : "") + (date === today ? " today" : "") + (future ? " future" : ""),
-          onClick: () => !future && setPicked(date), "aria-pressed": date === picked },
-          h("span", { className: "day-pick-dow" }, day),
-          h("span", { className: "day-pick-num" }, addDays(monday, i).getDate()));
-      })),
-    data.routines.length === 0 && !adding && h(EmptyState, {
-      title: "Thói quen giữ nhịp.",
-      text: "Đặt số lần mỗi tuần, tick theo ngày, theo dõi số tuần liên tiếp đạt mục tiêu.",
-      action: h("button", { className: "btn primary", onClick: () => setAdding(true) }, "Thói quen đầu tiên")
-    }),
-    adding && h("div", { className: "panel" }, h("div", { className: "inline wrap" },
-      h("input", { className: "txt grow", autoFocus: true, placeholder: "Tên thói quen", value,
-        onChange: e => setValue(e.target.value),
-        onKeyDown: e => { if (e.key === "Enter") add(); if (e.key === "Escape") setAdding(false); } }),
-      h("button", { className: "btn primary", onClick: add }, "Thêm"),
-      h("button", { className: "btn ghost", onClick: () => { setAdding(false); setValue(""); } }, "Huỷ"))),
-    data.routines.map(r => {
-      const hits = weekDates.reduce((s, d) => s + (r.log[d] ? 1 : 0), 0);
-      const target = r.target || 3;
-      const fill = clamp(Math.round(hits / target * 100), 0, 100);
-      const on = Boolean(r.log[picked]);
-      const streak = weekStreak(r);
-      return h("article", { className: "routine", key: r.id,
-        style: { background: "linear-gradient(to right, var(--brand-soft) " + fill + "%, var(--surface) " + fill + "%)" } },
-        h("div", { className: "routine-head" },
-          h("div", { className: "routine-name" },
-            h(EditableText, { value: r.name, onSave: n => mutate(d => { d.routines.find(i => i.id === r.id).name = n; }) })),
-          h("button", { type: "button",
-            className: "routine-toggle" + (on ? " on" : "") + (pickedFuture ? " future" : ""),
-            disabled: pickedFuture, onClick: () => toggle(r.id, picked), "aria-pressed": on,
-            "aria-label": on ? "Bỏ đánh dấu ngày này" : "Đánh dấu hoàn thành ngày này" })),
-        h("div", { className: "routine-meta" },
-          streak > 0 ? streak + " tuần liên tiếp đạt mục tiêu · " : "", hits + "/" + target + " tuần này"),
-        h("div", { className: "routine-controls" },
-          h("div", { className: "routine-dots", "aria-hidden": "true" },
-            weekDates.map(d => h("span", { key: d,
-              className: "routine-dot" + (r.log[d] ? " on" : "") + (d === picked ? " picked" : "") }))),
-          h("input", { className: "target-box", type: "number", min: 1, max: 7, value: target, "aria-label": "Số lần mỗi tuần",
-            onChange: e => mutate(d => { d.routines.find(i => i.id === r.id).target = clamp(Number(e.target.value) || 1, 1, 7); }) }),
-          h("button", { className: "row-del", title: "Xoá thói quen", "aria-label": "Xoá thói quen",
-            onClick: () => mutate(d => {
-              const gone = d.routines.find(i => i.id === r.id);
-              d.routines = d.routines.filter(i => i.id !== r.id);
-              d.trash.push({ id: uid(), deletedAt: new Date().toISOString(), kind: "routine", label: gone.name, payload: deepClone(gone) });
-            }, { undoLabel: "Đã xoá thói quen" })
-          }, h(Icon, { name: "trash", size: 18 }))));
-    }));
+    h(ScreenHeader, { title: "Thói quen", subtitle: data.routines.length + " thói quen đang theo dõi",
+      actions: h("button", { className:"icon-btn soft", onClick:()=>setAdding(true), "aria-label":"Thói quen mới" }, h(Icon,{name:"plus"})) }),
+    data.routines.length > 0 && h("nav", { className:"day-strip compact", "aria-label":"Chọn ngày" }, DOW.map((day,i)=>{
+      const date=weekDates[i], future=date>today; return h("button", { key:date, type:"button", disabled:future,
+        className:"day-pick"+(date===picked?" on":"")+(date===today?" today":"")+(future?" future":""), onClick:()=>!future&&setPicked(date) },
+        h("span",{className:"day-pick-dow"},day), h("span",{className:"day-pick-num"},addDays(monday,i).getDate())); })),
+    data.routines.length > 0 && h("section", { className:"dash-card habit-summary" },
+      h("div", { className:"card-headline" }, h("div",null,h("div",{className:"section-kicker"},"Tổng quan tuần"),h("h2",null,achieved+" / "+data.routines.length+" thói quen đạt")),
+        h("span",{className:"streak-badge"},bestStreak+" tuần streak")),
+      h(TrendSpark,{values:trend}),
+      h("div",{className:"trend-labels"},h("span",null,"8 tuần trước"),h("span",null,"Tuần này"))),
+    data.routines.length === 0 && !adding && h(EmptyState,{title:"Thói quen giữ nhịp.",text:"Đặt số lần mỗi tuần, tick theo ngày và theo dõi chuỗi tuần đạt mục tiêu.",
+      action:h("button",{className:"btn primary",onClick:()=>setAdding(true)},"Thói quen đầu tiên")}),
+    adding && h("div",{className:"panel"},h("div",{className:"inline wrap"},
+      h("input",{className:"txt grow",autoFocus:true,placeholder:"Tên thói quen",value,onChange:e=>setValue(e.target.value),onKeyDown:e=>{if(e.key==="Enter")add();if(e.key==="Escape")setAdding(false);}}),
+      h("button",{className:"btn primary",onClick:add},"Thêm"),h("button",{className:"btn ghost",onClick:()=>{setAdding(false);setValue("");}},"Huỷ"))),
+    data.routines.map(r=>{
+      const hits=weekDates.reduce((s,d)=>s+(r.log[d]?1:0),0), target=r.target||3, fill=clamp(Math.round(hits/target*100),0,100), on=Boolean(r.log[picked]), streak=weekStreak(r);
+      return h("article",{className:"routine modern",key:r.id},
+        h("div",{className:"routine-head"},h("div",{className:"routine-name"},h(EditableText,{value:r.name,onSave:n=>mutate(d=>{d.routines.find(i=>i.id===r.id).name=n;})})),
+          h("button",{type:"button",className:"routine-toggle"+(on?" on":"")+(pickedFuture?" future":""),disabled:pickedFuture,onClick:()=>toggle(r.id,picked),"aria-pressed":on})),
+        h("div",{className:"routine-meta"},streak>0?streak+" tuần liên tiếp đạt mục tiêu · ":"",hits+"/"+target+" tuần này"),
+        h(Progress,{value:fill}),
+        h("div",{className:"routine-controls"},
+          h("div",{className:"routine-dots"},weekDates.map(d=>h("span",{key:d,className:"routine-dot"+(r.log[d]?" on":"")+(d===picked?" picked":"")}))),
+          h("input",{className:"target-box",type:"number",min:1,max:7,value:target,"aria-label":"Số lần mỗi tuần",onChange:e=>mutate(d=>{d.routines.find(i=>i.id===r.id).target=clamp(Number(e.target.value)||1,1,7);})}),
+          h("button",{className:"row-del",title:"Xoá thói quen","aria-label":"Xoá thói quen",onClick:()=>mutate(d=>{const gone=d.routines.find(i=>i.id===r.id);d.routines=d.routines.filter(i=>i.id!==r.id);d.trash.push({id:uid(),deletedAt:new Date().toISOString(),kind:"routine",label:gone.name,payload:deepClone(gone)});},{undoLabel:"Đã xoá thói quen"})},h(Icon,{name:"trash",size:18}))));
+    })
+  );
 }
 
 /* ===================== trash ===================== */
@@ -1118,18 +1135,21 @@ const KIND_LABEL = { task: "Việc", kr: "Key Result", objective: "Objective", r
 function TrashView({ data, mutate, onBack }) {
   const items = data.trash.slice().sort((a, b) => b.deletedAt.localeCompare(a.deletedAt));
   const restore = entry => mutate(d => {
-    d.trash = d.trash.filter(i => i.id !== entry.id);
-    if (entry.kind === "objective") d.objectives.push(entry.payload);
-    else if (entry.kind === "routine") d.routines.push(entry.payload);
+    let restored = false;
+    if (entry.kind === "objective") { d.objectives.push(entry.payload); restored = true; }
+    else if (entry.kind === "routine") { d.routines.push(entry.payload); restored = true; }
     else if (entry.kind === "kr") {
       const o = d.objectives.find(i => i.id === entry.objId);
-      if (o) o.krs.push(entry.payload);   // objective gốc mất thì KR không có chỗ về
+      if (o) { o.krs.push(entry.payload); restored = true; }
+      // Nếu objective gốc không còn, giữ KR trong thùng rác thay vì làm mất dữ liệu.
     } else {
       const t = entry.payload;
       const o = t.objId && d.objectives.find(i => i.id === t.objId);
       const kr = o && o.krs.find(i => i.id === t.krId);
       if (kr) kr.tasks.push({ ...t }); else d.loose.push({ ...t });
+      restored = true;
     }
+    if (restored) d.trash = d.trash.filter(i => i.id !== entry.id);
   });
   return h(Fragment, null,
     h(ScreenHeader, { title: "Đã xoá gần đây", subtitle: "Tự dọn sau " + TRASH_DAYS + " ngày", onBack,

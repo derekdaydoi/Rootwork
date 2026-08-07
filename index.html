@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-<meta name="description" content="Rootwork — OKR, lịch tuần và thói quen trong một công cụ." />
-<meta name="theme-color" content="#ecebe6" />
+<meta name="description" content="Rootwork — personal execution system cho mục tiêu, công việc, lịch tuần và thói quen." />
+<meta name="theme-color" content="#f4f0e7" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Rootwork" />
 <link rel="icon" href="icon-256.png" />
-<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-180.png" />
 <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
 <link rel="manifest" href="manifest.json" />
 <title>Rootwork</title>
@@ -442,6 +442,199 @@ select.field{padding-right:var(--s-6);
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
+
+
+/* ================= ROOTWORK 4 — concept UI ================= */
+:root{
+  --bg:#f4f0e7;
+  --surface:#fffdf8;
+  --surface-2:#f7f3eb;
+  --surface-3:#eee9df;
+  --ink:#171915;
+  --muted:#62665f;
+  --subtle:#8a8e85;
+  --line:#e8e2d7;
+  --line-strong:#d6cfc2;
+  --brand-mark:#3aa66b;
+  --brand:#2f7d58;
+  --brand-strong:#245f45;
+  --brand-soft:#e6f0e9;
+  --danger:#bd4638;
+  --danger-bg:#fff0ed;
+  --warning:#986817;
+  --warning-bg:#fff7e7;
+  --shadow-1:0 1px 2px rgba(31,35,28,.035),0 9px 28px rgba(31,35,28,.055);
+  --shadow-2:0 4px 10px rgba(31,35,28,.07),0 18px 46px rgba(31,35,28,.11);
+}
+html,body{background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Arial,sans-serif}
+.app-shell{width:min(620px,100%);padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 154px)}
+
+/* Header language follows the mobile concept: quiet, compact, content first. */
+.dashboard-head,.screen-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.eyebrow{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:2px}
+.dash-title{margin:0;font-size:30px;line-height:1.05;letter-spacing:-1.25px;font-weight:780}
+.dash-date{font-size:12px;color:var(--muted);margin-top:5px}
+.screen-title{font-size:28px;letter-spacing:-1.1px;font-weight:780}
+.screen-sub{font-size:12px;margin-top:4px}
+.icon-btn.soft{background:rgba(255,253,248,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:rgba(214,207,194,.8);box-shadow:0 3px 14px rgba(31,35,28,.04)}
+
+/* Core card system */
+.dash-card{background:linear-gradient(180deg,rgba(255,253,248,.98),rgba(253,250,244,.98));border:1px solid rgba(214,207,194,.62);border-radius:19px;box-shadow:var(--shadow-1);padding:16px;margin-bottom:12px}
+.section-kicker{text-transform:none;letter-spacing:0;font-size:12px;font-weight:720;color:var(--muted);margin-bottom:10px}
+.card-headline{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.card-headline h2,.objective-pulse h2{margin:1px 0 0;font-size:17px;line-height:1.3;letter-spacing:-.35px}
+.accent-number{font-size:22px;line-height:1;color:var(--brand);letter-spacing:-.8px;white-space:nowrap}
+.muted-copy{font-size:13px;color:var(--muted);margin:2px 0 0}
+
+/* Today progress hero */
+.progress-hero{display:flex;align-items:center;gap:18px}
+.ring-wrap{position:relative;display:grid;place-items:center;flex:none}
+.ring-wrap svg{position:absolute;inset:0}
+.ring-track{stroke:#e5e0d6;stroke-width:7}
+.ring-value{stroke:var(--brand);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .35s var(--ease)}
+.ring-wrap strong{font-size:18px;letter-spacing:-.55px;color:var(--brand)}
+.progress-copy{min-width:0}
+.progress-fraction{font-size:27px;line-height:1;font-weight:780;letter-spacing:-1.2px}
+.progress-label{font-size:13px;font-weight:650;margin-top:3px}
+.progress-copy p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+.next-action{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:15px;padding:13px 0 0;border-top:1px solid var(--line)}
+.next-action>div{min-width:0;display:grid;gap:2px}
+.next-action span{font-size:11px;color:var(--muted)}
+.next-action strong{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.next-action small{font-size:11px;color:var(--subtle);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Objective pulse */
+.objective-pulse{cursor:pointer;transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.objective-pulse:active{transform:scale(.995)}
+.objective-pulse .progress{height:7px;border-radius:999px;background:#e7e2d8}
+.objective-pulse .progress>span{border-radius:inherit}
+.objective-pulse-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-top:8px}
+
+/* Weekly summary */
+.week-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:15px;overflow:hidden;background:rgba(255,255,255,.42)}
+.mini-stat{min-width:0;padding:13px 9px;text-align:center;border-right:1px solid var(--line);display:grid;justify-items:center}
+.mini-stat:last-child{border-right:0}
+.mini-stat strong{font-size:17px;line-height:1.05;letter-spacing:-.55px}
+.mini-stat span{font-size:10px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mini-stat small{font-size:9px;color:var(--subtle);margin-top:1px}
+.text-action{margin:11px 0 -4px auto;border:0;background:transparent;color:var(--brand);font-size:12px;font-weight:720;padding:6px 0;display:flex;align-items:center;gap:5px;cursor:pointer}
+
+/* Attention */
+.streak-badge{padding:6px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand-strong);font-size:10px;font-weight:740;white-space:nowrap}
+.attention-list{display:grid;gap:8px}
+.attention-row{width:100%;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.5);min-height:58px;padding:10px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;cursor:pointer;white-space:normal}
+.attention-dot{width:7px;height:7px;border-radius:50%;background:var(--warning);align-self:start;margin-top:7px}
+.attention-row.danger .attention-dot{background:var(--danger)}
+.attention-copy{display:grid;gap:2px;min-width:0}
+.attention-copy strong{font-size:12px}
+.attention-copy small{font-size:10.5px;color:var(--muted);line-height:1.35}
+.attention-row>svg{color:var(--subtle)}
+
+/* Bottom navigation */
+.bottom-nav{position:fixed;z-index:70;left:50%;transform:translateX(-50%);bottom:0;width:min(620px,100%);height:calc(74px + env(safe-area-inset-bottom));padding:7px 8px env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,253,248,.92);border-top:1px solid rgba(214,207,194,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 -12px 30px rgba(31,35,28,.06)}
+.bottom-nav-item{border:0;background:transparent;color:var(--subtle);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px 2px;cursor:pointer;font-size:9px;font-weight:650;min-width:0}
+.bottom-nav-item svg{transition:transform .16s var(--ease),color .16s var(--ease)}
+.bottom-nav-item.on{color:var(--brand)}
+.bottom-nav-item.on svg{transform:translateY(-1px)}
+.bottom-nav-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fab{width:52px;height:52px;right:max(18px,calc((100vw - 620px)/2 + 18px));bottom:calc(env(safe-area-inset-bottom) + 85px);box-shadow:0 9px 26px rgba(47,125,88,.28)}
+.toast{bottom:calc(env(safe-area-inset-bottom) + 145px)}
+
+/* Day selector */
+.day-strip.compact{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:6px;border:1px solid rgba(214,207,194,.55);box-shadow:none;background:rgba(255,253,248,.7);margin-bottom:14px}
+.day-strip.compact .day-pick{min-height:52px;border-radius:12px}
+.day-strip.compact .day-pick-dow{font-size:9px}
+.day-strip.compact .day-pick-num{font-size:13px}
+.day-strip.compact .day-pick.on{background:var(--brand);box-shadow:0 3px 10px rgba(47,125,88,.18)}
+.day-task-group{border:1px solid rgba(214,207,194,.55);box-shadow:var(--shadow-1)}
+.quiet-row{min-height:50px}
+.quiet-row .row-value{white-space:normal}
+.danger-label{color:var(--danger)}
+.overdue-group{border:1px solid rgba(189,70,56,.18)}
+.habit-check-panel{padding:12px;border:1px solid rgba(214,207,194,.55)}
+.routine-pill{min-height:40px;padding:7px 12px;font-size:12px;background:rgba(255,255,255,.58)}
+.routine-pill.future{opacity:.45}
+
+/* Objective page */
+.filter-tabs{display:flex;gap:6px;padding:5px;background:rgba(234,229,219,.72);border-radius:13px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.filter-tabs::-webkit-scrollbar{display:none}
+.filter-tab{border:0;background:transparent;min-height:34px;padding:0 12px;border-radius:10px;font-size:11px;font-weight:680;color:var(--muted);cursor:pointer;white-space:nowrap}
+.filter-tab.on{background:var(--surface);color:var(--brand-strong);box-shadow:0 2px 8px rgba(31,35,28,.07),inset 0 0 0 1px rgba(47,125,88,.2)}
+.add-objective-panel{padding:12px}
+.objective-stack{display:grid;gap:12px}
+.objective{margin-bottom:0;border:1px solid rgba(214,207,194,.58);border-radius:18px;box-shadow:var(--shadow-1);background:linear-gradient(180deg,#fffdf9,#fcf9f2)}
+.objective-head{padding:15px 14px 12px}
+.objective .progress{height:6px;background:#e7e1d7}
+.objective-body{padding:12px 14px 14px;background:transparent;border-top:1px solid var(--line)}
+.editable-value{font-size:16px}
+.objective-meta{font-size:10.5px}
+.objective-actions .row-del{opacity:.25}
+.objective:hover .objective-actions .row-del{opacity:.7}
+.percent{font-size:17px}
+.kr{background:#f7f2e9;border:1px solid #ebe4d9;border-radius:14px;margin-bottom:10px}
+.kr-head{min-height:45px}
+.kr-metric{font-size:11px}
+.kr-list{background:rgba(255,253,248,.75)}
+
+/* Routine page */
+.habit-summary{padding-bottom:12px}
+.trend-spark{width:100%;height:74px;color:var(--brand);overflow:visible}
+.spark-base{stroke:#dfd9ce;stroke-width:1}
+.spark-line{stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.trend-labels{display:flex;justify-content:space-between;color:var(--subtle);font-size:9px;margin-top:3px}
+.routine.modern{background:linear-gradient(180deg,#fffdf9,#fbf7f0)!important;border:1px solid rgba(214,207,194,.58);border-radius:17px;box-shadow:var(--shadow-1);padding:14px}
+.routine.modern .progress{height:5px;border-radius:999px;margin-top:10px;background:#e5e0d6}
+.routine.modern .progress>span{border-radius:inherit}
+.routine.modern .routine-controls{margin-top:12px}
+.routine-toggle{width:42px;height:42px}
+.routine-dot{width:8px;height:8px}
+
+/* Week page */
+.week-nav.centered{justify-content:center;margin:-4px 0 14px}
+.week-overview{margin-bottom:14px}
+.week-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.week-day-card{min-width:0;border:1px solid rgba(214,207,194,.62);border-radius:16px;background:linear-gradient(180deg,#fffdf9,#fbf7ef);box-shadow:var(--shadow-1);padding:12px;display:flex;flex-direction:column}
+.week-day-card.today{border-color:rgba(47,125,88,.6);box-shadow:var(--shadow-1),0 0 0 1px rgba(47,125,88,.13)}
+.week-day-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.week-day-top>div{display:grid;gap:1px}
+.week-day-top strong{font-size:13px}
+.week-day-top span,.day-ratio{font-size:9.5px;color:var(--muted)}
+.day-ratio{padding:3px 6px;border-radius:999px;background:var(--surface-3);font-weight:700;white-space:nowrap}
+.dot-progress{display:flex;gap:4px;margin:9px 0}
+.dot-progress span{height:5px;flex:1;border-radius:999px;background:#ddd7cd}
+.dot-progress span.on{background:var(--brand)}
+.week-mini-list{display:grid;gap:5px;min-height:0}
+.week-mini-task{border:0;background:transparent;padding:0;display:flex;align-items:baseline;gap:6px;text-align:left;cursor:pointer;min-width:0;color:var(--ink)}
+.week-mini-task b{font-size:9px;color:var(--brand);flex:none}
+.week-mini-task span{font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.week-mini-task.done span{text-decoration:line-through;color:var(--subtle)}
+.more-count{font-size:9px;color:var(--subtle);margin-top:5px}
+.week-day-card .day-add{margin:8px 0 -4px;padding:6px 0;width:100%;font-size:10px;color:var(--brand)}
+.backlog-group{border:1px solid rgba(214,207,194,.58)}
+
+/* Sheets feel closer to the same ivory system. */
+.sheet{background:var(--bg)}
+.sheet-head{background:linear-gradient(180deg,var(--bg) 84%,rgba(244,240,231,0))}
+.sheet .group{border:1px solid rgba(214,207,194,.55);box-shadow:none}
+
+@media (min-width:700px){
+  .app-shell{padding-top:34px;padding-left:24px;padding-right:24px}
+  .bottom-nav{border-left:1px solid rgba(214,207,194,.5);border-right:1px solid rgba(214,207,194,.5);border-radius:20px 20px 0 0}
+  .week-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .week-day-card:last-child{grid-column:auto}
+}
+@media (max-width:440px){
+  .app-shell{padding-left:14px;padding-right:14px}
+  .dash-card{padding:14px}
+  .week-stat-grid{grid-template-columns:repeat(4,minmax(70px,1fr));overflow-x:auto}
+  .mini-stat{min-width:70px}
+  .progress-hero{gap:14px}
+  .next-action{align-items:flex-end}
+  .next-action .btn{padding-left:12px;padding-right:12px}
+  .fab{right:14px}
+}
+
 </style>
 </head>
 <body>
