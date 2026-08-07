@@ -1,5 +1,5 @@
 /* Rootwork service worker — v4 concept UI. */
-const CACHE = "rootwork-v4.0-2026-08-07";
+const CACHE = "rootwork-v4.1-2026-08-07";
 
 const ASSETS = [
   "./",
