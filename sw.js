@@ -1,6 +1,6 @@
 /* Rootwork — sw.js
    Cache key đổi theo deploy để PWA Home Screen nhận code mới. */
-var CACHE = 'rootwork-cache-2026-08-12';
+var CACHE = 'rootwork-cache-2026-08-12-ui-fit-1';
 
 var ASSETS = [
   './',
@@ -8,6 +8,8 @@ var ASSETS = [
   './domain.js',
   './store.js',
   './app.js',
+  './ui-fixes.css',
+  './ui-fixes.js',
   './manifest.json',
   './vendor/react.production.min.js',
   './vendor/react-dom.production.min.js',
@@ -42,18 +44,60 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-/* React nằm trong vendor/ nên không còn nhánh cross-origin nào.
-   Chỉ cache response THÀNH CÔNG và cùng origin: trước đây mọi response đều
-   được ghi đè vào cache, nên một lần deploy hụt file là 404 bị nướng vĩnh
-   viễn và người dùng phải gỡ app khỏi Home Screen mới thoát ra được. */
 function cacheable(res) {
   return res && res.ok && res.type === 'basic';
+}
+
+function isNavigation(request) {
+  return request.mode === 'navigate' || /\/index\.html(?:$|\?)/.test(request.url);
+}
+
+/* UI hotfixes are isolated from app/domain/store code. Inject them only into
+   the HTML shell; all product logic continues to execute from app.js. */
+function decorateHtml(res) {
+  if (!res) return Promise.resolve(res);
+  return res.text().then(function (html) {
+    if (html.indexOf('ui-fixes.css') === -1) {
+      html = html.replace('</head>', '<link rel="stylesheet" href="ui-fixes.css" />\n</head>');
+    }
+    if (html.indexOf('ui-fixes.js') === -1) {
+      html = html.replace('</body>', '<script src="ui-fixes.js"></script>\n</body>');
+    }
+    var headers = new Headers(res.headers);
+    headers.set('content-type', 'text/html; charset=utf-8');
+    headers.delete('content-length');
+    return new Response(html, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: headers
+    });
+  });
 }
 
 self.addEventListener('fetch', function (event) {
   var request = event.request;
   if (request.method !== 'GET') return;
   if (new URL(request.url).origin !== self.location.origin) return;
+
+  if (isNavigation(request)) {
+    event.respondWith(
+      fetch(request)
+        .then(function (res) {
+          if (!cacheable(res)) return res;
+          return decorateHtml(res).then(function (decorated) {
+            var copy = decorated.clone();
+            caches.open(CACHE).then(function (c) { c.put(request, copy); });
+            return decorated;
+          });
+        })
+        .catch(function () {
+          return caches.match(request)
+            .then(function (hit) { return hit || caches.match('./index.html'); })
+            .then(decorateHtml);
+        })
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(request)
@@ -64,10 +108,6 @@ self.addEventListener('fetch', function (event) {
         }
         return res;
       })
-      .catch(function () {
-        return caches.match(request).then(function (hit) {
-          return hit || caches.match('./index.html');
-        });
-      })
+      .catch(function () { return caches.match(request); })
   );
 });
