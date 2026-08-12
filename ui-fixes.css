@@ -101,6 +101,55 @@
 .icon-btn,
 .switch { flex: none; }
 
+/* Attention card: dedicate separate rows for title, description and chevron.
+   The previous three-column layout let the text columns collapse into each other
+   on narrow iPhones, which caused 'chưa xếp lịch' and the description to merge. */
+.attention-list { gap: 10px; }
+.attention-row {
+  display: grid !important;
+  grid-template-columns: 8px minmax(0, 1fr) 22px !important;
+  align-items: start !important;
+  column-gap: 10px !important;
+  min-height: 78px !important;
+  padding: 13px 14px !important;
+  white-space: normal !important;
+}
+.attention-dot {
+  margin-top: 7px !important;
+  align-self: start !important;
+}
+.attention-copy {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+  text-align: left !important;
+}
+.attention-copy strong,
+.attention-copy small {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  overflow-wrap: break-word !important;
+}
+.attention-copy strong {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+.attention-copy small {
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+  color: var(--muted) !important;
+}
+.attention-row > svg {
+  align-self: center !important;
+  justify-self: end !important;
+  margin: 0 !important;
+}
+
 /* Weekly 4-up metrics: allow labels to use two lines instead of clipping. */
 .mini-stat span,
 .mini-stat small {
@@ -153,6 +202,14 @@
 
   .screen-title { overflow-wrap: anywhere; }
   .screen-actions { flex: none; }
+
+  .attention-row {
+    grid-template-columns: 7px minmax(0, 1fr) 18px !important;
+    column-gap: 9px !important;
+    padding: 12px !important;
+  }
+  .attention-copy strong { font-size: 12.5px !important; }
+  .attention-copy small { font-size: 10.5px !important; }
 
   .bottom-nav-item { font-size: 10.5px; }
 }
