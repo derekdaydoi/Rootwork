@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="t d">
+  <title id="t">Rootwork symbol</title>
+  <desc id="d">A white W with an anchor dot on Rootwork green.</desc>
+  <rect width="1000" height="1000" rx="220" fill="#14614A"/>
+  <path d="M240 318 L409 682 L500 435 L591 682 L760 318" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="500" cy="818" r="49" fill="#FFFFFF"/>
+</svg>
