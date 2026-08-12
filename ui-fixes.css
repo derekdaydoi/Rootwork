@@ -1,0 +1,168 @@
+/* Rootwork UI fit pass — presentation only. No domain/store logic. */
+
+/* Keep every flexible text container shrinkable. This prevents long Vietnamese
+   labels and user-entered names from pushing actions outside their cards. */
+.screen-head-left,
+.screen-head-left > div,
+.objective-title-line,
+.objective-actions,
+.kr-title,
+.task-body,
+.row-main,
+.attention-copy,
+.brand-app-copy,
+.week-mini-task,
+.week-mini-task span,
+.card-headline > div,
+.progress-copy { min-width: 0; }
+
+/* User-entered / variable-length copy must wrap inside its own column. */
+.editable-line,
+.editable-value,
+.kr-title .editable-line,
+.kr-title .editable-value,
+.task-name,
+.row-label,
+.row-value,
+.attention-copy strong,
+.attention-copy small,
+.panel-title,
+.panel-sub,
+.empty h3,
+.empty p,
+.muted-copy,
+.objective-pulse h2,
+.next-action strong,
+.next-action small {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* KR header: reserve stable room for percent/delete and let the title wrap. */
+.kr-head {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto auto;
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 6px;
+}
+.kr-dot { margin-top: 8px; }
+.kr-title { width: 100%; overflow: hidden; }
+.kr-title .editable-value {
+  display: block;
+  line-height: 1.3;
+  font-size: 15px;
+  font-weight: 700;
+}
+.kr-pct { align-self: center; }
+.kr-head .row-del { align-self: start; }
+
+/* Objective header: title owns the flexible middle column; controls never overlap. */
+.objective-head {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: start;
+}
+.objective-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+.objective-title-line .editable-value { line-height: 1.28; }
+.objective-meta { row-gap: 4px; }
+
+/* Dates/fields inside expanded Objective must not force horizontal overflow. */
+.objective-body .inline.wrap { align-items: center; }
+.objective-body .txt[type="date"] {
+  width: min(100%, 200px) !important;
+  max-width: 100%;
+}
+
+/* Metric editor can wrap cleanly on narrow phones. */
+.kr-metric { min-width: 0; }
+.metric-num { width: 64px; max-width: 100%; }
+.metric-unit { width: 96px; max-width: 100%; }
+
+/* General grouped rows: long content wraps, control column stays intact. */
+.row { align-items: flex-start; }
+.row-icon { margin-top: 3px; }
+.row-label { line-height: 1.35; }
+.row-value { line-height: 1.4; }
+
+/* Card/headline copy should never collide with badges or actions. */
+.card-headline h2,
+.objective-pulse h2 { overflow-wrap: anywhere; }
+.streak-badge,
+.accent-number,
+.percent,
+.row-del,
+.icon-btn,
+.switch { flex: none; }
+
+/* Weekly 4-up metrics: allow labels to use two lines instead of clipping. */
+.mini-stat span,
+.mini-stat small {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.25;
+}
+
+/* Bottom-nav copy remains readable without forcing horizontal overflow. */
+.bottom-nav-item { min-width: 0; }
+.bottom-nav-item span {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* FAB semantics are updated by ui-fixes.js. Hide it on pages with no page action. */
+.fab[data-context="hidden"] { display: none !important; }
+
+@media (max-width: 440px) {
+  .objective-head {
+    grid-template-columns: 30px minmax(0, 1fr);
+    column-gap: 8px;
+  }
+  .objective-actions {
+    grid-column: 2;
+    justify-content: flex-start;
+    margin-top: 4px;
+  }
+  .objective-actions .percent { margin-right: auto; }
+
+  .kr-head {
+    grid-template-columns: 8px minmax(0, 1fr) auto;
+  }
+  .kr-pct {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: -2px;
+  }
+  .kr-head .row-del {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .kr-metric { gap: 6px; }
+  .metric-num { width: 58px; }
+  .metric-unit { width: 86px; }
+
+  .screen-title { overflow-wrap: anywhere; }
+  .screen-actions { flex: none; }
+
+  .bottom-nav-item { font-size: 10.5px; }
+}
+
+@media (max-width: 360px) {
+  .app-shell { padding-left: 12px; padding-right: 12px; }
+  .objective { border-radius: 16px; }
+  .objective-head { padding-left: 10px; padding-right: 10px; }
+  .objective-body { padding-left: 10px; padding-right: 10px; }
+  .kr-head { padding-left: 10px; padding-right: 8px; }
+  .bottom-nav { gap: 3px; padding-left: 6px; padding-right: 6px; }
+  .bottom-nav-item { padding-left: 2px; padding-right: 2px; font-size: 10px; }
+}
