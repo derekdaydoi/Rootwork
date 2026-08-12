@@ -1,4 +1,4 @@
-/* Rootwork contextual FAB — presentation interaction only.
+/* Rootwork contextual UI helpers — presentation interaction only.
    Core data mutations remain owned by app.js/domain.js/store.js. */
 (function () {
   'use strict';
@@ -44,6 +44,31 @@
     }
   }
 
+  /* Week cards only need the weekday. The underlying date is preserved in React
+     state/data and still drives task assignment; this changes presentation only. */
+  function syncWeekdayLabels() {
+    var labels = {
+      T2: 'Thứ 2',
+      T3: 'Thứ 3',
+      T4: 'Thứ 4',
+      T5: 'Thứ 5',
+      T6: 'Thứ 6',
+      T7: 'Thứ 7',
+      CN: 'Chủ nhật'
+    };
+
+    document.querySelectorAll('.week-day-top strong').forEach(function (node) {
+      var text = node.textContent.trim();
+      var code = text.split(/\s+/)[0];
+      if (labels[code] && text !== labels[code]) node.textContent = labels[code];
+    });
+  }
+
+  function syncUi() {
+    syncFab();
+    syncWeekdayLabels();
+  }
+
   /* On non-home pages, proxy the floating + to that page's own + action.
      Home deliberately falls through to the original React handler = new task. */
   document.addEventListener('click', function (event) {
@@ -63,7 +88,7 @@
     window.setTimeout(function () { pageAdd.click(); }, 0);
   }, true);
 
-  var observer = new MutationObserver(syncFab);
+  var observer = new MutationObserver(syncUi);
   observer.observe(document.documentElement, {
     childList: true,
     subtree: true,
@@ -72,8 +97,8 @@
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', syncFab);
+    document.addEventListener('DOMContentLoaded', syncUi);
   } else {
-    syncFab();
+    syncUi();
   }
 }());
