@@ -101,9 +101,7 @@
 .icon-btn,
 .switch { flex: none; }
 
-/* Attention card: dedicate separate rows for title, description and chevron.
-   The previous three-column layout let the text columns collapse into each other
-   on narrow iPhones, which caused 'chưa xếp lịch' and the description to merge. */
+/* Attention card: dedicate separate rows for title, description and chevron. */
 .attention-list { gap: 10px; }
 .attention-row {
   display: grid !important;
@@ -114,10 +112,7 @@
   padding: 13px 14px !important;
   white-space: normal !important;
 }
-.attention-dot {
-  margin-top: 7px !important;
-  align-self: start !important;
-}
+.attention-dot { margin-top: 7px !important; align-self: start !important; }
 .attention-copy {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) !important;
@@ -135,19 +130,58 @@
   text-overflow: clip !important;
   overflow-wrap: break-word !important;
 }
-.attention-copy strong {
-  font-size: 13px !important;
-  line-height: 1.35 !important;
+.attention-copy strong { font-size: 13px !important; line-height: 1.35 !important; }
+.attention-copy small { font-size: 11px !important; line-height: 1.45 !important; color: var(--muted) !important; }
+.attention-row > svg { align-self: center !important; justify-self: end !important; margin: 0 !important; }
+
+/* Habit backfill: each weekly dot is now an explicit day control for past/today.
+   Future dots stay disabled. */
+.routine-dots { align-items: center; }
+.routine-dot.habit-retro-dot {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  position: relative;
+  transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
 }
-.attention-copy small {
-  font-size: 11px !important;
-  line-height: 1.45 !important;
-  color: var(--muted) !important;
+.routine-dot.habit-retro-dot::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 999px;
 }
-.attention-row > svg {
-  align-self: center !important;
-  justify-self: end !important;
-  margin: 0 !important;
+.routine-dot.habit-retro-dot:active { transform: scale(.78); }
+.routine-dot.habit-retro-dot:focus-visible {
+  outline: 2px solid rgba(20,106,74,.35);
+  outline-offset: 4px;
+}
+.routine-dot.habit-retro-dot-disabled { opacity: .38; }
+
+/* Keep the React number input as the persistence bridge, but present a native
+   select to the user. On iOS this opens the familiar wheel picker from 1–7. */
+.target-box-source {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.target-wheel {
+  width: 58px;
+  min-height: 42px;
+  flex: none;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0 24px 0 10px;
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-align: center;
+  text-align-last: center;
+  appearance: auto;
+  -webkit-appearance: menulist-button;
 }
 
 /* Weekly 4-up metrics: allow labels to use two lines instead of clipping. */
@@ -183,18 +217,9 @@
   }
   .objective-actions .percent { margin-right: auto; }
 
-  .kr-head {
-    grid-template-columns: 8px minmax(0, 1fr) auto;
-  }
-  .kr-pct {
-    grid-column: 2;
-    justify-self: start;
-    margin-top: -2px;
-  }
-  .kr-head .row-del {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-  }
+  .kr-head { grid-template-columns: 8px minmax(0, 1fr) auto; }
+  .kr-pct { grid-column: 2; justify-self: start; margin-top: -2px; }
+  .kr-head .row-del { grid-column: 3; grid-row: 1 / span 2; }
 
   .kr-metric { gap: 6px; }
   .metric-num { width: 58px; }
@@ -211,6 +236,11 @@
   .attention-copy strong { font-size: 12.5px !important; }
   .attention-copy small { font-size: 10.5px !important; }
 
+  .routine-controls { gap: 10px; }
+  .routine-dots { gap: 8px; }
+  .routine-dot.habit-retro-dot { width: 13px; height: 13px; }
+  .target-wheel { width: 56px; min-height: 42px; }
+
   .bottom-nav-item { font-size: 10.5px; }
 }
 
@@ -220,6 +250,9 @@
   .objective-head { padding-left: 10px; padding-right: 10px; }
   .objective-body { padding-left: 10px; padding-right: 10px; }
   .kr-head { padding-left: 10px; padding-right: 8px; }
+  .routine-controls { gap: 7px; }
+  .routine-dots { gap: 6px; }
+  .target-wheel { width: 52px; padding-left: 8px; padding-right: 18px; }
   .bottom-nav { gap: 3px; padding-left: 6px; padding-right: 6px; }
   .bottom-nav-item { padding-left: 2px; padding-right: 2px; font-size: 10px; }
 }
