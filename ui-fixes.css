@@ -1,7 +1,5 @@
 /* Rootwork UI fit pass — presentation only. No domain/store logic. */
 
-/* Keep every flexible text container shrinkable. This prevents long Vietnamese
-   labels and user-entered names from pushing actions outside their cards. */
 .screen-head-left,
 .screen-head-left > div,
 .objective-title-line,
@@ -16,7 +14,6 @@
 .card-headline > div,
 .progress-copy { min-width: 0; }
 
-/* User-entered / variable-length copy must wrap inside its own column. */
 .editable-line,
 .editable-value,
 .kr-title .editable-line,
@@ -40,7 +37,6 @@
   word-break: normal;
 }
 
-/* KR header: reserve stable room for percent/delete and let the title wrap. */
 .kr-head {
   display: grid;
   grid-template-columns: 8px minmax(0, 1fr) auto auto;
@@ -50,48 +46,27 @@
 }
 .kr-dot { margin-top: 8px; }
 .kr-title { width: 100%; overflow: hidden; }
-.kr-title .editable-value {
-  display: block;
-  line-height: 1.3;
-  font-size: 15px;
-  font-weight: 700;
-}
+.kr-title .editable-value { display: block; line-height: 1.3; font-size: 15px; font-weight: 700; }
 .kr-pct { align-self: center; }
 .kr-head .row-del { align-self: start; }
 
-/* Objective header: title owns the flexible middle column; controls never overlap. */
-.objective-head {
-  grid-template-columns: 36px minmax(0, 1fr) auto;
-  align-items: start;
-}
-.objective-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: nowrap;
-}
+.objective-head { grid-template-columns: 36px minmax(0, 1fr) auto; align-items: start; }
+.objective-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: nowrap; }
 .objective-title-line .editable-value { line-height: 1.28; }
 .objective-meta { row-gap: 4px; }
 
-/* Dates/fields inside expanded Objective must not force horizontal overflow. */
 .objective-body .inline.wrap { align-items: center; }
-.objective-body .txt[type="date"] {
-  width: min(100%, 200px) !important;
-  max-width: 100%;
-}
+.objective-body .txt[type="date"] { width: min(100%, 200px) !important; max-width: 100%; }
 
-/* Metric editor can wrap cleanly on narrow phones. */
 .kr-metric { min-width: 0; }
 .metric-num { width: 64px; max-width: 100%; }
 .metric-unit { width: 96px; max-width: 100%; }
 
-/* General grouped rows: long content wraps, control column stays intact. */
 .row { align-items: flex-start; }
 .row-icon { margin-top: 3px; }
 .row-label { line-height: 1.35; }
 .row-value { line-height: 1.4; }
 
-/* Card/headline copy should never collide with badges or actions. */
 .card-headline h2,
 .objective-pulse h2 { overflow-wrap: anywhere; }
 .streak-badge,
@@ -101,7 +76,6 @@
 .icon-btn,
 .switch { flex: none; }
 
-/* Attention card: dedicate separate rows for title, description and chevron. */
 .attention-list { gap: 10px; }
 .attention-row {
   display: grid !important;
@@ -134,31 +108,61 @@
 .attention-copy small { font-size: 11px !important; line-height: 1.45 !important; color: var(--muted) !important; }
 .attention-row > svg { align-self: center !important; justify-self: end !important; margin: 0 !important; }
 
-/* Habit backfill: each weekly dot is now an explicit day control for past/today.
-   Future dots stay disabled. */
-.routine-dots { align-items: center; }
-.routine-dot.habit-retro-dot {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
+/* Habit week control: use seven explicit day chips instead of anonymous dots.
+   Completed = solid green; selected day = green outline; future = disabled/muted. */
+.routine-controls {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px !important;
+}
+.routine-dots {
+  display: grid !important;
+  grid-template-columns: repeat(7, 30px);
+  gap: 6px !important;
+  align-items: center;
+  justify-content: start;
+  min-width: 0;
+}
+.routine-dot {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9px !important;
+  background: var(--surface-3) !important;
+  color: var(--subtle);
+  display: grid !important;
+  place-items: center;
   position: relative;
-  transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease);
+  box-shadow: none !important;
+  transition: transform .12s var(--ease), background .12s var(--ease), color .12s var(--ease), box-shadow .12s var(--ease);
 }
-.routine-dot.habit-retro-dot::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 999px;
+.routine-dot::before {
+  content: attr(data-day);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 750;
+  letter-spacing: -.15px;
 }
-.routine-dot.habit-retro-dot:active { transform: scale(.78); }
+.routine-dot.on {
+  background: var(--brand) !important;
+  color: #fff !important;
+}
+.routine-dot.picked {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px rgba(20,106,74,.55) !important;
+}
+.routine-dot.habit-retro-dot { cursor: pointer; }
+.routine-dot.habit-retro-dot:active { transform: scale(.9); }
 .routine-dot.habit-retro-dot:focus-visible {
   outline: 2px solid rgba(20,106,74,.35);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
-.routine-dot.habit-retro-dot-disabled { opacity: .38; }
+.routine-dot.habit-retro-dot-disabled {
+  opacity: .30;
+  cursor: default;
+}
 
-/* Keep the React number input as the persistence bridge, but present a native
-   select to the user. On iOS this opens the familiar wheel picker from 1–7. */
+/* Weekly target picker: compact closed state, native select interaction.
+   Tapping it still opens iOS's system picker with values 1–7. */
 .target-box-source {
   position: absolute !important;
   width: 1px !important;
@@ -167,54 +171,43 @@
   pointer-events: none !important;
 }
 .target-wheel {
-  width: 58px;
-  min-height: 42px;
+  width: 48px;
+  height: 38px;
+  min-height: 38px;
   flex: none;
   border: 1px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  background: var(--surface);
+  border-radius: 12px;
+  background-color: var(--surface);
   color: var(--ink);
-  padding: 0 24px 0 10px;
+  padding: 0 20px 0 8px;
   font: inherit;
-  font-size: var(--t-sm);
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 38px;
   text-align: center;
   text-align-last: center;
-  appearance: auto;
-  -webkit-appearance: menulist-button;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235f655e' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10l4-4 4 4M8 14l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+}
+.target-wheel:focus-visible {
+  outline: 2px solid rgba(20,106,74,.32);
+  outline-offset: 2px;
 }
 
-/* Weekly 4-up metrics: allow labels to use two lines instead of clipping. */
 .mini-stat span,
-.mini-stat small {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  line-height: 1.25;
-}
+.mini-stat small { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; }
 
-/* Bottom-nav copy remains readable without forcing horizontal overflow. */
 .bottom-nav-item { min-width: 0; }
-.bottom-nav-item span {
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.bottom-nav-item span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* FAB semantics are updated by ui-fixes.js. Hide it on pages with no page action. */
 .fab[data-context="hidden"] { display: none !important; }
 
 @media (max-width: 440px) {
-  .objective-head {
-    grid-template-columns: 30px minmax(0, 1fr);
-    column-gap: 8px;
-  }
-  .objective-actions {
-    grid-column: 2;
-    justify-content: flex-start;
-    margin-top: 4px;
-  }
+  .objective-head { grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; }
+  .objective-actions { grid-column: 2; justify-content: flex-start; margin-top: 4px; }
   .objective-actions .percent { margin-right: auto; }
 
   .kr-head { grid-template-columns: 8px minmax(0, 1fr) auto; }
@@ -228,18 +221,15 @@
   .screen-title { overflow-wrap: anywhere; }
   .screen-actions { flex: none; }
 
-  .attention-row {
-    grid-template-columns: 7px minmax(0, 1fr) 18px !important;
-    column-gap: 9px !important;
-    padding: 12px !important;
-  }
+  .attention-row { grid-template-columns: 7px minmax(0, 1fr) 18px !important; column-gap: 9px !important; padding: 12px !important; }
   .attention-copy strong { font-size: 12.5px !important; }
   .attention-copy small { font-size: 10.5px !important; }
 
-  .routine-controls { gap: 10px; }
-  .routine-dots { gap: 8px; }
-  .routine-dot.habit-retro-dot { width: 13px; height: 13px; }
-  .target-wheel { width: 56px; min-height: 42px; }
+  .routine-controls { grid-template-columns: minmax(0, 1fr) 46px 44px; gap: 8px !important; }
+  .routine-dots { grid-template-columns: repeat(7, 27px); gap: 5px !important; }
+  .routine-dot { width: 27px !important; height: 27px !important; border-radius: 8px !important; }
+  .routine-dot::before { font-size: 8.5px; }
+  .target-wheel { width: 46px; height: 36px; min-height: 36px; line-height: 36px; font-size: 13px; padding-left: 7px; padding-right: 18px; }
 
   .bottom-nav-item { font-size: 10.5px; }
 }
@@ -250,9 +240,10 @@
   .objective-head { padding-left: 10px; padding-right: 10px; }
   .objective-body { padding-left: 10px; padding-right: 10px; }
   .kr-head { padding-left: 10px; padding-right: 8px; }
-  .routine-controls { gap: 7px; }
-  .routine-dots { gap: 6px; }
-  .target-wheel { width: 52px; padding-left: 8px; padding-right: 18px; }
+  .routine-controls { grid-template-columns: minmax(0, 1fr) 44px 40px; gap: 6px !important; }
+  .routine-dots { grid-template-columns: repeat(7, 25px); gap: 4px !important; }
+  .routine-dot { width: 25px !important; height: 25px !important; }
+  .target-wheel { width: 44px; }
   .bottom-nav { gap: 3px; padding-left: 6px; padding-right: 6px; }
   .bottom-nav-item { padding-left: 2px; padding-right: 2px; font-size: 10px; }
 }
