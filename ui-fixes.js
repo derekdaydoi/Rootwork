@@ -29,12 +29,6 @@
     } else if (label === 'Thói quen') {
       context = 'routine';
       title = 'Thói quen mới';
-    } else if (label === 'Hôm nay' || label === 'Cả tuần') {
-      context = 'task';
-      title = 'Thêm việc';
-    } else if (label === 'Tổng quan') {
-      context = 'task';
-      title = 'Thêm việc';
     }
 
     fab.dataset.context = context;
@@ -44,19 +38,8 @@
     }
   }
 
-  /* Week cards only need the weekday. The underlying date is preserved in React
-     state/data and still drives task assignment; this changes presentation only. */
   function syncWeekdayLabels() {
-    var labels = {
-      T2: 'Thứ 2',
-      T3: 'Thứ 3',
-      T4: 'Thứ 4',
-      T5: 'Thứ 5',
-      T6: 'Thứ 6',
-      T7: 'Thứ 7',
-      CN: 'Chủ nhật'
-    };
-
+    var labels = { T2: 'Thứ 2', T3: 'Thứ 3', T4: 'Thứ 4', T5: 'Thứ 5', T6: 'Thứ 6', T7: 'Thứ 7', CN: 'Chủ nhật' };
     document.querySelectorAll('.week-day-top strong').forEach(function (node) {
       var text = node.textContent.trim();
       var code = text.split(/\s+/)[0];
@@ -64,14 +47,9 @@
     });
   }
 
-  /* Habit corrections:
-     - past/current days in this week can be backfilled directly from the seven dots;
-     - target count uses a native select. On iOS this opens the system wheel picker.
-     Both paths proxy the existing React controls, so persistence/calculation remains unchanged. */
   function syncHabitControls() {
-    var dayButtons = Array.prototype.slice.call(
-      document.querySelectorAll('.day-strip.compact .day-pick')
-    );
+    var dayButtons = Array.prototype.slice.call(document.querySelectorAll('.day-strip.compact .day-pick'));
+    var shortDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
     document.querySelectorAll('.routine.modern').forEach(function (card) {
       var dots = Array.prototype.slice.call(card.querySelectorAll('.routine-dot'));
@@ -80,11 +58,13 @@
         var blocked = !dayButton || dayButton.disabled;
         dot.classList.toggle('habit-retro-dot', !blocked);
         dot.classList.toggle('habit-retro-dot-disabled', blocked);
+        dot.setAttribute('data-day', shortDays[index] || '');
+        dot.setAttribute('aria-label', (dot.classList.contains('on') ? 'Bỏ ghi nhận ' : 'Ghi nhận ') + (dayButton ? dayButton.textContent.trim() : shortDays[index]));
         if (!blocked) {
           dot.setAttribute('role', 'button');
           dot.setAttribute('tabindex', '0');
-          dot.setAttribute('aria-label', 'Đánh dấu thói quen cho ' + dayButton.textContent.trim());
           dot.setAttribute('title', 'Chạm để ghi nhận ngày này');
+          dot.removeAttribute('aria-disabled');
         } else {
           dot.removeAttribute('role');
           dot.removeAttribute('tabindex');
@@ -119,8 +99,6 @@
     syncHabitControls();
   }
 
-  /* On non-home pages, proxy the floating + to that page's own + action.
-     Home deliberately falls through to the original React handler = new task. */
   document.addEventListener('click', function (event) {
     var fab = event.target.closest && event.target.closest('.fab');
     if (fab) {
@@ -185,16 +163,8 @@
   });
 
   var observer = new MutationObserver(syncUi);
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['class']
-  });
+  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', syncUi);
-  } else {
-    syncUi();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncUi);
+  else syncUi();
 }());
