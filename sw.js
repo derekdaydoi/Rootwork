@@ -1,6 +1,6 @@
 /* Rootwork — sw.js
    Cache key đổi theo deploy để PWA Home Screen nhận code mới. */
-var CACHE = 'rootwork-cache-2026-08-12-ui-fit-1';
+var CACHE = 'rootwork-cache-2026-08-13-habit-controls-1';
 
 var ASSETS = [
   './',
