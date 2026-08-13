@@ -1,6 +1,6 @@
 /* Rootwork — sw.js
    Cache key đổi theo deploy để PWA Home Screen nhận code mới. */
-var CACHE = 'rootwork-cache-2026-08-13-habit-controls-1';
+var CACHE = 'rootwork-cache-2026-08-13-habit-controls-2';
 
 var ASSETS = [
   './',
@@ -52,8 +52,6 @@ function isNavigation(request) {
   return request.mode === 'navigate' || /\/index\.html(?:$|\?)/.test(request.url);
 }
 
-/* UI hotfixes are isolated from app/domain/store code. Inject them only into
-   the HTML shell; all product logic continues to execute from app.js. */
 function decorateHtml(res) {
   if (!res) return Promise.resolve(res);
   return res.text().then(function (html) {
@@ -66,11 +64,7 @@ function decorateHtml(res) {
     var headers = new Headers(res.headers);
     headers.set('content-type', 'text/html; charset=utf-8');
     headers.delete('content-length');
-    return new Response(html, {
-      status: res.status,
-      statusText: res.statusText,
-      headers: headers
-    });
+    return new Response(html, { status: res.status, statusText: res.statusText, headers: headers });
   });
 }
 
