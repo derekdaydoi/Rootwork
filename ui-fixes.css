@@ -108,8 +108,7 @@
 .attention-copy small { font-size: 11px !important; line-height: 1.45 !important; color: var(--muted) !important; }
 .attention-row > svg { align-self: center !important; justify-self: end !important; margin: 0 !important; }
 
-/* Habit week control: use seven explicit day chips instead of anonymous dots.
-   Completed = solid green; selected day = green outline; future = disabled/muted. */
+/* Habit week control */
 .routine-controls {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -143,26 +142,13 @@
   font-weight: 750;
   letter-spacing: -.15px;
 }
-.routine-dot.on {
-  background: var(--brand) !important;
-  color: #fff !important;
-}
-.routine-dot.picked {
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px rgba(20,106,74,.55) !important;
-}
+.routine-dot.on { background: var(--brand) !important; color: #fff !important; }
+.routine-dot.picked { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px rgba(20,106,74,.55) !important; }
 .routine-dot.habit-retro-dot { cursor: pointer; }
 .routine-dot.habit-retro-dot:active { transform: scale(.9); }
-.routine-dot.habit-retro-dot:focus-visible {
-  outline: 2px solid rgba(20,106,74,.35);
-  outline-offset: 3px;
-}
-.routine-dot.habit-retro-dot-disabled {
-  opacity: .30;
-  cursor: default;
-}
+.routine-dot.habit-retro-dot:focus-visible { outline: 2px solid rgba(20,106,74,.35); outline-offset: 3px; }
+.routine-dot.habit-retro-dot-disabled { opacity: .30; cursor: default; }
 
-/* Weekly target picker: compact closed state, native select interaction.
-   Tapping it still opens iOS's system picker with values 1–7. */
 .target-box-source {
   position: absolute !important;
   width: 1px !important;
@@ -192,10 +178,7 @@
   background-repeat: no-repeat;
   background-position: right 7px center;
 }
-.target-wheel:focus-visible {
-  outline: 2px solid rgba(20,106,74,.32);
-  outline-offset: 2px;
-}
+.target-wheel:focus-visible { outline: 2px solid rgba(20,106,74,.32); outline-offset: 2px; }
 
 .mini-stat span,
 .mini-stat small { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; }
@@ -204,6 +187,81 @@
 .bottom-nav-item span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .fab[data-context="hidden"] { display: none !important; }
+
+/* Home hamburger menu: force a real popover instead of inheriting oversized
+   generic button/label styles. Keeps it inside the viewport on iPhone. */
+.menu-wrap {
+  position: relative !important;
+  flex: none !important;
+  z-index: 95 !important;
+}
+.backdrop-lite {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 93 !important;
+  background: transparent !important;
+}
+.menu-card {
+  position: absolute !important;
+  z-index: 94 !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  left: auto !important;
+  width: min(246px, calc(100vw - 28px)) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 28px) !important;
+  padding: 6px !important;
+  margin: 0 !important;
+  display: grid !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.98) !important;
+  box-shadow: 0 16px 42px rgba(17,17,17,.15) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+.menu-card > button,
+.menu-card > label {
+  width: 100% !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  border: 0 !important;
+  border-radius: 11px !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  font-family: var(--font-ui) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+}
+.menu-card > button:hover,
+.menu-card > label:hover { background: var(--surface-2) !important; }
+.menu-card > button:active,
+.menu-card > label:active { background: var(--surface-3) !important; }
+.menu-card > button svg,
+.menu-card > label svg {
+  width: 19px !important;
+  height: 19px !important;
+  flex: none !important;
+  color: var(--muted) !important;
+}
+.menu-card .menu-sep {
+  height: 1px !important;
+  margin: 3px 8px !important;
+  background: var(--line) !important;
+}
+.menu-card input[type="file"] { display: none !important; }
 
 @media (max-width: 440px) {
   .objective-head { grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; }
@@ -230,6 +288,18 @@
   .routine-dot { width: 27px !important; height: 27px !important; border-radius: 8px !important; }
   .routine-dot::before { font-size: 8.5px; }
   .target-wheel { width: 46px; height: 36px; min-height: 36px; line-height: 36px; font-size: 13px; padding-left: 7px; padding-right: 18px; }
+
+  .menu-card {
+    width: 224px !important;
+    max-width: calc(100vw - 28px) !important;
+    border-radius: 15px !important;
+  }
+  .menu-card > button,
+  .menu-card > label {
+    min-height: 42px !important;
+    padding: 9px 10px !important;
+    font-size: 13.5px !important;
+  }
 
   .bottom-nav-item { font-size: 10.5px; }
 }
