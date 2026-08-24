@@ -214,9 +214,7 @@
   }
 
   function BrandMark() {
-    return h('div', { className: 'brand-lockup' },
-      h('img', { src: 'brand/rootwork-mark.svg', alt: '', className: 'brand-icon' }),
-      h('div', { className: 'wordmark' }, h('strong', null, 'ROOT'), h('span', null, 'WORK')));
+    return h('strong', { className: 'wordmark' }, 'Rootwork');
   }
 
   function StartWordmark() {

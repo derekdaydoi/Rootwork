@@ -1,5 +1,5 @@
 /* Rootwork V2 — local-first PWA shell. */
-var CACHE = 'rootwork-v2-2026-08-24-7';
+var CACHE = 'rootwork-v2-2026-08-24-8';
 var ASSETS = [
   './',
   './index.html',
