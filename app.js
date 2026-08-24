@@ -55,15 +55,20 @@
     return t('Good evening', 'Chào buổi tối');
   }
   function campaignMessage(monday) {
-    var english = D.campaignMessage(monday);
+    var english = [
+      ['A new week starts here.', 'Choose what deserves your effort.'],
+      ['Seven days ahead.', 'Put your energy where it matters.'],
+      ['New week. New progress.', "Let's make it count."],
+      ['Start clear.', 'Build something real this week.']
+    ];
     var vietnamese = [
+      ['Một tuần mới bắt đầu.', 'Chọn điều xứng đáng để dồn sức.'],
+      ['Bảy ngày phía trước.', 'Dồn năng lượng vào điều quan trọng.'],
       ['Tuần mới. Tiến bộ mới.', 'Làm cho tuần này đáng giá.'],
-      ['Một tuần mới đang mở ra.', 'Chọn điều đáng để dồn sức.'],
-      ['Chặng tiếp theo bắt đầu tại đây.', 'Tiến vào điều quan trọng.'],
-      ['Bảy ngày. Một hướng đi rõ ràng.', 'Tạo nên điều có thật.']
+      ['Bắt đầu thật rõ ràng.', 'Tạo nên điều có thật trong tuần này.']
     ];
     var index = Math.abs(D.diffDays(monday, '2024-01-01')) % vietnamese.length;
-    return UI_LOCALE === 'vi' ? vietnamese[index] : english;
+    return UI_LOCALE === 'vi' ? vietnamese[index] : english[index];
   }
   function attentionLabel(item) {
     if (UI_LOCALE !== 'vi') return item.label;
@@ -212,6 +217,10 @@
     return h('div', { className: 'brand-lockup' },
       h('img', { src: 'brand/rootwork-mark.svg', alt: '', className: 'brand-icon' }),
       h('div', { className: 'wordmark' }, h('strong', null, 'ROOT'), h('span', null, 'WORK')));
+  }
+
+  function StartWordmark() {
+    return h('strong', { className: 'start-wordmark' }, 'Rootwork');
   }
 
   function AppTopbar(props) {
@@ -432,7 +441,9 @@
         openTarget: openTarget,
         openRoutine: openRoutine,
         openCreate: openCreate,
-        setView: changeView
+        setView: changeView,
+        locale: locale,
+        onLocale: chooseLocale
       };
       if (view === 'tree') return h(TreeView, shared);
       if (view === 'calendar') return h(CalendarView, shared);
@@ -488,9 +499,10 @@
       return null;
     }
 
+    var showTopbar = view === 'home' && (week.targets.length > 0 || week.looseTasks.length > 0);
     return h(Fragment, null,
       h('div', { className: 'app-shell' },
-        h(AppTopbar, {
+        showTopbar && h(AppTopbar, {
           name: data.profile.name,
           level: level.level,
           locale: locale,
@@ -533,16 +545,15 @@
       var message = campaignMessage(week.startDate);
       return h('main', { className: 'start-screen greeting-screen' },
         h('div', { className: 'start-brand-row' },
-          h('div', { className: 'start-brand' }, h(BrandMark)),
+          h(StartWordmark),
           h(LanguageToggle, { locale: props.locale, onChange: props.onLocale })),
         h('section', { className: 'greeting-copy' },
           h('p', null, greeting() + ','),
-          h('h1', null, props.data.profile.name + '.'),
+          h('h1', null, props.data.profile.name, h('span', { className: 'greeting-wave', 'aria-hidden': 'true' }, '👋')),
           h('div', { className: 'campaign-copy' },
             h('strong', null, message[0]),
             h('span', null, message[1]))),
         h('img', { className: 'greeting-landscape', src: 'assets/welcome-mountains-v2.png', alt: '' }),
-        h('div', { className: 'start-meta' }, t('Week ', 'Tuần ') + D.isoWeek(week.startDate) + ' · ' + fmtWeekLong(week.startDate)),
         h('button', {
           className: 'primary-button start-cta',
           onClick: function () {
@@ -640,6 +651,7 @@
 
   function HomeView(props) {
     var week = props.week;
+    if (!week.targets.length && !week.looseTasks.length) return h(BlankWeekView, props);
     var metrics = D.weekMetrics(week, props.data.routines);
     var level = D.levelState(D.totalXp(props.data));
     var tasks = D.weekTasks(week);
@@ -705,6 +717,29 @@
         })) : h('div', { className: 'quiet-panel compact' }, t('Nothing is competing for attention.', 'Không có gì đang tranh nhau sự chú ý.'))));
   }
 
+  function BlankWeekView(props) {
+    return h(Fragment, null,
+      h(PageHeader, {
+        title: t('Week ', 'Tuần ') + D.isoWeek(props.week.startDate),
+        subtitle: fmtWeekRange(props.week.startDate),
+        action: h('div', { className: 'header-actions' },
+          h(LanguageToggle, { locale: props.locale, onChange: props.onLocale }),
+          h('button', {
+            className: 'icon-button', onClick: function () { props.setView('settings'); },
+            'aria-label': t('Open settings', 'Mở cài đặt')
+          }, h(Icon, { name: 'settings', size: 22 })))
+      }),
+      h('section', { className: 'blank-week-builder' },
+        h('div', { className: 'blank-week-visual' },
+          h('img', { src: 'assets/empty-seedling-v2.png', alt: '' })),
+        h('div', { className: 'blank-week-copy' },
+          h('h2', null, t('A blank week is an opportunity.', 'Một tuần trống là một cơ hội.')),
+          h('p', null, t('What are we building this week?', 'Tuần này ta sẽ xây điều gì?'))),
+        h('button', {
+          className: 'primary-button blank-week-cta', onClick: function () { props.openCreate(); }
+        }, t('Build my week', 'Dựng tuần mới'), h(Icon, { name: 'chevron', size: 22 }))));
+  }
+
   function toggleTask(props, task) {
     props.mutate(function (data) {
       var record = D.findTask(data, task);
@@ -743,8 +778,8 @@
   function TreeView(props) {
     return h(Fragment, null,
       h(PageHeader, {
-        eyebrow: fmtWeekRange(props.week.startDate),
         title: t('Week ' + D.isoWeek(props.week.startDate) + ' goals', 'Mục tiêu tuần ' + D.isoWeek(props.week.startDate)),
+        subtitle: fmtWeekRange(props.week.startDate),
         action: h('button', {
           className: 'icon-button',
           onClick: function () { props.openCreate('target'); },
@@ -859,8 +894,8 @@
     var unscheduled = D.sortTasks(D.weekTasks(props.week).filter(function (task) { return !task.date && !task.done; }));
     return h(Fragment, null,
       h(PageHeader, {
-        eyebrow: fmtWeekRange(props.week.startDate),
         title: t('Week ' + D.isoWeek(props.week.startDate), 'Tuần ' + D.isoWeek(props.week.startDate)),
+        subtitle: fmtWeekRange(props.week.startDate),
         action: h('button', {
           className: 'icon-button',
           onClick: function () { props.openCreate('task', { date: picked }); },
@@ -1045,7 +1080,8 @@
     return h(Fragment, null,
       h(PageHeader, {
         title: t('Settings & data', 'Cài đặt & dữ liệu'),
-        onBack: props.onBack
+        onBack: props.onBack,
+        action: h(LanguageToggle, { locale: props.locale, onChange: props.onLocale })
       }),
       h('section', { className: 'settings-card' },
         h('h2', null, t('Profile', 'Hồ sơ')),

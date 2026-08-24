@@ -34,8 +34,12 @@ tree, and an action remains valid with no date or time.
 The weekly start journey is:
 
 ~~~text
-Greeting → Review carried targets → Previous-week recap → Current campaign
+Greeting → Review carried targets → Previous-week recap → Blank-week builder → Current campaign
 ~~~
+
+On a fresh week with no carried targets, the greeting leads to a focused
+builder state rather than an empty dashboard. The dashboard appears only after
+the user creates a target or action.
 
 ## Code boundaries
 
