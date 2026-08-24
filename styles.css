@@ -24,7 +24,7 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { min-height: 100%; background: var(--bg); -webkit-text-size-adjust: 100%; }
+html { min-height: 100%; background: var(--bg); -webkit-text-size-adjust: 100%; touch-action: pan-x pan-y; }
 body {
   min-height: 100%;
   margin: 0;
@@ -35,6 +35,7 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums;
+  touch-action: pan-x pan-y;
 }
 button, input, textarea, select { color: inherit; font: inherit; }
 button { cursor: pointer; }
@@ -893,6 +894,10 @@ svg { display: block; flex: none; }
   .routine-day i { width: 27px; height: 27px; }
   .field-grid { grid-template-columns: 1fr; }
   .review-footer { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  input, textarea, select { font-size: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
