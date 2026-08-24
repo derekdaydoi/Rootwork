@@ -70,6 +70,18 @@
     var index = Math.abs(D.diffDays(monday, '2024-01-01')) % vietnamese.length;
     return UI_LOCALE === 'vi' ? vietnamese[index] : english[index];
   }
+  function levelStageLabel(stage) {
+    var labels = {
+      beginning: ['Beginning', 'Khởi đầu'],
+      rooted: ['Rooted', 'Bám rễ'],
+      momentum: ['Momentum', 'Vào guồng'],
+      established: ['Established', 'Vững vàng'],
+      mastery: ['Mastery', 'Tinh luyện'],
+      enduring: ['Enduring', 'Bền vững']
+    };
+    var label = labels[stage] || labels.beginning;
+    return UI_LOCALE === 'vi' ? label[1] : label[0];
+  }
   function attentionLabel(item) {
     if (UI_LOCALE !== 'vi') return item.label;
     var count = Number((item.label.match(/^\d+/) || ['0'])[0]);
@@ -227,8 +239,8 @@
       h('div', { className: 'topbar-actions' },
         h(LanguageToggle, { locale: props.locale, onChange: props.onLocale }),
         h('button', {
-          type: 'button', className: 'identity-chip', onClick: props.onSettings,
-          'aria-label': t('Open profile and settings', 'Mở hồ sơ và cài đặt')
+          type: 'button', className: 'identity-chip', onClick: props.onProgress,
+          'aria-label': t('Open long-term progress', 'Mở tiến trình dài hạn')
         }, h('b', null, t('Lv.', 'Cấp ') + props.level)),
         h('button', {
           type: 'button', className: 'icon-button', onClick: props.onMenu,
@@ -338,9 +350,9 @@
       return function () { if (toastTimer.current) clearTimeout(toastTimer.current); };
     }, []);
 
-    function showToast(message, action) {
+    function showToast(message, action, tone) {
       if (toastTimer.current) clearTimeout(toastTimer.current);
-      setToast({ message: message, action: action || null });
+      setToast({ message: message, action: action || null, tone: tone || '' });
       toastTimer.current = setTimeout(function () { setToast(null); }, 5000);
     }
 
@@ -361,10 +373,16 @@
           setToast(null);
         });
       } else if (options && options.trackProgress) {
-        var afterLevel = D.levelState(D.totalXp(next)).level;
+        var afterLevelState = D.levelState(D.totalXp(next));
+        var afterLevel = afterLevelState.level;
         var earned = Math.max(0, D.totalXp(next) - D.totalXp(before));
         if (afterLevel > beforeLevel) {
-          showToast(t('Level ' + afterLevel + '. Progress recorded.', 'Đã lên Cấp ' + afterLevel + '. Tiến bộ đã được ghi lại.'));
+          showToast(
+            t('Level ' + afterLevel + ' · ' + levelStageLabel(afterLevelState.stage),
+              'Cấp ' + afterLevel + ' · ' + levelStageLabel(afterLevelState.stage)),
+            null,
+            'level'
+          );
         } else if (earned > 0) {
           showToast('+' + earned + ' XP · ' + t('Progress recorded', 'Đã ghi nhận tiến bộ'));
         }
@@ -446,6 +464,13 @@
       if (view === 'tree') return h(TreeView, shared);
       if (view === 'calendar') return h(CalendarView, shared);
       if (view === 'routine') return h(RoutineView, shared);
+      if (view === 'progress') return h(ProgressView, Object.assign({}, shared, {
+        onBack: function () { changeView('home'); },
+        onOpenArchive: function (weekId) {
+          setArchiveWeekId(weekId || null);
+          changeView('archive');
+        }
+      }));
       if (view === 'archive') return h(ArchiveView, Object.assign({}, shared, {
         selectedId: archiveWeekId,
         setSelectedId: setArchiveWeekId,
@@ -508,17 +533,18 @@
           menuOpen: menuOpen,
           onMenu: function () { setMenuOpen(!menuOpen); },
           onArchive: function () { changeView('archive'); },
+          onProgress: function () { changeView('progress'); },
           onSettings: function () { changeView('settings'); }
         }),
         storageError && h('div', { className: 'system-notice' }, storageError),
         renderContent()),
-      view !== 'archive' && view !== 'settings' && h(BottomNav, {
+      view !== 'archive' && view !== 'progress' && view !== 'settings' && h(BottomNav, {
         view: view,
         onView: changeView,
         onCreate: function () { openCreate(); }
       }),
       renderSheet(),
-      toast && h('div', { className: 'toast', role: 'status' },
+      toast && h('div', { className: 'toast ' + (toast.tone || ''), role: 'status' },
         h('span', null, toast.message),
         toast.action && h('button', { onClick: toast.action }, t('Undo', 'Hoàn tác'))));
   }
@@ -551,7 +577,7 @@
           h('div', { className: 'campaign-copy' },
             h('strong', null, message[0]),
             h('span', null, message[1]))),
-        h('img', { className: 'greeting-landscape', src: 'assets/welcome-mountains-v2.png', alt: '' }),
+        h('img', { className: 'greeting-landscape', src: 'assets/welcome-mountains-photo.jpg', alt: '' }),
         h('button', {
           className: 'primary-button start-cta',
           onClick: function () {
@@ -602,7 +628,7 @@
                   }
                 }, target.status === 'removed' ? t('Keep', 'Giữ') : t('Remove', 'Bỏ'))));
           }) : h(EmptyState, {
-            image: 'assets/empty-seedling-v2.png',
+            icon: 'target',
             title: t('Start with one clear target.', 'Bắt đầu bằng một mục tiêu rõ ràng.'),
             action: h('button', {
               className: 'secondary-button', onClick: function () { props.openCreate('target'); }
@@ -652,6 +678,7 @@
     if (!week.targets.length && !week.looseTasks.length) return h(BlankWeekView, props);
     var metrics = D.weekMetrics(week, props.data.routines);
     var level = D.levelState(D.totalXp(props.data));
+    var weekXp = D.weekXp(week, props.data.routines);
     var tasks = D.weekTasks(week);
     var todayTasks = D.sortTasks(tasks.filter(function (task) {
       return task.date === D.today() && !task.done;
@@ -664,13 +691,25 @@
           h('p', null, fmtWeekRange(week.startDate))),
         h('div', { className: 'campaign-percent' }, metrics.completion + '%')),
       h(Progress, { value: metrics.completion, className: 'campaign-progress' }),
-      h('section', { className: 'identity-progress' },
-        h('img', { className: 'level-crest', src: 'assets/level-crest-v2.png', alt: '' }),
+      h('button', {
+        type: 'button',
+        className: 'identity-progress',
+        onClick: function () { props.setView('progress'); },
+        'aria-label': t('Open long-term progress', 'Mở tiến trình dài hạn')
+      },
+        h('div', { className: 'level-number' },
+          h('span', null, t('LEVEL', 'CẤP')),
+          h('strong', null, level.level)),
         h('div', { className: 'identity-progress-copy' },
-          h('div', { className: 'identity-row' },
-            h('strong', null, props.data.profile.name + ' · ' + t('Lv.', 'Cấp ') + level.level),
-            h('span', null, number(level.currentXp) + ' / ' + number(level.neededXp) + ' XP')),
-          h(Progress, { value: level.percent }))),
+          h('div', { className: 'level-heading' },
+            h('div', null,
+              h('strong', null, props.data.profile.name),
+              h('span', null, levelStageLabel(level.stage))),
+            h('span', null, number(level.remainingXp) + ' ' + t('XP to Level ', 'XP để đạt Cấp ') + level.nextLevel)),
+          h(Progress, { value: level.percent }),
+          h('div', { className: 'level-meta' },
+            h('span', null, number(level.currentXp) + ' / ' + number(level.neededXp) + ' XP'),
+            h('strong', null, '+' + number(weekXp) + ' ' + t('XP this week', 'XP tuần này'))))),
       h('section', { className: 'home-section today-focus' },
         h('div', { className: 'section-heading' },
           h('h2', null, t('What matters today', 'Điều quan trọng hôm nay')),
@@ -699,7 +738,7 @@
               t(result.done + ' of ' + result.total + ' actions', result.done + '/' + result.total + ' tác vụ'))),
             h('span', { className: 'target-percent' }, result.percent + '%'));
         })) : h(EmptyState, {
-          image: 'assets/empty-seedling-v2.png',
+          icon: 'target',
           title: t('A blank week is an opportunity.', 'Một tuần trống là một cơ hội.'),
           text: t('What are we building this week?', 'Tuần này ta sẽ xây điều gì?'),
           action: h('button', {
@@ -729,7 +768,8 @@
       }),
       h('section', { className: 'blank-week-builder' },
         h('div', { className: 'blank-week-visual' },
-          h('img', { src: 'assets/empty-seedling-v2.png', alt: '' })),
+          h('span', null, t('NEW WEEK', 'TUẦN MỚI')),
+          h('strong', null, D.isoWeek(props.week.startDate))),
         h('div', { className: 'blank-week-copy' },
           h('h2', null, t('A blank week is an opportunity.', 'Một tuần trống là một cơ hội.')),
           h('p', null, t('What are we building this week?', 'Tuần này ta sẽ xây điều gì?'))),
@@ -791,7 +831,7 @@
         onAddTask: function (target) { props.openCreate('task', { targetId: target.id }); },
         onEditTarget: props.openTarget
       }) : h(EmptyState, {
-        image: 'assets/empty-seedling-v2.png',
+        icon: 'tree',
         title: t('A tree starts with one target.', 'Một cái cây bắt đầu từ một mục tiêu.'),
         action: h('button', {
           className: 'primary-button small', onClick: function () { props.openCreate('target'); }
@@ -1063,6 +1103,65 @@
         title: t('History begins after this week.', 'Lịch sử bắt đầu sau tuần này.'),
         text: t('Completed weeks stay here as records.', 'Các tuần đã hoàn tất sẽ được lưu lại tại đây.')
       }));
+  }
+
+  function ProgressView(props) {
+    var level = D.levelState(D.totalXp(props.data));
+    var currentXp = D.weekXp(props.week, props.data.routines);
+    var completed = props.data.weeks.filter(function (week) {
+      return week.status === 'complete';
+    }).sort(function (a, b) { return b.startDate.localeCompare(a.startDate); });
+    var summaries = completed.map(function (week) {
+      return { week: week, recap: week.recap || D.buildRecap(week, []) };
+    });
+    var average = summaries.length ? Math.round(summaries.reduce(function (sum, item) {
+      return sum + item.recap.completion;
+    }, 0) / summaries.length) : 0;
+    var targetsAdvanced = summaries.reduce(function (sum, item) {
+      return sum + item.recap.targetsAdvanced;
+    }, 0);
+    return h(Fragment, null,
+      h(PageHeader, {
+        title: t('Progress', 'Tiến trình'),
+        onBack: props.onBack
+      }),
+      h('section', { className: 'progress-level-card' },
+        h('div', { className: 'progress-level-top' },
+          h('span', null, levelStageLabel(level.stage)),
+          h('span', null, number(level.totalXp) + ' XP')),
+        h('div', { className: 'progress-level-main' },
+          h('div', null,
+            h('span', null, t('LEVEL', 'CẤP')),
+            h('strong', null, level.level)),
+          h('div', null,
+            h('strong', null, props.data.profile.name),
+            h('span', null, number(level.remainingXp) + ' ' + t('XP to Level ', 'XP để đạt Cấp ') + level.nextLevel))),
+        h(Progress, { value: level.percent }),
+        h('div', { className: 'progress-level-meta' },
+          h('span', null, number(level.currentXp) + ' / ' + number(level.neededXp) + ' XP'),
+          h('strong', null, '+' + number(currentXp) + ' ' + t('this week', 'tuần này')))),
+      h('section', { className: 'progress-facts' },
+        h('div', null, h('strong', null, completed.length), h('span', null, t('weeks recorded', 'tuần đã ghi lại'))),
+        h('div', null, h('strong', null, average + '%'), h('span', null, t('average execution', 'thực hiện trung bình'))),
+        h('div', null, h('strong', null, targetsAdvanced), h('span', null, t('targets advanced', 'mục tiêu tiến lên')))),
+      h('section', { className: 'recent-progress' },
+        h('div', { className: 'section-heading' },
+          h('h2', null, t('Recent weeks', 'Các tuần gần đây')),
+          h('button', { className: 'text-button', onClick: function () { props.onOpenArchive(); } }, t('Archive', 'Lưu trữ'))),
+        summaries.length ? h('div', { className: 'progress-week-list' }, summaries.slice(0, 5).map(function (item) {
+          return h('button', {
+            key: item.week.id,
+            onClick: function () { props.onOpenArchive(item.week.id); }
+          },
+            h('div', null,
+              h('strong', null, t('Week ', 'Tuần ') + D.isoWeek(item.week.startDate)),
+              h('span', null, fmtWeekRange(item.week.startDate))),
+            h('div', null,
+              h('strong', null, item.recap.completion + '%'),
+              h('span', null, '+' + number(item.recap.xpEarned) + ' XP')),
+            h(Icon, { name: 'chevron', size: 18 }));
+        })) : h('div', { className: 'quiet-panel' },
+          h('strong', null, t('Your first record is being written.', 'Tuần đầu tiên của bạn đang được viết.')))));
   }
 
   function SettingsView(props) {

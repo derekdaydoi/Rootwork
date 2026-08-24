@@ -95,12 +95,16 @@ XP is earned only from recorded execution:
 The formula is centralized in `domain.js`. Unchecking an action before the
 week closes removes its provisional XP. Completed-week XP is frozen in its
 recap. Levels use increasing thresholds: the gap to the next level is
-`500 × current level`; level 1 begins at 0 XP.
+`500 × current level`; level 1 begins at 0 XP. Level stages add readable
+long-term chapters without changing the XP curve: Beginning (1–4), Rooted
+(5–9), Momentum (10–19), Established (20–34), Mastery (35–49), and Enduring
+(50+).
 
 ## Navigation and screen states
 
 The primary mobile navigation is Home, Tree, Create, Calendar, and Routine.
-Archive and Settings/Data are secondary. Home answers the current-campaign
+Progress, Archive, and Settings/Data are secondary. The compact Level indicator
+opens Progress; it reports only recorded XP and completed-week outcomes. Home answers the current-campaign
 questions; Tree is the primary target/action planning surface; Calendar is a
 weekly agenda over the same tasks; Routine is independent. Greeting, target
 review, and recap temporarily replace primary navigation at weekly start.

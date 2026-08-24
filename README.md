@@ -97,7 +97,13 @@ Rules live only in domain.js:
 
 Unchecking current-week work removes provisional XP. Once a week is closed,
 its recap and XP are frozen. The gap to the next level is
-500 × current level.
+500 × current level. Levels are grouped into six long-term stages: Beginning,
+Rooted, Momentum, Established, Mastery, and Enduring. Stage labels do not alter
+XP; they make long-term progress easier to read.
+
+The weekly-start background is a real photograph by
+[Lennart Rudolph](https://unsplash.com/photos/mountain-valley-landscape-at-sunrise-with-soft-pastel-sky-8rLobnurnXA),
+used under the Unsplash License.
 
 ## Run locally
 

@@ -13,6 +13,14 @@
     weekComplete: 50,
     weekStrong: 50
   };
+  var LEVEL_STAGES = [
+    { id: 'beginning', minLevel: 1, maxLevel: 4 },
+    { id: 'rooted', minLevel: 5, maxLevel: 9 },
+    { id: 'momentum', minLevel: 10, maxLevel: 19 },
+    { id: 'established', minLevel: 20, maxLevel: 34 },
+    { id: 'mastery', minLevel: 35, maxLevel: 49 },
+    { id: 'enduring', minLevel: 50, maxLevel: 999 }
+  ];
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
   function pad(value) { return value < 10 ? '0' + value : String(value); }
@@ -433,17 +441,28 @@
     return 250 * (value - 1) * value;
   }
 
+  function levelStage(level) {
+    var value = clamp(Math.floor(Number(level) || 1), 1, 999);
+    return LEVEL_STAGES.find(function (stage) {
+      return value >= stage.minLevel && value <= stage.maxLevel;
+    }) || LEVEL_STAGES[0];
+  }
+
   function levelState(xp) {
     var total = Math.max(0, Math.floor(Number(xp) || 0));
     var level = 1;
     while (total >= levelFloor(level + 1) && level < 999) level += 1;
     var floor = levelFloor(level);
     var next = levelFloor(level + 1);
+    var stage = levelStage(level);
     return {
       level: level,
+      nextLevel: level + 1,
+      stage: stage.id,
       totalXp: total,
       currentXp: total - floor,
       neededXp: next - floor,
+      remainingXp: Math.max(0, next - total),
       percent: Math.round((total - floor) / (next - floor) * 100)
     };
   }
@@ -478,6 +497,7 @@
     DAY: DAY,
     DOW: DOW,
     XP_RULES: XP_RULES,
+    LEVEL_STAGES: LEVEL_STAGES,
     clone: clone,
     clamp: clamp,
     ymd: ymd,
@@ -523,6 +543,7 @@
     weekXp: weekXp,
     totalXp: totalXp,
     levelFloor: levelFloor,
+    levelStage: levelStage,
     levelState: levelState,
     attentionItems: attentionItems,
     archiveTrend: archiveTrend

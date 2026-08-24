@@ -112,10 +112,14 @@ test('XP is centralized, capped for routines, and close bonuses require executio
 
 test('level thresholds increase by 500 XP per current level', () => {
   assert.equal(D.levelState(0).level, 1);
+  assert.equal(D.levelState(0).stage, 'beginning');
+  assert.equal(D.levelState(0).remainingXp, 500);
   assert.equal(D.levelState(499).level, 1);
   assert.equal(D.levelState(500).level, 2);
   assert.equal(D.levelState(1499).level, 2);
   assert.equal(D.levelState(1500).level, 3);
+  assert.equal(D.levelState(22500).stage, 'momentum');
+  assert.equal(D.levelState(95000).stage, 'established');
 });
 
 test('rollover freezes the old week and carries only incomplete work without schedule', () => {
