@@ -204,7 +204,11 @@
   }
 
   function BrandMark() {
-    return h('strong', { className: 'wordmark' }, 'rootwork');
+    return h('span', { className: 'brand-title-lockup', 'aria-label': 'Rootwork' },
+      h('img', { src: 'brand/rootwork-symbol.svg', alt: '', 'aria-hidden': 'true' }),
+      h('strong', { className: 'brand-title-word' },
+        h('span', null, 'root'),
+        h('span', null, 'work')));
   }
 
   function LaunchLogo() {
@@ -586,7 +590,7 @@
       return null;
     }
 
-    var showTopbar = view === 'home' && (week.targets.length > 0 || week.looseTasks.length > 0);
+    var showTopbar = view === 'home';
     return h(Fragment, null,
       h('div', { className: 'app-shell' },
         showTopbar && h(AppTopbar, {
@@ -797,18 +801,7 @@
   }
 
   function BlankWeekView(props) {
-    return h(Fragment, null,
-      h(PageHeader, {
-        title: t('Week ', 'Tuần ') + D.isoWeek(props.week.startDate),
-        subtitle: fmtWeekRange(props.week.startDate),
-        action: h('div', { className: 'header-actions' },
-          h(LanguageToggle, { locale: props.locale, onChange: props.onLocale }),
-          h('button', {
-            className: 'icon-button', onClick: function () { props.setView('settings'); },
-            'aria-label': t('Open settings', 'Mở cài đặt')
-          }, h(Icon, { name: 'settings', size: 22 })))
-      }),
-      h('section', { className: 'blank-week-builder' },
+    return h('section', { className: 'blank-week-builder' },
         h('div', { className: 'blank-week-visual' },
           h('span', null, t('NEW WEEK', 'TUẦN MỚI')),
           h('strong', null, D.isoWeek(props.week.startDate))),
@@ -817,7 +810,7 @@
           h('p', null, t('What are we building this week?', 'Tuần này ta sẽ xây điều gì?'))),
         h('button', {
           className: 'primary-button blank-week-cta', onClick: function () { props.openCreate(); }
-        }, t('Build my week', 'Dựng tuần mới'), h(Icon, { name: 'chevron', size: 22 }))));
+        }, t('Build my week', 'Dựng tuần mới'), h(Icon, { name: 'chevron', size: 22 })));
   }
 
   function toggleTask(props, task) {
