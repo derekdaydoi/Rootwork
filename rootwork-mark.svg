@@ -1,7 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="t d">
-  <title id="t">Rootwork symbol</title>
-  <desc id="d">A white W with an anchor dot on Rootwork green.</desc>
-  <rect width="1000" height="1000" rx="220" fill="#14614A"/>
-  <path d="M240 318 L409 682 L500 435 L591 682 L760 318" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="500" cy="818" r="49" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Rootwork app mark</title>
+  <desc id="desc">A rooted progression tree that forms a geometric W.</desc>
+  <rect width="1024" height="1024" rx="224" fill="#176B45"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="58" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M512 790 356 572 220 286"/>
+    <path d="M356 572 512 286"/>
+    <path d="M512 790 668 572 512 286"/>
+    <path d="M668 572 804 286"/>
+  </g>
+  <g fill="#FFFFFF">
+    <circle cx="220" cy="286" r="46"/>
+    <circle cx="512" cy="286" r="46"/>
+    <circle cx="804" cy="286" r="46"/>
+    <circle cx="356" cy="572" r="46"/>
+    <circle cx="668" cy="572" r="46"/>
+    <circle cx="512" cy="790" r="52"/>
+  </g>
 </svg>

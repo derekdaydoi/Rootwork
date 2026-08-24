@@ -204,14 +204,52 @@
   }
 
   function BrandMark() {
-    return h('strong', { className: 'wordmark' }, 'Rootwork');
+    return h('strong', { className: 'wordmark' }, 'rootwork');
+  }
+
+  function LaunchLogo() {
+    var lines = [
+      ['M80 112 52 70', 260],
+      ['M80 112 108 70', 350],
+      ['M52 70 24 22', 560],
+      ['M52 70 80 22', 650],
+      ['M108 70 80 22', 740],
+      ['M108 70 136 22', 830]
+    ];
+    var nodes = [
+      [80, 112, 8, 130],
+      [52, 70, 7, 500],
+      [108, 70, 7, 580],
+      [24, 22, 7, 940],
+      [80, 22, 7, 1020],
+      [136, 22, 7, 1100]
+    ];
+    return h('svg', {
+      className: 'launch-symbol', viewBox: '0 0 160 132', 'aria-hidden': 'true'
+    },
+      h('circle', { className: 'launch-pulse', cx: 80, cy: 66, r: 58 }),
+      h('g', { className: 'launch-lines' }, lines.map(function (line, index) {
+        return h('path', {
+          key: 'line-' + index,
+          d: line[0], pathLength: 1,
+          style: { '--launch-delay': line[1] + 'ms' }
+        });
+      })),
+      h('g', { className: 'launch-nodes' }, nodes.map(function (node, index) {
+        return h('circle', {
+          key: 'node-' + index,
+          cx: node[0], cy: node[1], r: node[2],
+          style: { '--launch-delay': node[3] + 'ms' }
+        });
+      })));
   }
 
   function LaunchScreen(props) {
     return h('main', { className: 'launch-screen ' + (props.phase || 'show') },
-      h('div', { className: 'launch-lockup' },
-        h('img', { src: 'icon-192.png', alt: '', className: 'launch-mark' }),
-        h('strong', null, 'Rootwork')));
+      h('div', { className: 'launch-lockup', role: 'img', 'aria-label': 'Rootwork' },
+        h(LaunchLogo),
+        h('strong', { className: 'launch-wordmark' }, 'rootwork'),
+        h('span', { className: 'launch-subtitle' }, t('Turn effort into progress.', 'Biến nỗ lực thành tiến bộ.'))));
   }
 
   function AppTopbar(props) {
@@ -287,8 +325,8 @@
       setLaunchPhase('show');
       var reducedMotion = global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
       launchTimers.current = [
-        setTimeout(function () { setLaunchPhase('exit'); }, reducedMotion ? 80 : 700),
-        setTimeout(function () { setLaunchPhase('done'); }, reducedMotion ? 140 : 1300)
+        setTimeout(function () { setLaunchPhase('exit'); }, reducedMotion ? 80 : 1900),
+        setTimeout(function () { setLaunchPhase('done'); }, reducedMotion ? 140 : 2450)
       ];
     }
 

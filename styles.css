@@ -64,8 +64,11 @@ svg { display: block; flex: none; }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @keyframes check-pop { 0% { transform: scale(.78); } 62% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes xp-sweep { from { transform: translateX(-120%); } to { transform: translateX(360%); } }
-@keyframes launch-mark-in { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
-@keyframes launch-name-in { from { opacity: 0; transform: translateY(8px); letter-spacing: .8px; } to { opacity: 1; transform: none; letter-spacing: -.7px; } }
+@keyframes launch-line-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes launch-node-in { 0% { opacity: 0; transform: scale(.25); } 70% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes launch-pulse { 0% { opacity: 0; transform: scale(.72); } 35% { opacity: .55; } 100% { opacity: 0; transform: scale(1.18); } }
+@keyframes launch-word-in { from { opacity: 0; transform: translateY(7px); letter-spacing: .4px; } to { opacity: 1; transform: none; letter-spacing: -.75px; } }
+@keyframes launch-subtitle-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
 .app-shell {
   width: min(720px, 100%);
@@ -86,18 +89,66 @@ svg { display: block; flex: none; }
   z-index: 220;
   inset: 0;
   min-height: 100dvh;
-  background: #fff;
+  background: rgba(255, 255, 255, 1);
   display: grid;
   place-items: center;
   overflow: hidden;
-  transform: translateY(0);
-  transition: transform .6s cubic-bezier(.76, 0, .24, 1);
+  opacity: 1;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity .5s var(--ease), background-color .5s var(--ease), backdrop-filter .5s var(--ease);
 }
-.launch-lockup { display: grid; justify-items: center; gap: 13px; transition: opacity .28s ease, transform .4s var(--ease); }
-.launch-mark { width: 66px; height: 66px; border-radius: 17px; animation: launch-mark-in .42s var(--ease) both; }
-.launch-lockup strong { color: var(--green); font-size: 25px; line-height: 1; letter-spacing: -.7px; animation: launch-name-in .45s .1s var(--ease) both; }
-.launch-screen.exit { transform: translateY(-100%); }
-.launch-screen.exit .launch-lockup { opacity: 0; transform: translateY(-28px) scale(.96); }
+.launch-lockup { display: grid; justify-items: center; transition: opacity .35s ease, transform .5s var(--ease); }
+.launch-symbol { width: 126px; height: 104px; overflow: visible; }
+.launch-lines path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: launch-line-draw .34s var(--launch-delay) var(--ease) both;
+}
+.launch-nodes circle {
+  fill: var(--green);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: launch-node-in .24s var(--launch-delay) var(--ease) both;
+}
+.launch-pulse {
+  fill: none;
+  stroke: var(--green-soft);
+  stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: launch-pulse .62s 1.08s var(--ease) both;
+}
+.launch-wordmark {
+  margin-top: 12px;
+  color: var(--green-deep);
+  font-size: 27px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -.75px;
+  opacity: 0;
+  animation: launch-word-in .34s 1.04s var(--ease) both;
+}
+.launch-subtitle {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .05px;
+  opacity: 0;
+  animation: launch-subtitle-in .32s 1.28s var(--ease) both;
+}
+.launch-static-mark { width: 126px; height: 104px; }
+.launch-static .launch-wordmark { opacity: 1; animation: none; }
+.launch-screen.exit { opacity: 0; background: rgba(255, 255, 255, 0); backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); pointer-events: none; }
+.launch-screen.exit .launch-lockup { opacity: 0; transform: translateY(-9px) scale(1.015); }
 
 .wordmark { color: var(--green); font-size: 16px; font-weight: 850; letter-spacing: -.55px; }
 .app-topbar {

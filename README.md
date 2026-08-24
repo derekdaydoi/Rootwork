@@ -42,6 +42,11 @@ week with no carried targets, Rootwork leads into a focused
 builder state rather than an empty dashboard. The dashboard appears only after
 the user creates a target or action.
 
+The opening builds the Rootwork mark from its bottom root node into the full
+progression-tree W, then reveals the wordmark and localized subtitle before a
+soft transition into current context. Vector masters live in `brand/`; the PWA
+icon set is generated from the same geometry.
+
 ## Code boundaries
 
 ~~~text

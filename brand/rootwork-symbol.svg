@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 132" role="img" aria-labelledby="title desc">
+  <title id="title">Rootwork symbol</title>
+  <desc id="desc">A rooted progression tree that forms a geometric W.</desc>
+  <g fill="none" stroke="#176B45" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M80 112 52 70 24 22"/>
+    <path d="M52 70 80 22"/>
+    <path d="M80 112 108 70 80 22"/>
+    <path d="M108 70 136 22"/>
+  </g>
+  <g fill="#176B45">
+    <circle cx="24" cy="22" r="7"/>
+    <circle cx="80" cy="22" r="7"/>
+    <circle cx="136" cy="22" r="7"/>
+    <circle cx="52" cy="70" r="7"/>
+    <circle cx="108" cy="70" r="7"/>
+    <circle cx="80" cy="112" r="8"/>
+  </g>
+</svg>

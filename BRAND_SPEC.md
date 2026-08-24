@@ -28,8 +28,8 @@ All interface colors are declared once in styles.css.
 | --danger | #A64239 | destructive/overdue state |
 | --warning | #8A641D | stalled/attention state |
 
-The app mark retains the established solid #14614A field for icon continuity.
-This is a brand asset color, not an additional interface accent.
+The app mark uses the same #176B45 primary green as the interface so the
+installed icon, launch sequence, and product state feel continuous.
 
 ## Typography
 
@@ -40,15 +40,18 @@ consistently offline.
 
 ## Mark
 
-brand/rootwork-mark.svg is the source vector:
+`brand/rootwork-mark.svg` is the square app-mark source and
+`brand/rootwork-symbol.svg` is the transparent symbol source:
 
-- viewBox 0 0 1000 1000;
-- solid green rounded-square field;
-- white single-stroke W/root form and anchor dot;
-- no gradient, glow, shadow, or alternate fill treatment;
+- one bottom root node grows into two structural junctions;
+- the junctions resolve into three upper target nodes;
+- the complete geometry reads as both a progression tree and a W;
+- the symbol remains one color with round joins and no decorative detail;
+- the app mark uses a solid green rounded-square field and white geometry;
 - all meaningful geometry remains safe inside circular Android masks.
 
-The existing generated PNG sizes remain the PWA icon set.
+`make_icons.py` owns the matching raster geometry and regenerates the 180,
+192, 256, 512, and 1024 px PWA icons plus transparent symbol PNG.
 
 ## Shape and spacing
 
@@ -62,6 +65,13 @@ The existing generated PNG sizes remain the PWA icon set.
 
 Motion communicates progression:
 
+- every app entry begins on white with the root node;
+- lines grow upward from the root before their destination nodes resolve;
+- a single pale ring acknowledges the complete structure without glow;
+- the lowercase wordmark appears after the symbol;
+- the localized subtitle follows: “Turn effort into progress.” / “Biến nỗ
+  lực thành tiến bộ.”;
+- the white layer fades away to reveal current context in about 2.4 seconds;
 - the week root resolves first;
 - the trunk and target connectors draw downward;
 - target nodes appear after connectors;
