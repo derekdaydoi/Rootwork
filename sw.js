@@ -1,15 +1,12 @@
-/* Rootwork — sw.js
-   Cache key đổi theo deploy để PWA Home Screen nhận code mới. */
-var CACHE = 'rootwork-cache-2026-08-16-menu-fix-1';
-
+/* Rootwork V2 — local-first PWA shell. */
+var CACHE = 'rootwork-v2-2026-08-24-1';
 var ASSETS = [
   './',
   './index.html',
+  './styles.css',
   './domain.js',
   './store.js',
   './app.js',
-  './ui-fixes.css',
-  './ui-fixes.js',
   './manifest.json',
   './vendor/react.production.min.js',
   './vendor/react-dom.production.min.js',
@@ -24,11 +21,7 @@ var ASSETS = [
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE)
-      .then(function (cache) {
-        return Promise.all(ASSETS.map(function (url) {
-          return cache.add(url).catch(function () { return null; });
-        }));
-      })
+      .then(function (cache) { return cache.addAll(ASSETS); })
       .then(function () { return self.skipWaiting(); })
   );
 });
@@ -37,35 +30,15 @@ self.addEventListener('activate', function (event) {
   event.waitUntil(
     caches.keys()
       .then(function (keys) {
-        return Promise.all(keys.filter(function (k) { return k !== CACHE; })
-          .map(function (k) { return caches.delete(k); }));
+        return Promise.all(keys.filter(function (key) { return key !== CACHE; })
+          .map(function (key) { return caches.delete(key); }));
       })
       .then(function () { return self.clients.claim(); })
   );
 });
 
-function cacheable(res) {
-  return res && res.ok && res.type === 'basic';
-}
-
-function isNavigation(request) {
-  return request.mode === 'navigate' || /\/index\.html(?:$|\?)/.test(request.url);
-}
-
-function decorateHtml(res) {
-  if (!res) return Promise.resolve(res);
-  return res.text().then(function (html) {
-    if (html.indexOf('ui-fixes.css') === -1) {
-      html = html.replace('</head>', '<link rel="stylesheet" href="ui-fixes.css" />\n</head>');
-    }
-    if (html.indexOf('ui-fixes.js') === -1) {
-      html = html.replace('</body>', '<script src="ui-fixes.js"></script>\n</body>');
-    }
-    var headers = new Headers(res.headers);
-    headers.set('content-type', 'text/html; charset=utf-8');
-    headers.delete('content-length');
-    return new Response(html, { status: res.status, statusText: res.statusText, headers: headers });
-  });
+function cacheable(response) {
+  return response && response.ok && response.type === 'basic';
 }
 
 self.addEventListener('fetch', function (event) {
@@ -73,35 +46,31 @@ self.addEventListener('fetch', function (event) {
   if (request.method !== 'GET') return;
   if (new URL(request.url).origin !== self.location.origin) return;
 
-  if (isNavigation(request)) {
+  if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then(function (res) {
-          if (!cacheable(res)) return res;
-          return decorateHtml(res).then(function (decorated) {
-            var copy = decorated.clone();
-            caches.open(CACHE).then(function (c) { c.put(request, copy); });
-            return decorated;
-          });
+        .then(function (response) {
+          if (cacheable(response)) {
+            var copy = response.clone();
+            caches.open(CACHE).then(function (cache) { cache.put('./index.html', copy); });
+          }
+          return response;
         })
-        .catch(function () {
-          return caches.match(request)
-            .then(function (hit) { return hit || caches.match('./index.html'); })
-            .then(decorateHtml);
-        })
+        .catch(function () { return caches.match('./index.html'); })
     );
     return;
   }
 
   event.respondWith(
-    fetch(request)
-      .then(function (res) {
-        if (cacheable(res)) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(request, copy); });
+    caches.match(request).then(function (cached) {
+      if (cached) return cached;
+      return fetch(request).then(function (response) {
+        if (cacheable(response)) {
+          var copy = response.clone();
+          caches.open(CACHE).then(function (cache) { cache.put(request, copy); });
         }
-        return res;
-      })
-      .catch(function () { return caches.match(request); })
+        return response;
+      });
+    })
   );
 });

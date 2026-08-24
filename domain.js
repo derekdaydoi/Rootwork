@@ -1,241 +1,251 @@
-/* Rootwork — domain.js
-   Toàn bộ nghiệp vụ OKR, lịch và thói quen. Hàm thuần: không đụng DOM,
-   không đụng storage, không đụng React. Mọi thứ ở đây test được bằng
-   assertion mà không cần mở browser.
-
-   Cùng pattern với Rootflow/domain.js để hai repo đọc như một. */
+/* Rootwork V2 — pure product rules. No DOM, storage, or React access. */
 (function (global) {
   'use strict';
 
   var DAY = 86400000;
-  var DOW = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  var DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var XP_RULES = {
+    action: 20,
+    highAction: 30,
+    targetComplete: 40,
+    routineCheck: 5,
+    routineGoal: 20,
+    weekComplete: 50,
+    weekStrong: 50
+  };
 
-  /* ============================ NGÀY ============================ */
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+  function pad(value) { return value < 10 ? '0' + value : String(value); }
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 
-  function pad(n) { return n < 10 ? '0' + n : '' + n; }
-
-  /* Không dùng toISOString() trực tiếp: nó quy về UTC và làm lệch một ngày
-     với mọi múi giờ phía đông. Đọc theo giờ local rồi tự ghép chuỗi. */
-  function ymd(d) {
-    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  function ymd(date) {
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
   }
 
-  function parseYmd(s) {
-    var p = String(s || '').split('-');
-    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  function parseYmd(value) {
+    var parts = String(value || '').split('-');
+    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  }
+
+  function isIsoDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    var date = parseYmd(value);
+    return !Number.isNaN(date.getTime()) && ymd(date) === value;
+  }
+
+  function isTime(value) {
+    return typeof value === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
   }
 
   function today() { return ymd(new Date()); }
 
-  function isIsoDate(v) {
-    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
-    return !Number.isNaN(parseYmd(v).getTime());
-  }
-
-  function isTime(v) { return typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v); }
-
-  function addDays(s, n) {
-    var d = parseYmd(s);
-    d.setDate(d.getDate() + n);
-    return ymd(d);
+  function addDays(value, amount) {
+    var date = parseYmd(value);
+    date.setDate(date.getDate() + amount);
+    return ymd(date);
   }
 
   function diffDays(a, b) {
-    return Math.round((parseYmd(a) - parseYmd(b)) / DAY);
+    return Math.round((parseYmd(a).getTime() - parseYmd(b).getTime()) / DAY);
   }
 
-  /* Tuần bắt đầu Thứ Hai. */
-  function mondayOf(s) {
-    var d = parseYmd(s || today());
-    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-    return ymd(d);
+  function mondayOf(value) {
+    var date = parseYmd(value || today());
+    date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+    return ymd(date);
   }
 
   function weekDates(monday) {
-    return DOW.map(function (_, i) { return addDays(monday, i); });
+    return DOW.map(function (_, index) { return addDays(monday, index); });
   }
 
-  function daysFromToday(s) {
-    if (!isIsoDate(s)) return null;
-    return diffDays(s, today());
+  function isoWeek(value) {
+    var date = parseYmd(value);
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
+    var firstThursday = new Date(date.getFullYear(), 0, 4);
+    firstThursday.setDate(firstThursday.getDate() + 3 - ((firstThursday.getDay() + 6) % 7));
+    return 1 + Math.round((date.getTime() - firstThursday.getTime()) / (7 * DAY));
   }
 
-  /* ============================ ĐỊNH DẠNG ============================ */
-
-  function fmtDate(s) {
-    if (!isIsoDate(s)) return 'Chưa xếp';
-    if (s === today()) return 'Hôm nay';
-    if (s === addDays(today(), 1)) return 'Ngày mai';
-    if (s === addDays(today(), -1)) return 'Hôm qua';
-    return parseYmd(s).toLocaleDateString('vi-VN', { day: 'numeric', month: 'short' });
+  function fmtDate(value, options) {
+    if (!isIsoDate(value)) return 'Unscheduled';
+    return parseYmd(value).toLocaleDateString('en-US', options || { month: 'short', day: 'numeric' });
   }
 
-  function fmtDateFull(s) {
-    if (!isIsoDate(s)) return 'Chưa xếp';
-    return parseYmd(s).toLocaleDateString('vi-VN',
-      { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  function fmtDateFull(value) {
+    return fmtDate(value, { weekday: 'long', month: 'long', day: 'numeric' });
   }
 
   function fmtWeekRange(monday) {
-    return parseYmd(monday).toLocaleDateString('vi-VN', { day: 'numeric', month: 'short' }) +
-      ' – ' + parseYmd(addDays(monday, 6))
-        .toLocaleDateString('vi-VN', { day: 'numeric', month: 'short', year: 'numeric' });
+    var end = addDays(monday, 6);
+    var startDate = parseYmd(monday);
+    var endDate = parseYmd(end);
+    if (startDate.getMonth() === endDate.getMonth()) {
+      return startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+        '–' + endDate.getDate();
+    }
+    return fmtDate(monday) + '–' + fmtDate(end);
   }
 
-  function fmtToday() {
-    var t = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
-    return t.charAt(0).toUpperCase() + t.slice(1);
+  function fmtWeekLong(monday) {
+    return parseYmd(monday).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) +
+      ' – ' + parseYmd(addDays(monday, 6)).toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric'
+      });
   }
 
-  function deadlineLabel(s) {
-    var d = daysFromToday(s);
-    if (d === null) return { text: 'Chưa đặt hạn', tone: '' };
-    if (d < 0) return { text: 'Quá hạn ' + Math.abs(d) + ' ngày', tone: 'overdue' };
-    if (d === 0) return { text: 'Hạn hôm nay', tone: 'soon' };
-    if (d <= 7) return { text: 'Còn ' + d + ' ngày', tone: 'soon' };
+  function greeting(date) {
+    var hour = (date || new Date()).getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  function campaignMessage(monday) {
+    var messages = [
+      ['New week. New progress.', "Let's make it count."],
+      ['A clean week ahead.', 'Choose what deserves momentum.'],
+      ['The next campaign starts here.', 'Move what matters.'],
+      ['Seven days. A clear direction.', 'Build something real.']
+    ];
+    var index = Math.abs(diffDays(monday, '2024-01-01')) % messages.length;
+    return messages[index];
+  }
+
+  function findWeek(data, weekId) {
+    return (data.weeks || []).find(function (week) { return week.id === weekId; }) || null;
+  }
+
+  function currentWeek(data, at) {
+    var monday = mondayOf(at || today());
+    return (data.weeks || []).find(function (week) {
+      return week.startDate === monday && week.status !== 'complete';
+    }) || null;
+  }
+
+  function previousWeek(data, week) {
+    return (data.weeks || []).filter(function (candidate) {
+      return candidate.status === 'complete' && candidate.startDate < week.startDate;
+    }).sort(function (a, b) { return b.startDate.localeCompare(a.startDate); })[0] || null;
+  }
+
+  function weekTasks(week) {
+    var tasks = [];
+    (week.targets || []).forEach(function (target) {
+      if (target.status === 'removed') return;
+      (target.tasks || []).forEach(function (task) {
+        tasks.push(Object.assign({}, task, {
+          weekId: week.id,
+          targetId: target.id,
+          targetTitle: target.title,
+          loose: false
+        }));
+      });
+    });
+    (week.looseTasks || []).forEach(function (task) {
+      tasks.push(Object.assign({}, task, {
+        weekId: week.id,
+        targetId: null,
+        targetTitle: 'Loose action',
+        loose: true
+      }));
+    });
+    return tasks;
+  }
+
+  function bareTask(task) {
     return {
-      text: 'Hạn ' + parseYmd(s).toLocaleDateString('vi-VN',
-        { day: 'numeric', month: 'short', year: 'numeric' }),
-      tone: ''
+      id: task.id,
+      title: task.title,
+      note: task.note || '',
+      priority: task.priority === 'high' ? 'high' : 'normal',
+      done: Boolean(task.done),
+      date: isIsoDate(task.date) ? task.date : null,
+      time: isTime(task.time) && isIsoDate(task.date) ? task.time : null,
+      completedAt: typeof task.completedAt === 'string' ? task.completedAt : null
     };
   }
 
-  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
-
-  /* ============================ CÂY DỮ LIỆU ============================ */
-
-  /* Task ở dạng "phẳng" mang thêm toạ độ (objId/krId) và nhãn hiển thị.
-     Đây là view, không phải bản ghi — không bao giờ được ghi ngược vào cây
-     hay vào thùng rác. Dùng bare() để lấy lại bản ghi sạch. */
-  var TASK_FIELDS = ['id', 'title', 'note', 'priority', 'done', 'date', 'time'];
-
-  function bare(task) {
-    var out = {};
-    TASK_FIELDS.forEach(function (k) { out[k] = task[k]; });
-    return out;
+  function findTarget(data, weekId, targetId) {
+    var week = findWeek(data, weekId);
+    return week && (week.targets || []).find(function (target) { return target.id === targetId; }) || null;
   }
 
-  function flatten(data) {
-    var out = [];
-    (data.objectives || []).forEach(function (o) {
-      if (o.archived) return;
-      (o.krs || []).forEach(function (kr) {
-        (kr.tasks || []).forEach(function (t) {
-          out.push(Object.assign({}, t, {
-            loose: false, objId: o.id, krId: kr.id, source: o.title, krTitle: kr.title
-          }));
-        });
-      });
-    });
-    (data.loose || []).forEach(function (t) {
-      out.push(Object.assign({}, t, { loose: true, source: 'Phát sinh', krTitle: '' }));
-    });
-    return out;
+  function findTask(data, reference) {
+    var week = findWeek(data, reference.weekId);
+    if (!week) return null;
+    if (!reference.targetId) {
+      return (week.looseTasks || []).find(function (task) { return task.id === reference.id; }) || null;
+    }
+    var target = (week.targets || []).find(function (item) { return item.id === reference.targetId; });
+    return target && (target.tasks || []).find(function (task) { return task.id === reference.id; }) || null;
   }
 
-  function findTask(data, task) {
-    if (task.loose) return (data.loose || []).find(function (i) { return i.id === task.id; });
-    var o = (data.objectives || []).find(function (i) { return i.id === task.objId; });
-    var kr = o && (o.krs || []).find(function (i) { return i.id === task.krId; });
-    return kr && (kr.tasks || []).find(function (i) { return i.id === task.id; });
-  }
-
-  function detachTask(draft, task) {
-    if (task.loose) {
-      draft.loose = draft.loose.filter(function (i) { return i.id !== task.id; });
+  function detachTask(week, reference) {
+    if (!reference.targetId) {
+      week.looseTasks = (week.looseTasks || []).filter(function (task) { return task.id !== reference.id; });
       return;
     }
-    var o = draft.objectives.find(function (i) { return i.id === task.objId; });
-    var kr = o && o.krs.find(function (i) { return i.id === task.krId; });
-    if (kr) kr.tasks = kr.tasks.filter(function (i) { return i.id !== task.id; });
+    var target = (week.targets || []).find(function (item) { return item.id === reference.targetId; });
+    if (target) target.tasks = (target.tasks || []).filter(function (task) { return task.id !== reference.id; });
   }
 
-  /* dest là 'loose' hoặc 'objId::krId'. KR biến mất thì rơi về loose,
-     không làm mất task. */
-  function attachTask(draft, dest, task) {
-    if (dest === 'loose') { draft.loose.push(task); return; }
-    var parts = String(dest).split('::');
-    var o = draft.objectives.find(function (i) { return i.id === parts[0]; });
-    var kr = o && o.krs.find(function (i) { return i.id === parts[1]; });
-    if (kr) kr.tasks.push(task); else draft.loose.push(task);
+  function attachTask(week, targetId, task) {
+    if (!targetId) {
+      week.looseTasks.push(task);
+      return;
+    }
+    var target = (week.targets || []).find(function (item) { return item.id === targetId; });
+    if (target) target.tasks.push(task); else week.looseTasks.push(task);
   }
 
-  function destOf(task) {
-    return task.loose ? 'loose' : task.objId + '::' + task.krId;
-  }
-
-  /* ============================ SẮP XẾP ============================ */
-
-  /* Thứ tự trong ngày: chưa xong trước → có giờ trước → giờ sớm trước →
-     ưu tiên cao trước. */
-  function sortDay(list) {
+  function sortTasks(list) {
     return list.slice().sort(function (a, b) {
       if (a.done !== b.done) return a.done ? 1 : -1;
       if (Boolean(a.time) !== Boolean(b.time)) return a.time ? -1 : 1;
-      if (a.time && b.time) return a.time.localeCompare(b.time);
+      if (a.time && b.time && a.time !== b.time) return a.time.localeCompare(b.time);
       if (a.priority !== b.priority) return a.priority === 'high' ? -1 : 1;
-      return 0;
+      return a.title.localeCompare(b.title);
     });
   }
 
-  /* ============================ TIẾN ĐỘ ============================ */
-
-  /* KR có chỉ số thì đo bằng chỉ số. Không có thì suy ra từ tỉ lệ task xong —
-     kém chính xác hơn, nên UI phải mời người dùng đặt chỉ số. */
-  function krPercent(kr) {
-    if (kr.metric && kr.metric.target > 0) {
-      return clamp(Math.round(kr.metric.current / kr.metric.target * 100), 0, 100);
-    }
-    var tasks = kr.tasks || [];
-    if (!tasks.length) return 0;
-    return Math.round(tasks.filter(function (t) { return t.done; }).length / tasks.length * 100);
+  function donePercent(list) {
+    if (!list.length) return 0;
+    return Math.round(list.filter(function (task) { return task.done; }).length / list.length * 100);
   }
 
-  /* Trung bình cộng các KR, không trọng số. Objective không có KR = 0%,
-     không phải 100% — chưa định nghĩa được thì chưa đạt được. */
-  function objectivePercent(o) {
-    var krs = o.krs || [];
-    if (!krs.length) return 0;
-    return Math.round(krs.reduce(function (s, kr) { return s + krPercent(kr); }, 0) / krs.length);
+  function targetMetrics(target) {
+    var tasks = target.tasks || [];
+    var done = tasks.filter(function (task) { return task.done; }).length;
+    return {
+      total: tasks.length,
+      done: done,
+      percent: tasks.length ? Math.round(done / tasks.length * 100) : 0,
+      advanced: done > 0,
+      stalled: tasks.length > 0 && done === 0,
+      complete: tasks.length > 0 && done === tasks.length
+    };
   }
 
-  function overallPercent(data) {
-    var live = (data.objectives || []).filter(function (o) { return !o.archived; });
-    if (!live.length) return 0;
-    return Math.round(live.reduce(function (s, o) { return s + objectivePercent(o); }, 0) / live.length);
+  function routineCommitment(routine) {
+    var recurrence = routine.recurrence || {};
+    if (recurrence.type === 'daily') return 7;
+    return clamp(Number(recurrence.target) || 3, 1, 7);
   }
 
-  function overdue(data) {
-    var t = today();
-    return flatten(data)
-      .filter(function (x) { return !x.done && x.date && x.date < t; })
-      .sort(function (a, b) {
-        if (a.priority !== b.priority) return a.priority === 'high' ? -1 : 1;
-        return a.date.localeCompare(b.date);
-      });
-  }
-
-  function unscheduled(data) {
-    return flatten(data).filter(function (t) { return !t.date && !t.done; });
-  }
-
-  /* ============================ THÓI QUEN ============================ */
-
-  /* Streak đếm theo TUẦN đạt target, không phải ngày liên tiếp — vì target là
-     "n lần mỗi tuần". Đếm ngày liên tiếp luôn trả về 1 cho người đặt 3 lần/tuần
-     rồi làm đúng 3 lần cách quãng, tức là phạt người dùng đúng.
-
-     Tuần hiện tại chưa đủ target thì không tính là đứt: nó chưa kết thúc. */
   function routineHits(routine, monday) {
-    return weekDates(monday).reduce(function (s, d) {
-      return s + (routine.log && routine.log[d] ? 1 : 0);
+    return weekDates(monday).reduce(function (sum, date) {
+      return sum + (routine.log && routine.log[date] ? 1 : 0);
     }, 0);
   }
 
-  function weekStreak(routine) {
-    var target = routine.target || 3;
-    var monday = mondayOf(today());
-    if (routineHits(routine, monday) < target) monday = addDays(monday, -7);
+  function routineWeekStreak(routine, anchorMonday) {
+    var monday = anchorMonday || mondayOf(today());
+    var target = routineCommitment(routine);
+    if (routineHits(routine, monday) < target && monday === mondayOf(today())) {
+      monday = addDays(monday, -7);
+    }
     var streak = 0;
     var guard = 0;
     while (routineHits(routine, monday) >= target && guard < 520) {
@@ -246,163 +256,275 @@
     return streak;
   }
 
-  function routineTrend(data, monday, weeks) {
-    var n = weeks || 8;
-    return Array.from({ length: n }, function (_, k) {
-      var m = addDays(monday, (k - (n - 1)) * 7);
-      var hit = 0, target = 0;
-      (data.routines || []).forEach(function (r) {
-        target += r.target || 3;
-        hit += routineHits(r, m);
-      });
-      return target ? clamp(Math.round(hit / target * 100), 0, 100) : 0;
-    });
-  }
-
-  /* ============================ CHỈ SỐ TUẦN ============================ */
-
-  function weekMetrics(data, monday) {
-    var dates = weekDates(monday);
-    var inWeek = {};
-    dates.forEach(function (d) { inWeek[d] = true; });
-
-    var tasks = flatten(data).filter(function (t) { return t.date && inWeek[t.date]; });
-    var done = tasks.filter(function (t) { return t.done; }).length;
-    var high = tasks.filter(function (t) { return t.priority === 'high'; });
-    var highDone = high.filter(function (t) { return t.done; }).length;
-
-    var targetTotal = 0, hits = 0;
-    (data.routines || []).forEach(function (r) {
-      targetTotal += r.target || 3;
-      hits += routineHits(r, monday);
-    });
-
+  function routineSnapshot(routine, monday) {
+    var target = routineCommitment(routine);
+    var hits = routineHits(routine, monday);
     return {
-      tasks: tasks,
-      total: tasks.length,
-      done: done,
-      percent: tasks.length ? Math.round(done / tasks.length * 100) : 0,
-      high: high,
-      highDone: highDone,
-      highPercent: high.length ? Math.round(highDone / high.length * 100) : 100,
-      routinePercent: targetTotal ? clamp(Math.round(hits / targetTotal * 100), 0, 100) : 0
+      id: routine.id,
+      name: routine.name,
+      target: target,
+      hits: hits,
+      percent: target ? clamp(Math.round(hits / target * 100), 0, 100) : 0,
+      achieved: hits >= target
     };
   }
 
-  /* Điểm nhịp: một số duy nhất để trả lời "tuần này có đang chạy không".
-     Trọng số cố định ở một chỗ — trước đây Home và Week dùng hai công thức
-     khác nhau (.5/.3/.2 và .55/.25/.20) nên hiển thị lệch nhau. */
-  var RHYTHM_WEIGHTS = { done: 0.5, high: 0.3, routine: 0.2 };
-
-  function rhythmScore(metrics) {
-    return Math.round(
-      metrics.percent * RHYTHM_WEIGHTS.done +
-      metrics.highPercent * RHYTHM_WEIGHTS.high +
-      metrics.routinePercent * RHYTHM_WEIGHTS.routine
-    );
-  }
-
-  /* Tỉ lệ hoàn thành của một danh sách task bất kỳ. */
-  function donePercent(list) {
-    if (!list.length) return 0;
-    return Math.round(list.filter(function (t) { return t.done; }).length / list.length * 100);
-  }
-
-  /* Mức lấp đầy thanh tiến độ của một thói quen trong tuần. Kẹp trần 100:
-     làm 5/3 lần vẫn là đạt, không phải 167%. */
-  function routineFill(hits, target) {
-    return clamp(Math.round(hits / (target || 3) * 100), 0, 100);
-  }
-
-  /* Số ô sáng trên thanh 4 đoạn. 1–24% vẫn sáng 1 ô: có tiến độ phải nhìn thấy. */
-  function segments(percent) {
-    var v = clamp(Number(percent) || 0, 0, 100);
-    return v === 0 ? 0 : clamp(Math.round(v / 25), 1, 4);
-  }
-
-  /* ============================ ĐIỂM CẦN CHÚ Ý ============================ */
-
-  function attentionItems(data) {
-    var out = [];
-    var late = overdue(data);
-    var open = unscheduled(data);
-    if (late.length) {
-      out.push({
-        tone: 'danger', view: 'week',
-        title: late.length + ' việc đã quá hạn',
-        text: 'Xếp lại lịch hoặc bỏ những việc không còn đáng làm.'
-      });
-    }
-    if (open.length) {
-      out.push({
-        tone: 'warning', view: 'week',
-        title: open.length + ' việc chưa xếp lịch',
-        text: 'Đưa vào một ngày cụ thể hoặc giữ trong backlog.'
-      });
-    }
-    var near = (data.objectives || []).filter(function (o) {
-      if (o.archived) return false;
-      var d = daysFromToday(o.deadline);
-      return d !== null && d >= 0 && d <= 7 && objectivePercent(o) < 100;
+  function routineConsistency(routines, monday) {
+    var target = 0;
+    var hits = 0;
+    (routines || []).forEach(function (routine) {
+      var commitment = routineCommitment(routine);
+      target += commitment;
+      hits += Math.min(routineHits(routine, monday), commitment);
     });
-    if (near.length) {
-      out.push({
-        tone: 'warning', view: 'targets',
-        title: near.length + ' mục tiêu còn ≤ 7 ngày',
-        text: 'Kiểm tra KR và việc còn lại trước hạn.'
-      });
+    return target ? Math.round(hits / target * 100) : 0;
+  }
+
+  function weekMetrics(week, routines) {
+    var tasks = weekTasks(week);
+    var done = tasks.filter(function (task) { return task.done; }).length;
+    var targets = (week.targets || []).filter(function (target) { return target.status !== 'removed'; });
+    var targetResults = targets.map(targetMetrics);
+    var advanced = targetResults.filter(function (result) { return result.advanced; }).length;
+    var stalled = targetResults.filter(function (result) { return result.stalled; }).length;
+    return {
+      total: tasks.length,
+      done: done,
+      completion: tasks.length ? Math.round(done / tasks.length * 100) : 0,
+      targets: targets.length,
+      targetsAdvanced: advanced,
+      targetsStalled: stalled,
+      targetsComplete: targetResults.filter(function (result) { return result.complete; }).length,
+      scheduled: tasks.filter(function (task) { return Boolean(task.date); }).length,
+      unscheduled: tasks.filter(function (task) { return !task.date && !task.done; }).length,
+      routineConsistency: routineConsistency(routines || [], week.startDate)
+    };
+  }
+
+  function executionXp(week, routines) {
+    var xp = weekTasks(week).reduce(function (sum, task) {
+      if (!task.done) return sum;
+      return sum + (task.priority === 'high' ? XP_RULES.highAction : XP_RULES.action);
+    }, 0);
+    (week.targets || []).forEach(function (target) {
+      if (target.status !== 'removed' && targetMetrics(target).complete) xp += XP_RULES.targetComplete;
+    });
+    (routines || []).forEach(function (routine) {
+      var commitment = routineCommitment(routine);
+      var hits = routineHits(routine, week.startDate);
+      xp += Math.min(hits, commitment) * XP_RULES.routineCheck;
+      if (hits >= commitment) xp += XP_RULES.routineGoal;
+    });
+    return xp;
+  }
+
+  function closeBonus(metrics) {
+    if (metrics.total < 3 || metrics.completion < 50) return 0;
+    return XP_RULES.weekComplete + (metrics.completion >= 80 ? XP_RULES.weekStrong : 0);
+  }
+
+  function buildRecap(week, routines) {
+    var metrics = weekMetrics(week, routines || []);
+    return {
+      completion: metrics.completion,
+      xpEarned: executionXp(week, routines || []) + closeBonus(metrics),
+      totalActions: metrics.total,
+      completedActions: metrics.done,
+      targetsAdvanced: metrics.targetsAdvanced,
+      targetsStalled: metrics.targetsStalled,
+      targetsComplete: metrics.targetsComplete,
+      routineConsistency: metrics.routineConsistency,
+      routines: (routines || []).map(function (routine) {
+        return routineSnapshot(routine, week.startDate);
+      })
+    };
+  }
+
+  function finalizeWeek(week, routines, completedAt) {
+    var next = clone(week);
+    if (next.status === 'complete' && next.recap) return next;
+    next.status = 'complete';
+    next.phase = 'complete';
+    next.completedAt = completedAt || new Date().toISOString();
+    next.recap = buildRecap(next, routines || []);
+    return next;
+  }
+
+  function createWeek(monday, prior) {
+    var weekId = 'week-' + monday;
+    var taskIndex = 0;
+    var targets = prior ? (prior.targets || []).filter(function (target) {
+      return target.status !== 'removed';
+    }).map(function (target, targetIndex) {
+      return {
+        id: weekId + '-target-' + (targetIndex + 1),
+        sourceTargetId: target.id,
+        title: target.title,
+        description: target.description || '',
+        status: 'active',
+        tasks: (target.tasks || []).filter(function (task) { return !task.done; }).map(function (task) {
+          taskIndex += 1;
+          return {
+            id: weekId + '-task-' + taskIndex,
+            sourceTaskId: task.id,
+            title: task.title,
+            note: task.note || '',
+            priority: task.priority === 'high' ? 'high' : 'normal',
+            done: false,
+            date: null,
+            time: null,
+            completedAt: null
+          };
+        })
+      };
+    }) : [];
+    return {
+      id: weekId,
+      startDate: monday,
+      endDate: addDays(monday, 6),
+      status: 'setup',
+      phase: 'greeting',
+      startedAt: null,
+      completedAt: null,
+      sourceWeekId: prior ? prior.id : null,
+      targets: targets,
+      looseTasks: [],
+      recap: null
+    };
+  }
+
+  function ensureCurrentWeek(data, at) {
+    var monday = mondayOf(at || today());
+    var exact = currentWeek(data, at || today());
+    if (exact) return data;
+    var next = clone(data);
+    next.weeks = next.weeks || [];
+    next.weeks = next.weeks.map(function (week) {
+      if (week.status !== 'complete' && week.startDate < monday) {
+        return finalizeWeek(week, next.routines || []);
+      }
+      return week;
+    });
+    var existing = next.weeks.find(function (week) { return week.startDate === monday; });
+    if (!existing) {
+      var prior = next.weeks.filter(function (week) {
+        return week.status === 'complete' && week.startDate < monday;
+      }).sort(function (a, b) { return b.startDate.localeCompare(a.startDate); })[0] || null;
+      next.weeks.push(createWeek(monday, prior));
     }
+    return next;
+  }
+
+  function weekXp(week, routines) {
+    if (week.status === 'complete' && week.recap) return Number(week.recap.xpEarned) || 0;
+    return executionXp(week, routines || []);
+  }
+
+  function totalXp(data) {
+    var total = Number(data.progress && data.progress.baseXp) || 0;
+    (data.weeks || []).forEach(function (week) {
+      total += weekXp(week, data.routines || []);
+    });
+    return total;
+  }
+
+  function levelFloor(level) {
+    var value = Math.max(1, Number(level) || 1);
+    return 250 * (value - 1) * value;
+  }
+
+  function levelState(xp) {
+    var total = Math.max(0, Math.floor(Number(xp) || 0));
+    var level = 1;
+    while (total >= levelFloor(level + 1) && level < 999) level += 1;
+    var floor = levelFloor(level);
+    var next = levelFloor(level + 1);
+    return {
+      level: level,
+      totalXp: total,
+      currentXp: total - floor,
+      neededXp: next - floor,
+      percent: Math.round((total - floor) / (next - floor) * 100)
+    };
+  }
+
+  function attentionItems(week, at) {
+    var date = at || today();
+    var tasks = weekTasks(week);
+    var late = tasks.filter(function (task) { return !task.done && task.date && task.date < date; });
+    var stalled = (week.targets || []).filter(function (target) { return targetMetrics(target).stalled; });
+    var dueToday = tasks.filter(function (task) { return !task.done && task.date === date; });
+    var out = [];
+    if (late.length) out.push({ tone: 'danger', label: late.length + ' overdue action' + (late.length === 1 ? '' : 's') });
+    if (stalled.length) out.push({ tone: 'warning', label: stalled.length + ' target' + (stalled.length === 1 ? '' : 's') + ' not moving yet' });
+    if (dueToday.length) out.push({ tone: 'neutral', label: dueToday.length + ' action' + (dueToday.length === 1 ? '' : 's') + ' planned for today' });
     return out;
   }
 
-  /* Objective đưa lên đầu Tổng quan: gần hạn nhất trước, chưa đặt hạn thì
-     xếp theo tiến độ cao nhất. */
-  function featuredObjective(data) {
-    var live = (data.objectives || []).filter(function (o) { return !o.archived; });
-    return live.slice().sort(function (a, b) {
-      if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
-      if (a.deadline) return -1;
-      if (b.deadline) return 1;
-      return objectivePercent(b) - objectivePercent(a);
-    })[0] || null;
-  }
-
-  /* Việc tiếp theo: ưu tiên việc có giờ sắp tới, rồi việc ưu tiên cao. */
-  function nextTask(data) {
-    var t = today();
-    var now = new Date().toTimeString().slice(0, 5);
-    var pending = sortDay(flatten(data).filter(function (x) {
-      return x.date === t && !x.done;
-    }));
-    return pending.find(function (x) { return x.time && x.time >= now; }) ||
-      pending.find(function (x) { return x.priority === 'high'; }) ||
-      pending[0] || null;
+  function archiveTrend(data, count) {
+    return (data.weeks || []).filter(function (week) { return week.status === 'complete' && week.recap; })
+      .sort(function (a, b) { return a.startDate.localeCompare(b.startDate); })
+      .slice(-(count || 8)).map(function (week) {
+        return {
+          week: isoWeek(week.startDate),
+          completion: Number(week.recap.completion) || 0,
+          xp: Number(week.recap.xpEarned) || 0,
+          routines: Number(week.recap.routineConsistency) || 0
+        };
+      });
   }
 
   global.RootworkDomain = {
     DAY: DAY,
     DOW: DOW,
-    RHYTHM_WEIGHTS: RHYTHM_WEIGHTS,
-    TASK_FIELDS: TASK_FIELDS,
-
-    ymd: ymd, parseYmd: parseYmd, today: today,
-    isIsoDate: isIsoDate, isTime: isTime,
-    addDays: addDays, diffDays: diffDays,
-    mondayOf: mondayOf, weekDates: weekDates, daysFromToday: daysFromToday,
-
-    fmtDate: fmtDate, fmtDateFull: fmtDateFull, fmtWeekRange: fmtWeekRange,
-    fmtToday: fmtToday, deadlineLabel: deadlineLabel, clamp: clamp,
-
-    bare: bare, flatten: flatten, findTask: findTask,
-    detachTask: detachTask, attachTask: attachTask, destOf: destOf, sortDay: sortDay,
-
-    krPercent: krPercent, objectivePercent: objectivePercent,
-    overallPercent: overallPercent, overdue: overdue, unscheduled: unscheduled,
-
-    routineHits: routineHits, weekStreak: weekStreak, routineTrend: routineTrend,
-
-    weekMetrics: weekMetrics, rhythmScore: rhythmScore, segments: segments,
-    donePercent: donePercent, routineFill: routineFill,
-    attentionItems: attentionItems, featuredObjective: featuredObjective, nextTask: nextTask
+    XP_RULES: XP_RULES,
+    clone: clone,
+    clamp: clamp,
+    ymd: ymd,
+    parseYmd: parseYmd,
+    isIsoDate: isIsoDate,
+    isTime: isTime,
+    today: today,
+    addDays: addDays,
+    diffDays: diffDays,
+    mondayOf: mondayOf,
+    weekDates: weekDates,
+    isoWeek: isoWeek,
+    fmtDate: fmtDate,
+    fmtDateFull: fmtDateFull,
+    fmtWeekRange: fmtWeekRange,
+    fmtWeekLong: fmtWeekLong,
+    greeting: greeting,
+    campaignMessage: campaignMessage,
+    findWeek: findWeek,
+    currentWeek: currentWeek,
+    previousWeek: previousWeek,
+    weekTasks: weekTasks,
+    bareTask: bareTask,
+    findTarget: findTarget,
+    findTask: findTask,
+    detachTask: detachTask,
+    attachTask: attachTask,
+    sortTasks: sortTasks,
+    donePercent: donePercent,
+    targetMetrics: targetMetrics,
+    routineCommitment: routineCommitment,
+    routineHits: routineHits,
+    routineWeekStreak: routineWeekStreak,
+    routineSnapshot: routineSnapshot,
+    routineConsistency: routineConsistency,
+    weekMetrics: weekMetrics,
+    executionXp: executionXp,
+    closeBonus: closeBonus,
+    buildRecap: buildRecap,
+    finalizeWeek: finalizeWeek,
+    createWeek: createWeek,
+    ensureCurrentWeek: ensureCurrentWeek,
+    weekXp: weekXp,
+    totalXp: totalXp,
+    levelFloor: levelFloor,
+    levelState: levelState,
+    attentionItems: attentionItems,
+    archiveTrend: archiveTrend
   };
 }(window));
