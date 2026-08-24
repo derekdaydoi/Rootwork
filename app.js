@@ -1354,6 +1354,8 @@
     return h(Modal, {
       title: editing ? t('Edit target', 'Sửa mục tiêu') : t('New target', 'Mục tiêu mới'),
       onClose: props.onClose,
+      keyboardAware: true,
+      className: 'entry-sheet target-entry-sheet',
       action: h('button', {
         className: 'sheet-save', disabled: !title.trim(), onClick: commit
       }, editing ? t('Save', 'Lưu') : t('Add', 'Thêm'))
