@@ -216,4 +216,14 @@ test('clean task enforces time requires a valid date', () => {
   assert.equal(cleaned.time, null);
 });
 
+test('language preference persists independently from weekly data', () => {
+  const weeklyData = storage.get(S.KEY);
+  assert.equal(S.getLocale(), 'en');
+  S.setLocale('vi');
+  assert.equal(S.getLocale(), 'vi');
+  assert.equal(storage.get(S.KEY), weeklyData);
+  S.setLocale('unsupported');
+  assert.equal(S.getLocale(), 'en');
+});
+
 process.stdout.write('\n' + passed + ' tests passed.\n');

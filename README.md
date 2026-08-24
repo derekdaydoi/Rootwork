@@ -10,6 +10,10 @@ week with a permanent campaign record.
 There is no server, account, analytics, or tracking. Data lives in this
 browser's localStorage.
 
+The interface supports complete English and Vietnamese modes. The language
+preference is stored separately from campaign data, so switching languages
+does not alter weekly records or backup compatibility.
+
 ## Product structure
 
 ~~~text
@@ -38,6 +42,7 @@ Greeting → Review carried targets → Previous-week recap → Current campaign
 ~~~text
 index.html     PWA shell
 styles.css    mobile-first visual system and motion
+assets/       generated raster artwork used by the weekly-start and progress UI
 app.js         React UI and interaction only
 domain.js      pure dates, weekly lifecycle, metrics, XP, and level rules
 store.js       localStorage, schema migration, cleanup, and backup
@@ -109,11 +114,13 @@ node tests/run-tests.js
 
 The suite covers date/week boundaries, scheduled and unscheduled completion,
 XP caps and bonuses, level thresholds, rollover immutability, carry-forward
-behavior, v4 migration, newer-schema guards, and the date/time invariant.
+behavior, v4 migration, newer-schema guards, the date/time invariant, and
+language-preference persistence.
 
 The mobile QA pass also verifies:
 
 - 390 px rendering without horizontal overflow;
+- complete English/Vietnamese switching and persistence;
 - greeting, target review, tree, calendar, routine, recap, and Archive states;
 - action completion in the tree;
 - backup export format;

@@ -4,6 +4,7 @@
 
   var D = global.RootworkDomain;
   var KEY = 'rootwork:v1';
+  var LOCALE_KEY = 'rootwork:locale';
   var SCHEMA = 5;
   var BACKUP_FORMAT = 'rootwork-backup';
   var TRASH_DAYS = 30;
@@ -18,6 +19,16 @@
 
   function now() { return new Date().toISOString(); }
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+  function getLocale() {
+    try { return global.localStorage.getItem(LOCALE_KEY) === 'vi' ? 'vi' : 'en'; }
+    catch (error) { return 'en'; }
+  }
+
+  function setLocale(locale) {
+    try { global.localStorage.setItem(LOCALE_KEY, locale === 'vi' ? 'vi' : 'en'); }
+    catch (error) { /* The UI can still switch language for this session. */ }
+  }
 
   function str(value, fallback) {
     var text = typeof value === 'string' ? value.trim() : '';
@@ -447,6 +458,8 @@
     SCHEMA: SCHEMA,
     BACKUP_FORMAT: BACKUP_FORMAT,
     TRASH_DAYS: TRASH_DAYS,
+    getLocale: getLocale,
+    setLocale: setLocale,
     uid: uid,
     now: now,
     empty: empty,
