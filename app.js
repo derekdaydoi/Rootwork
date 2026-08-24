@@ -175,6 +175,7 @@
   }
 
   function Modal(props) {
+    var backdropRef = useRef(null);
     useEffect(function () {
       function closeOnEscape(event) {
         if (event.key === 'Escape') props.onClose();
@@ -182,8 +183,37 @@
       global.addEventListener('keydown', closeOnEscape);
       return function () { global.removeEventListener('keydown', closeOnEscape); };
     }, [props.onClose]);
+    useEffect(function () {
+      if (!props.keyboardAware) return undefined;
+      var viewport = global.visualViewport;
+      var frame = null;
+      function syncViewport() {
+        if (frame) global.cancelAnimationFrame(frame);
+        frame = global.requestAnimationFrame(function () {
+          var node = backdropRef.current;
+          if (!node) return;
+          node.style.setProperty('--visual-height', Math.round(viewport ? viewport.height : global.innerHeight) + 'px');
+          node.style.setProperty('--visual-offset', Math.round(viewport ? viewport.offsetTop : 0) + 'px');
+        });
+      }
+      syncViewport();
+      global.addEventListener('resize', syncViewport);
+      if (viewport) {
+        viewport.addEventListener('resize', syncViewport);
+        viewport.addEventListener('scroll', syncViewport);
+      }
+      return function () {
+        if (frame) global.cancelAnimationFrame(frame);
+        global.removeEventListener('resize', syncViewport);
+        if (viewport) {
+          viewport.removeEventListener('resize', syncViewport);
+          viewport.removeEventListener('scroll', syncViewport);
+        }
+      };
+    }, [props.keyboardAware]);
     return h('div', {
-      className: 'modal-backdrop',
+      ref: backdropRef,
+      className: 'modal-backdrop ' + (props.keyboardAware ? 'keyboard-aware' : ''),
       onMouseDown: function (event) {
         if (event.target === event.currentTarget) props.onClose();
       }
@@ -1395,6 +1425,8 @@
     return h(Modal, {
       title: editing ? t('Edit action', 'Sửa tác vụ') : t('New action', 'Tác vụ mới'),
       onClose: props.onClose,
+      keyboardAware: true,
+      className: 'entry-sheet',
       action: h('button', {
         className: 'sheet-save', disabled: !title.trim(), onClick: commit
       }, editing ? t('Save', 'Lưu') : t('Add', 'Thêm'))
@@ -1487,6 +1519,8 @@
     return h(Modal, {
       title: editing ? t('Edit routine', 'Sửa thói quen') : t('New routine', 'Thói quen mới'),
       onClose: props.onClose,
+      keyboardAware: true,
+      className: 'entry-sheet routine-entry-sheet',
       action: h('button', {
         className: 'sheet-save', disabled: !name.trim(), onClick: commit
       }, editing ? t('Save', 'Lưu') : t('Add', 'Thêm'))

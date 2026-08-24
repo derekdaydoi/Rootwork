@@ -60,6 +60,7 @@ svg { display: block; flex: none; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
 @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes entry-sheet-in { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
 @keyframes grow-down { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes grow-across { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes node-in { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
@@ -1014,6 +1015,24 @@ svg { display: block; flex: none; }
   box-shadow: 0 -14px 42px rgba(15, 30, 21, .18);
   animation: sheet-in .24s var(--ease) both;
 }
+.modal-backdrop.keyboard-aware {
+  inset: auto 0 auto;
+  top: var(--visual-offset, 0px);
+  height: var(--visual-height, 100dvh);
+  padding: calc(var(--safe-top) + 10px) 14px calc(var(--safe-bottom) + 10px);
+  align-items: center;
+  overscroll-behavior: contain;
+}
+.keyboard-aware .entry-sheet {
+  width: min(520px, 100%);
+  max-height: calc(var(--visual-height, 100dvh) - var(--safe-top) - var(--safe-bottom) - 20px);
+  padding-bottom: 16px;
+  border-radius: 22px;
+  box-shadow: 0 18px 52px rgba(15, 30, 21, .22);
+  animation: entry-sheet-in .2s var(--ease) both;
+  overscroll-behavior: contain;
+}
+.keyboard-aware .sheet-handle { display: none; }
 .sheet-handle { width: 36px; height: 4px; margin: 8px auto 2px; border-radius: 999px; background: var(--line-strong); }
 .modal-header {
   position: sticky;
