@@ -47,6 +47,8 @@ progression-tree W, then reveals the wordmark and localized subtitle before a
 soft transition into current context. Vector masters live in `brand/`; the PWA
 icon set is generated from the same geometry.
 
+Brand ownership is recorded in [NOTICE.md](NOTICE.md).
+
 ## Code boundaries
 
 ~~~text

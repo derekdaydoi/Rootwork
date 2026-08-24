@@ -249,7 +249,8 @@
       h('div', { className: 'launch-lockup', role: 'img', 'aria-label': 'Rootwork' },
         h(LaunchLogo),
         h('strong', { className: 'launch-wordmark' }, 'rootwork'),
-        h('span', { className: 'launch-subtitle' }, t('Turn effort into progress.', 'Biến nỗ lực thành tiến bộ.'))));
+        h('span', { className: 'launch-subtitle' }, t('Turn effort into progress.', 'Biến nỗ lực thành tiến bộ.'))),
+      h('small', { className: 'launch-copyright' }, '© 2026 @derekdaydoi'));
   }
 
   function AppTopbar(props) {

@@ -53,6 +53,10 @@ consistently offline.
 `make_icons.py` owns the matching raster geometry and regenerates the 180,
 192, 256, 512, and 1024 px PWA icons plus transparent symbol PNG.
 
+The Rootwork name, symbol, wordmark, app icons, and visual identity are
+copyright © 2026 @derekdaydoi. The ownership notice is embedded in source SVG
+and generated PNG metadata and appears discreetly in the opening sequence.
+
 ## Shape and spacing
 
 - Controls target at least 44 px.
