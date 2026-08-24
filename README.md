@@ -34,10 +34,11 @@ tree, and an action remains valid with no date or time.
 The weekly start journey is:
 
 ~~~text
-Greeting → Review carried targets → Previous-week recap → Blank-week builder → Current campaign
+Launch transition → Review carried targets → Previous-week recap → Blank-week builder → Current campaign
 ~~~
 
-On a fresh week with no carried targets, the greeting leads to a focused
+The launch transition appears on every open and requires no action. On a fresh
+week with no carried targets, Rootwork leads into a focused
 builder state rather than an empty dashboard. The dashboard appears only after
 the user creates a target or action.
 
@@ -46,7 +47,6 @@ the user creates a target or action.
 ~~~text
 index.html     PWA shell
 styles.css    mobile-first visual system and motion
-assets/       generated raster artwork used by the weekly-start and progress UI
 app.js         React UI and interaction only
 domain.js      pure dates, weekly lifecycle, metrics, XP, and level rules
 store.js       localStorage, schema migration, cleanup, and backup
@@ -101,10 +101,6 @@ its recap and XP are frozen. The gap to the next level is
 Rooted, Momentum, Established, Mastery, and Enduring. Stage labels do not alter
 XP; they make long-term progress easier to read.
 
-The weekly-start background is a real photograph by
-[Lennart Rudolph](https://unsplash.com/photos/mountain-valley-landscape-at-sunrise-with-soft-pastel-sky-8rLobnurnXA),
-used under the Unsplash License.
-
 ## Run locally
 
 Serve the repository over HTTP; service workers do not run correctly from a
@@ -131,7 +127,7 @@ The mobile QA pass also verifies:
 
 - 390 px rendering without horizontal overflow;
 - complete English/Vietnamese switching and persistence;
-- greeting, target review, tree, calendar, routine, recap, and Archive states;
+- launch transition, target review, tree, calendar, routine, recap, and Archive states;
 - action completion in the tree;
 - backup export format;
 - PWA manifest;

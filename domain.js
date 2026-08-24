@@ -401,6 +401,15 @@
     };
   }
 
+  function setupPhase(week, previous) {
+    var targets = (week && week.targets || []).filter(function (target) {
+      return target.status !== 'removed';
+    });
+    if (targets.length) return 'review';
+    if (previous) return 'recap';
+    return 'active';
+  }
+
   function ensureCurrentWeek(data, at) {
     var monday = mondayOf(at || today());
     var exact = currentWeek(data, at || today());
@@ -539,6 +548,7 @@
     buildRecap: buildRecap,
     finalizeWeek: finalizeWeek,
     createWeek: createWeek,
+    setupPhase: setupPhase,
     ensureCurrentWeek: ensureCurrentWeek,
     weekXp: weekXp,
     totalXp: totalXp,

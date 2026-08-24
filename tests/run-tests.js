@@ -122,6 +122,14 @@ test('level thresholds increase by 500 XP per current level', () => {
   assert.equal(D.levelState(95000).stage, 'established');
 });
 
+test('launch transition routes new weeks without a weekly greeting screen', () => {
+  const week = D.createWeek('2026-08-24', null);
+  assert.equal(D.setupPhase(week, null), 'active');
+  assert.equal(D.setupPhase(week, D.createWeek('2026-08-17', null)), 'recap');
+  week.targets.push({ id: 't1', title: 'Ship', status: 'active', tasks: [] });
+  assert.equal(D.setupPhase(week, null), 'review');
+});
+
 test('rollover freezes the old week and carries only incomplete work without schedule', () => {
   const previous = D.createWeek('2026-08-17', null);
   previous.status = 'active';

@@ -48,28 +48,6 @@
     }
     return D.fmtWeekLong(monday);
   }
-  function greeting() {
-    var hour = new Date().getHours();
-    if (hour < 12) return t('Good morning', 'Chào buổi sáng');
-    if (hour < 18) return t('Good afternoon', 'Chào buổi chiều');
-    return t('Good evening', 'Chào buổi tối');
-  }
-  function campaignMessage(monday) {
-    var english = [
-      ['A new week starts here.', 'Choose what deserves your effort.'],
-      ['Seven days ahead.', 'Put your energy where it matters.'],
-      ['New week. New progress.', "Let's make it count."],
-      ['Start clear.', 'Build something real this week.']
-    ];
-    var vietnamese = [
-      ['Một tuần mới bắt đầu.', 'Chọn điều xứng đáng để dồn sức.'],
-      ['Bảy ngày phía trước.', 'Dồn năng lượng vào điều quan trọng.'],
-      ['Tuần mới. Tiến bộ mới.', 'Làm cho tuần này đáng giá.'],
-      ['Bắt đầu thật rõ ràng.', 'Tạo nên điều có thật trong tuần này.']
-    ];
-    var index = Math.abs(D.diffDays(monday, '2024-01-01')) % vietnamese.length;
-    return UI_LOCALE === 'vi' ? vietnamese[index] : english[index];
-  }
   function levelStageLabel(stage) {
     var labels = {
       beginning: ['Beginning', 'Khởi đầu'],
@@ -229,8 +207,11 @@
     return h('strong', { className: 'wordmark' }, 'Rootwork');
   }
 
-  function StartWordmark() {
-    return h('strong', { className: 'start-wordmark' }, 'Rootwork');
+  function LaunchScreen(props) {
+    return h('main', { className: 'launch-screen ' + (props.phase || 'show') },
+      h('div', { className: 'launch-lockup' },
+        h('img', { src: 'icon-192.png', alt: '', className: 'launch-mark' }),
+        h('strong', null, 'Rootwork')));
   }
 
   function AppTopbar(props) {
@@ -285,6 +266,7 @@
 
   function App() {
     var state = useState(null), data = state[0], setData = state[1];
+    var launchState = useState('show'), launchPhase = launchState[0], setLaunchPhase = launchState[1];
     var localeState = useState(S.getLocale()), locale = localeState[0], setLocale = localeState[1];
     var viewState = useState('home'), view = viewState[0], setView = viewState[1];
     var sheetState = useState(null), sheet = sheetState[0], setSheet = sheetState[1];
@@ -296,8 +278,19 @@
     var saveBlocked = useRef(false);
     var dataRef = useRef(null);
     var toastTimer = useRef(null);
+    var launchTimers = useRef([]);
     UI_LOCALE = locale;
     dataRef.current = data;
+
+    function playLaunch() {
+      launchTimers.current.forEach(function (timer) { clearTimeout(timer); });
+      setLaunchPhase('show');
+      var reducedMotion = global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      launchTimers.current = [
+        setTimeout(function () { setLaunchPhase('exit'); }, reducedMotion ? 80 : 700),
+        setTimeout(function () { setLaunchPhase('done'); }, reducedMotion ? 140 : 1300)
+      ];
+    }
 
     function chooseLocale(nextLocale) {
       var safeLocale = nextLocale === 'vi' ? 'vi' : 'en';
@@ -309,6 +302,38 @@
     useEffect(function () {
       document.documentElement.lang = locale;
     }, [locale]);
+
+    useEffect(function () {
+      if (!data) return undefined;
+      playLaunch();
+      return undefined;
+    }, [Boolean(data)]);
+
+    useEffect(function () {
+      function launchOnReturn() {
+        if (document.visibilityState === 'visible' && dataRef.current) playLaunch();
+      }
+      document.addEventListener('visibilitychange', launchOnReturn);
+      return function () {
+        document.removeEventListener('visibilitychange', launchOnReturn);
+        launchTimers.current.forEach(function (timer) { clearTimeout(timer); });
+      };
+    }, []);
+
+    useEffect(function () {
+      if (!data) return;
+      var current = D.currentWeek(data);
+      if (!current || current.phase !== 'greeting') return;
+      mutate(function (next) {
+        var week = D.currentWeek(next);
+        var previous = D.previousWeek(next, week);
+        week.phase = D.setupPhase(week, previous);
+        if (week.phase === 'active') {
+          week.status = 'active';
+          week.startedAt = week.startedAt || S.now();
+        }
+      });
+    }, [Boolean(data)]);
 
     useEffect(function () {
       try {
@@ -420,7 +445,7 @@
       });
     }
 
-    if (!data) return h('div', { className: 'loading-screen' }, h(BrandMark), h('span', null, t('Opening your week…', 'Đang mở tuần của bạn…')));
+    if (!data) return h(LaunchScreen, { phase: 'show' });
 
     var week = D.currentWeek(data);
     var previous = week ? D.previousWeek(data, week) : null;
@@ -546,7 +571,8 @@
       renderSheet(),
       toast && h('div', { className: 'toast ' + (toast.tone || ''), role: 'status' },
         h('span', null, toast.message),
-        toast.action && h('button', { onClick: toast.action }, t('Undo', 'Hoàn tác'))));
+        toast.action && h('button', { onClick: toast.action }, t('Undo', 'Hoàn tác'))),
+      launchPhase !== 'done' && h(LaunchScreen, { phase: launchPhase }));
   }
 
   function WeekStartFlow(props) {
@@ -563,29 +589,6 @@
           current.targets = current.targets.filter(function (target) { return target.status !== 'removed'; });
         }
       });
-    }
-
-    if (week.phase === 'greeting') {
-      var message = campaignMessage(week.startDate);
-      return h('main', { className: 'start-screen greeting-screen' },
-        h('div', { className: 'start-brand-row' },
-          h(StartWordmark),
-          h(LanguageToggle, { locale: props.locale, onChange: props.onLocale })),
-        h('section', { className: 'greeting-copy' },
-          h('p', null, greeting() + ','),
-          h('h1', null, props.data.profile.name, h('span', { className: 'greeting-wave', 'aria-hidden': 'true' }, '👋')),
-          h('div', { className: 'campaign-copy' },
-            h('strong', null, message[0]),
-            h('span', null, message[1]))),
-        h('img', { className: 'greeting-landscape', src: 'assets/welcome-mountains-photo.jpg', alt: '' }),
-        h('button', {
-          className: 'primary-button start-cta',
-          onClick: function () {
-            if (week.targets.length) setPhase('review');
-            else if (previous) setPhase('recap');
-            else setPhase('active');
-          }
-        }, t('Start this week', 'Bắt đầu tuần này'), h(Icon, { name: 'chevron', size: 23 })));
     }
 
     if (week.phase === 'review') {

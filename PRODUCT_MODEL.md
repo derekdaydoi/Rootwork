@@ -26,8 +26,9 @@ cannot be reconstructed from V1 data.
 
 1. Opening a calendar week finalizes any older active week.
 2. Rootwork creates one current campaign for the current Monday–Sunday range.
-3. The user sees a sparse greeting.
-4. Carried or imported targets can be kept, edited, removed, or supplemented.
+3. Every app launch starts with a short white brand transition; it is not a
+   weekly step and requires no action.
+4. On a new week, carried or imported targets can be kept, edited, removed, or supplemented.
 5. If a previous week exists, its progression tree and recap are shown.
 6. The campaign becomes active and drives Home, Tree, and Calendar.
 7. At the next rollover, tasks, routine results, completion, XP, and target
@@ -106,5 +107,5 @@ The primary mobile navigation is Home, Tree, Create, Calendar, and Routine.
 Progress, Archive, and Settings/Data are secondary. The compact Level indicator
 opens Progress; it reports only recorded XP and completed-week outcomes. Home answers the current-campaign
 questions; Tree is the primary target/action planning surface; Calendar is a
-weekly agenda over the same tasks; Routine is independent. Greeting, target
+weekly agenda over the same tasks; Routine is independent. Launch, target
 review, and recap temporarily replace primary navigation at weekly start.
