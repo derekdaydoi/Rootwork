@@ -804,14 +804,16 @@
 
   function ProgressionTree(props) {
     var week = props.week;
+    var isCurrentTree = !props.recap && !props.compact;
     return h('section', {
-      className: 'progression-tree ' + (props.recap ? 'recap-tree' : '') + (props.compact ? ' compact-tree' : '')
+      className: 'progression-tree ' + (props.recap ? 'recap-tree' : '') +
+        (props.compact ? ' compact-tree' : '') + (isCurrentTree ? ' current-tree' : '')
     },
-      h('div', { className: 'week-node' },
+      !isCurrentTree && h('div', { className: 'week-node' },
         h('span', null, t('WEEK', 'TUẦN')),
         h('strong', null, D.isoWeek(week.startDate)),
         h('small', null, fmtWeekRange(week.startDate))),
-      h('div', { className: 'tree-trunk', 'aria-hidden': 'true' }),
+      !isCurrentTree && h('div', { className: 'tree-trunk', 'aria-hidden': 'true' }),
       h('div', { className: 'tree-branches' },
         (week.targets || []).filter(function (target) { return target.status !== 'removed'; }).map(function (target, targetIndex) {
           var metrics = D.targetMetrics(target);
@@ -826,12 +828,16 @@
                 className: 'target-node-main',
                 onClick: props.onEditTarget ? function () { props.onEditTarget(target); } : undefined
               },
-                h('span', { className: 'target-node-kicker' }, t('TARGET ', 'MỤC TIÊU ') + String(targetIndex + 1).padStart(2, '0')),
+                h('span', { className: 'target-node-kicker' }, isCurrentTree
+                  ? String(targetIndex + 1).padStart(2, '0')
+                  : t('TARGET ', 'MỤC TIÊU ') + String(targetIndex + 1).padStart(2, '0')),
                 h('strong', null, target.title),
                 target.description && h('small', null, target.description)),
               h('div', { className: 'target-node-progress' },
-                h('strong', null, metrics.percent + '%'),
-                h('span', null, metrics.done + '/' + metrics.total))),
+                h('strong', null, metrics.total ? metrics.percent + '%' : '—'),
+                h('span', null, metrics.total
+                  ? metrics.done + '/' + metrics.total
+                  : t('0 actions', '0 tác vụ')))),
             h('div', { className: 'action-stem', 'aria-hidden': 'true' }),
             h('div', { className: 'tree-actions' },
               (target.tasks || []).length ? target.tasks.map(function (rawTask, taskIndex) {
@@ -859,10 +865,12 @@
                   },
                     h('strong', null, task.title),
                     h('small', null, task.date ? fmtDate(task.date) + (task.time ? ' · ' + task.time : '') : t('Unscheduled', 'Chưa xếp lịch'))));
-              }) : h('div', { className: 'tree-empty-action' }, t('No actions yet', 'Chưa có tác vụ')),
+              }) : null,
               props.onAddTask && h('button', {
-                className: 'tree-add-action', onClick: function () { props.onAddTask(target); }
-              }, h(Icon, { name: 'plus', size: 20 }), t('Add action', 'Thêm tác vụ'))));
+                className: 'tree-add-action ' + ((target.tasks || []).length ? '' : 'empty'),
+                onClick: function () { props.onAddTask(target); }
+              }, h(Icon, { name: 'plus', size: 20 }),
+              (target.tasks || []).length ? t('Add action', 'Thêm tác vụ') : t('Add first action', 'Thêm tác vụ đầu tiên'))));
         })));
   }
 

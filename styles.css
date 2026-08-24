@@ -496,6 +496,136 @@ svg { display: block; flex: none; }
 .tree-empty-action { min-height: 48px; display: grid; place-items: center; color: var(--muted); font-size: 11px; }
 .loose-section { margin-top: 22px; }
 
+/* The active-week heading is the root. Targets branch from one compact spine,
+   so the hierarchy stays readable on a phone without becoming a card stack. */
+.current-tree { margin-top: 2px; }
+.current-tree .tree-branches {
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding-left: 18px;
+}
+.current-tree .tree-branches::before {
+  content: '';
+  position: absolute;
+  top: 27px;
+  bottom: 27px;
+  left: 5px;
+  width: 1.5px;
+  background: var(--line-strong);
+}
+.current-tree .tree-branch {
+  --branch-color: var(--green);
+  --branch-soft: var(--green-pale);
+  padding-top: 0;
+}
+.current-tree .tree-branch:nth-child(2) { --branch-color: #356b89; --branch-soft: #eff5f8; }
+.current-tree .tree-branch:nth-child(3) { --branch-color: #7455a0; --branch-soft: #f5f1fa; }
+.current-tree .tree-branch:nth-child(4) { --branch-color: #a8662b; --branch-soft: #fbf3e9; }
+.current-tree .tree-branch:nth-child(5n) { --branch-color: #a34f63; --branch-soft: #faeff2; }
+.current-tree .branch-connector {
+  top: 27px;
+  left: -13px;
+  width: 14px;
+  height: 1.5px;
+  background: var(--branch-color);
+  transform-origin: left;
+  animation-name: grow-across;
+}
+.current-tree .branch-connector::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2.5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--branch-color);
+}
+.current-tree .target-node {
+  min-height: 58px;
+  border-color: var(--line);
+  border-left: 3px solid var(--branch-color);
+  border-radius: 9px;
+  box-shadow: none;
+}
+.current-tree .target-node-main {
+  padding: 8px 12px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 9px;
+}
+.current-tree .target-node-kicker {
+  grid-row: 1 / span 2;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  border-radius: 8px;
+  background: var(--branch-soft);
+  color: var(--branch-color);
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.current-tree .target-node-main strong { grid-column: 2; align-self: end; font-size: 14px; }
+.current-tree .target-node-main small { grid-column: 2; margin-top: 0; align-self: start; font-size: 9.5px; }
+.current-tree .target-node-progress {
+  width: 62px;
+  padding: 7px 5px;
+  background: var(--branch-soft);
+}
+.current-tree .target-node-progress strong { color: var(--branch-color); font-size: 14px; }
+.current-tree .action-stem {
+  width: 1.5px;
+  height: 9px;
+  margin: 0 0 0 20px;
+  background: var(--branch-color);
+}
+.current-tree .tree-actions {
+  margin-left: 20px;
+  overflow: visible;
+  border: 0;
+  border-left: 1.5px solid var(--branch-color);
+  border-radius: 0;
+  background: transparent;
+}
+.current-tree .tree-action,
+.current-tree .tree-add-action {
+  position: relative;
+  width: calc(100% - 14px);
+  margin-left: 14px;
+}
+.current-tree .tree-action::before,
+.current-tree .tree-add-action::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  width: 13px;
+  height: 1px;
+  background: var(--branch-color);
+}
+.current-tree .tree-action {
+  min-height: 43px;
+  padding: 6px 8px;
+  background: transparent;
+}
+.current-tree .tree-action-copy strong { font-size: 12px; }
+.current-tree .tree-add-action {
+  min-height: 40px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--branch-color);
+}
+.current-tree .tree-add-action.empty {
+  min-height: 44px;
+  border-radius: 0 0 8px 0;
+  background: var(--branch-soft);
+}
+
 .day-strip {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
