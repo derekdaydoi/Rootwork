@@ -1,9 +1,10 @@
 /* Rootwork — local-first PWA shell. */
-var CACHE = 'rootwork-mockup-ui-2026-09-06-01';
+var CACHE = 'rootwork-mockup-ui-2026-09-07-02';
 var ASSETS = [
   './',
   './index.html',
   './styles.css',
+  './polish.css',
   './domain.js',
   './store.js',
   './app.js',
@@ -12,6 +13,7 @@ var ASSETS = [
   './vendor/react-dom.production.min.js',
   './brand/rootwork-logo.png',
   './brand/rootwork-mark.png',
+  './brand/rootwork-sprout-256.png',
   './icon-180.png',
   './icon-192.png',
   './icon-256.png',
