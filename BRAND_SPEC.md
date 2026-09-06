@@ -1,94 +1,35 @@
-# Rootwork V2 brand and interface specification
+# Rootwork brand specification
 
-Rootwork should feel like a serious weekly progression system: energetic
-through hierarchy and visible movement, calm enough to use every day.
+## Canonical asset
 
-## Principles
+`brand/rootwork-logo.png` is the only runtime logo/mark asset. It is a raster PNG intentionally used as a real image element; no SVG drawing animation, CSS pseudo-element logo, runtime image replacement, or duplicate legacy marks are part of the final UI.
 
-- Game mechanics underneath; premium productivity interface on top.
-- Use information hierarchy, typography, connectors, and state change for
-  energy—not visual effects.
-- Prefer whitespace and decisive grouping over floating dashboard cards.
-- The tree is top-down. It must never become a mind map.
-- Mobile readability wins over displaying every branch at once.
+## Wordmark
+
+`Rootwork` is rendered as text in Open Sans 800 so the name remains sharp at every device density. The supporting line is `Small steps. A better you.` / `Nhỏ hôm nay, lớn ngày mai`.
 
 ## Palette
 
-All interface colors are declared once in styles.css.
+- App background: `#F5F6F2`
+- Surface: `#FFFFFF`
+- Primary text: `#162019`
+- Secondary text: `#5E685F`
+- Primary green: `#176B45`
+- Progress green: `#2F8A59`
+- Soft green: `#E8F3EC`
+- Border: `#DDE3DD`
+- Warning text: `#8A5A12`
+- Warning surface: `#FFF4DF`
 
-| Token | Value | Role |
-|---|---|---|
-| --bg | #F5F5F1 | application background |
-| --surface | #FFFFFF | primary surface |
-| --ink | #171A18 | primary text |
-| --muted | #737A75 | supporting text |
-| --line | #E1E5DF | dividers and structure |
-| --green | #176B45 | primary action and progress |
-| --green-deep | #0F432E | strong green text/state |
-| --danger | #A64239 | destructive/overdue state |
-| --warning | #8A641D | stalled/attention state |
+The interface is light-only. Primary and secondary text colors were chosen to retain readable contrast on white and the off-white app background.
 
-The app mark uses the same #176B45 primary green as the interface so the
-installed icon, launch sequence, and product state feel continuous.
+## Launch motion
 
-## Typography
+The opening sequence is one screen only:
 
-Use the local system UI stack. Large campaign/week headings are heavy,
-compact, and tightly tracked; operational copy remains neutral and highly
-legible. Rootwork has no web-font dependency, so the installed PWA renders
-consistently offline.
+1. real raster logo scales/fades in;
+2. a soft green halo expands behind it;
+3. the Rootwork wordmark and subtitle rise/fade in;
+4. the splash fades out directly into the app.
 
-## Mark
-
-`brand/rootwork-mark.svg` is the square app-mark source and
-`brand/rootwork-symbol.svg` is the transparent symbol source:
-
-- one bottom root node grows into two structural junctions;
-- the junctions resolve into three upper target nodes;
-- the complete geometry reads as both a progression tree and a W;
-- the symbol remains one color with round joins and no decorative detail;
-- the app mark uses a solid green rounded-square field and white geometry;
-- all meaningful geometry remains safe inside circular Android masks.
-
-`make_icons.py` owns the matching raster geometry and regenerates the 180,
-192, 256, 512, and 1024 px PWA icons plus transparent symbol PNG.
-
-The Rootwork name, symbol, wordmark, app icons, and visual identity are
-copyright © 2026 @derekdaydoi. The ownership notice is embedded in source SVG
-and generated PNG metadata and appears discreetly in the opening sequence.
-
-## Shape and spacing
-
-- Controls target at least 44 px.
-- Cards and sheets use restrained 12–18 px radii.
-- Avoid nested card stacks when a divider or direct layout is clearer.
-- Borders should usually carry structure; shadows remain shallow.
-- Bottom navigation and sheet actions account for device safe areas.
-
-## Motion
-
-Motion communicates progression:
-
-- every app entry begins on white with the root node;
-- lines grow upward from the root before their destination nodes resolve;
-- a single pale ring acknowledges the complete structure without glow;
-- the lowercase wordmark appears after the symbol;
-- the localized subtitle follows: “Turn effort into progress.” / “Biến nỗ
-  lực thành tiến bộ.”;
-- the white layer fades away to reveal current context in about 2.4 seconds;
-- the week root resolves first;
-- the trunk and target connectors draw downward;
-- target nodes appear after connectors;
-- actions resolve after their target;
-- progress and XP bars advance smoothly;
-- level acknowledgement is textual and subtle.
-
-No particles, neon, explosions, loot effects, or decorative looping motion.
-prefers-reduced-motion collapses all animation and transition duration.
-
-## Voice
-
-Copy is concise, direct, and forward-looking. Avoid self-help clichés,
-emotional overreach, fake urgency, and videogame vocabulary in normal
-operation. “Campaign” is used sparingly for the weekly-start sense of a new
-beginning.
+Reduced-motion preferences are respected.
