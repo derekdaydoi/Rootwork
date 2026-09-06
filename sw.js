@@ -1,5 +1,5 @@
-/* Rootwork V2 — local-first PWA shell. */
-var CACHE = 'rootwork-v2-2026-08-24-15';
+/* Rootwork — local-first PWA shell. */
+var CACHE = 'rootwork-mockup-ui-2026-09-06-01';
 var ASSETS = [
   './',
   './index.html',
@@ -10,8 +10,8 @@ var ASSETS = [
   './manifest.json',
   './vendor/react.production.min.js',
   './vendor/react-dom.production.min.js',
-  './brand/rootwork-mark.svg',
-  './brand/rootwork-symbol.svg',
+  './brand/rootwork-logo.png',
+  './brand/rootwork-mark.png',
   './icon-180.png',
   './icon-192.png',
   './icon-256.png',
