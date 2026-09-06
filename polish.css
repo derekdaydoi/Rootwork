@@ -1,0 +1,103 @@
+/* Rootwork visual polish — light-only, crisp raster mark, Open Sans, stronger navigation. */
+:root{
+  color-scheme:light!important;
+  font-family:"Open Sans",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html,body,#root{background:#f4f3ef!important;color-scheme:light!important}
+body,button,input,textarea,select{font-family:"Open Sans",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+
+/* One-step splash: Rootwork -> motion -> app. */
+.rw-launch{
+  background:radial-gradient(circle at 50% 45%,#f3faf5 0%,#fff 38%,#fff 100%)!important;
+  animation:rw-polish-launch-out .46s 1.20s cubic-bezier(.2,.7,.2,1) forwards!important;
+}
+.rw-launch-lockup{
+  display:grid!important;
+  justify-items:center!important;
+  align-content:center!important;
+  gap:8px!important;
+  animation:none!important;
+}
+.rw-launch-logo{display:none!important}
+.rw-launch-lockup::before{
+  content:"";
+  order:1;
+  width:86px;
+  height:86px;
+  background:url("brand/rootwork-sprout-256.png") center/contain no-repeat;
+  filter:drop-shadow(0 10px 18px rgba(24,91,56,.16));
+  animation:rw-polish-mark-in .72s cubic-bezier(.16,.9,.24,1) both;
+}
+.rw-launch-lockup::after{
+  content:"Rootwork";
+  order:2;
+  margin-top:2px;
+  color:#172119;
+  font-size:34px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:-1.15px;
+  animation:rw-polish-word-in .52s .20s ease both;
+}
+.rw-launch-lockup p{
+  order:3;
+  margin:3px 0 0!important;
+  color:#6e786f!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  letter-spacing:0!important;
+  animation:rw-polish-tag-in .42s .42s ease both!important;
+}
+@keyframes rw-polish-mark-in{
+  0%{opacity:0;transform:translateY(12px) scale(.78)}
+  62%{opacity:1;transform:translateY(0) scale(1.06)}
+  100%{opacity:1;transform:none}
+}
+@keyframes rw-polish-word-in{
+  from{opacity:0;transform:translateY(7px);letter-spacing:-.4px}
+  to{opacity:1;transform:none;letter-spacing:-1.15px}
+}
+@keyframes rw-polish-tag-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes rw-polish-launch-out{to{opacity:0;visibility:hidden;pointer-events:none;transform:scale(1.012)}}
+
+/* Crisp mark everywhere it is reused. */
+.rw-brand img,.rw-empty-state img{
+  content:url("brand/rootwork-sprout-256.png")!important;
+  object-fit:contain!important;
+}
+.rw-brand{gap:10px!important}
+.rw-brand img{width:40px!important;height:40px!important;flex:0 0 40px!important}
+.rw-brand strong{font-size:20px!important;font-weight:800!important;letter-spacing:-.45px!important}
+.rw-brand small{font-size:10px!important;line-height:1.2!important}
+.rw-empty-state img{width:52px!important;height:52px!important}
+
+/* Fit blocks and keep text readable rather than oversized. */
+body{font-size:14px!important;line-height:1.45!important}
+.rw-page-heading{padding:14px 2px 13px!important}
+.rw-page-heading h1{font-size:27px!important;font-weight:800!important;line-height:1.1!important;letter-spacing:-.8px!important}
+.rw-page-heading p{margin-top:5px!important;font-size:12.5px!important;line-height:1.45!important}
+.rw-big-metric strong{font-size:36px!important;font-weight:800!important;letter-spacing:-1.15px!important}
+.rw-section-title h2{font-size:17px!important;font-weight:800!important;letter-spacing:-.35px!important}
+.rw-goal-head-copy strong,.rw-task-copy strong{font-size:12px!important}
+.rw-goal-head-copy small,.rw-task-copy small{line-height:1.35!important}
+.rw-metric-card,.rw-stat,.rw-goal-card,.rw-calendar-card,.rw-card{border-radius:14px!important}
+
+/* Bigger, clearer menu symbols and tap targets. */
+.rw-top-actions{gap:6px!important}
+.rw-icon-btn,.rw-avatar{width:40px!important;height:40px!important}
+.rw-icon-btn{font-size:24px!important}
+.rw-avatar{font-size:13px!important}
+.rw-bottom-nav{height:calc(72px + var(--safe-bottom))!important;padding-top:6px!important}
+.rw-bottom-nav button{height:58px!important;gap:4px!important;border-radius:11px!important}
+.rw-bottom-nav b{font-size:25px!important;line-height:1!important;font-weight:700!important}
+.rw-bottom-nav span{font-size:9px!important;font-weight:600!important;line-height:1.1!important}
+.rw-bottom-nav button.active b{transform:scale(1.04)}
+.rw-shell{padding-bottom:calc(98px + var(--safe-bottom))!important}
+.rw-floating-add,.rw-toast{bottom:calc(88px + var(--safe-bottom))!important}
+
+@media(max-width:355px){
+  .rw-brand img{width:36px!important;height:36px!important;flex-basis:36px!important}
+  .rw-brand strong{font-size:19px!important}
+  .rw-page-heading h1{font-size:25px!important}
+  .rw-bottom-nav b{font-size:23px!important}
+}
