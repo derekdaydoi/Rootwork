@@ -7,12 +7,12 @@
   "id": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F5F6F2",
-  "theme_color": "#F5F6F2",
+  "background_color": "#AFE2FF",
+  "theme_color": "#AFE2FF",
   "categories": ["productivity"],
   "lang": "vi",
   "dir": "ltr",
   "icons": [
-    { "src": "brand/rootwork-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "brand/rootwork-logo.png?v=20260907-target-r5", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
