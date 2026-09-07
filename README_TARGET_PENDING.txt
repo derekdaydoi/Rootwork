@@ -1,1 +1,0 @@
-Pending binary logo commit
