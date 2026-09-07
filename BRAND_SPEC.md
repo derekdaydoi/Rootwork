@@ -1,31 +1,27 @@
 # Rootwork brand specification
 
-## Canonical mark
+## Identity
 
-`brand/rootwork-logo.png` is the single runtime brand image. It is a 512×512 raster PNG derived from the approved bullseye-and-arrow mark, optically centered with a homescreen-safe margin. The icon background is `#AFE2FF`; the mark is `#1800AD`.
+Rootwork uses the approved target-and-arrow mark. The canonical palette is:
 
-No SVG reconstruction, CSS-drawn logo, pseudo-element replacement, or duplicate legacy brand asset is used.
+- Indigo `#1800AD` — primary brand/action color
+- Light blue `#AFE2FF` — launch and homescreen icon background
+- White — surfaces
 
-## Wordmark and type
+The product remains light-only. Open Sans is the primary UI and wordmark typeface with system fallbacks.
 
-`Rootwork` is rendered as live text in Open Sans 800 so it remains sharp across densities. UI copy uses Open Sans 400/600/700/800 with system fallbacks.
+## Brand asset
 
-## Palette
+The app uses `brand/rootwork-logo.png`, a 512×512 raster with the approved `#AFE2FF` background and safe padding for homescreen/maskable crops. The same file is used in the splash and top bar so the runtime has one canonical binary brand source.
 
-- Target indigo: `#1800AD`
-- Target blue: `#AFE2FF`
-- App background: `#F2FAFF`
-- Surface: `#FFFFFF`
-- Primary text: `#171041`
-- Secondary text: `#625D7B`
-- Border: `#CFE5F4`
-
-The interface remains light-only. Product structure and information architecture are unchanged by this rebrand.
+Do not apply SVG drawing, CSS `content:url`, image replacement hacks, blur or drop-shadow filters to the raster logo.
 
 ## Launch motion
 
-The opening screen uses the real raster logo: scale/settle, a single expanding target ring, wordmark/tagline reveal, then a direct fade into the app. Reduced-motion preferences are respected.
+The opening screen is one transition, not onboarding. The raster logo is fully opaque from its first rendered frame. A separate ring layer expands behind it, the logo settles from 94% to 100% scale, then the Open Sans wordmark, tagline and copyright fade upward before the screen exits.
+
+The splash is fixed to `100dvh` with overflow locked to prevent iOS Safari scroll indicators during launch. Reduced-motion preferences disable decorative motion.
 
 ## Copyright
 
-The launch screen carries `© 2026 Rootwork · @derekdaydoi`. Brand ownership is also recorded in `NOTICE.md`.
+`Rootwork`, the target-and-arrow brand mark and this product identity are © 2026 Rootwork / @derekdaydoi. The notice appears on the launch screen and in `NOTICE.md`.
