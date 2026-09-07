@@ -1,27 +1,31 @@
 # Rootwork brand specification
 
-## Canonical asset
+## Canonical mark
 
-`brand/rootwork-logo.png` là brand asset raster duy nhất ở runtime. Không dùng SVG brand, line-drawing logo, pseudo-element logo, `content:url` hoặc duplicate legacy marks.
+`brand/rootwork-logo.png` is the single runtime brand image. It is a 512×512 raster PNG derived from the approved bullseye-and-arrow mark, optically centered with a homescreen-safe margin. The icon background is `#AFE2FF`; the mark is `#1800AD`.
 
-## Wordmark
+No SVG reconstruction, CSS-drawn logo, pseudo-element replacement, or duplicate legacy brand asset is used.
 
-`Rootwork` render bằng Open Sans 800 để chữ luôn sắc nét. Tagline: `Small steps. A better you.` / `Nhỏ hôm nay, lớn ngày mai`.
+## Wordmark and type
 
-## UI
+`Rootwork` is rendered as live text in Open Sans 800 so it remains sharp across densities. UI copy uses Open Sans 400/600/700/800 with system fallbacks.
 
-- Light theme only.
-- Background `#F5F6F2`, surface `#FFFFFF`, text `#162019`, muted `#5E685F`.
-- Primary green `#176B45`, progress green `#2F8A59`, soft green `#E8F3EC`.
-- Navigation icon đủ lớn và touch target tối thiểu khoảng 44 px.
-- Inline SVG chỉ dùng cho icon UI; không dùng để dựng brand mark.
+## Palette
+
+- Target indigo: `#1800AD`
+- Target blue: `#AFE2FF`
+- App background: `#F2FAFF`
+- Surface: `#FFFFFF`
+- Primary text: `#171041`
+- Secondary text: `#625D7B`
+- Border: `#CFE5F4`
+
+The interface remains light-only. Product structure and information architecture are unchanged by this rebrand.
 
 ## Launch motion
 
-Một splash duy nhất:
-1. raster logo scale/fade vào;
-2. halo xanh nhẹ mở rộng phía sau;
-3. wordmark/tagline fade-rise;
-4. splash fade ra và vào thẳng app.
+The opening screen uses the real raster logo: scale/settle, a single expanding target ring, wordmark/tagline reveal, then a direct fade into the app. Reduced-motion preferences are respected.
 
-`prefers-reduced-motion` phải rút ngắn animation.
+## Copyright
+
+The launch screen carries `© 2026 Rootwork · @derekdaydoi`. Brand ownership is also recorded in `NOTICE.md`.
