@@ -1,6 +1,6 @@
 (function(g){'use strict';
 var R=g.React,D=g.RootworkDomain,S=g.RootworkStore,h=R.createElement;
-var U=g.RootworkUI={R:R,D:D,S:S,h:h,LOGO:'brand/rootwork-logo.png?v=20260907-r3'};
+var U=g.RootworkUI={R:R,D:D,S:S,h:h,LOGO:'brand/rootwork-logo.png?v=20260907-target-r5'};
 var P={home:['M3.5 10.8 12 4l8.5 6.8','M5.5 9.8v10h13v-10','M9.5 19.8v-6h5v6'],goal:['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z','M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7z'],cal:['M7 3.5v3','M17 3.5v3','M4 8.5h16','M5.5 5.5h13a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2z'],chart:['M5 19V12','M12 19V7','M19 19V4'],routine:['M20 7v5h-5','M4 17v-5h5','M18.2 9A7 7 0 0 0 6.1 6.8L4 9','M5.8 15A7 7 0 0 0 17.9 17.2L20 15'],plus:['M12 5v14','M5 12h14'],settings:['M12 8.4a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2z','M4.8 9.2 3.7 7.5l2.2-2.2 1.8 1.1 2-.8.5-2.1h3.6l.5 2.1 2 .8 1.8-1.1 2.2 2.2-1.1 1.8.8 2 2.1.5v3.2l-2.1.5-.8 2 1.1 1.8-2.2 2.2-1.8-1.1-2 .8-.5 2.1h-3.6l-.5-2.1-2-.8-1.8 1.1-2.2-2.2 1.1-1.8-.8-2-2.1-.5v-3.2l2.1-.5.8-2z'],check:['M5 12.5l4.2 4.2L19 7.5'],left:['M14.5 5.5 8 12l6.5 6.5'],right:['M9.5 5.5 16 12l-6.5 6.5'],close:['M6.5 6.5l11 11','M17.5 6.5l-11 11']};
 function I(n,s,w){return h('svg',{width:s||24,height:s||24,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:w||2,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':'true'},(P[n]||[]).map(function(d,i){return h('path',{d:d,key:i})}))}
 function Logo(c){return h('img',{src:U.LOGO,alt:'',className:c||'logo',draggable:false})}
