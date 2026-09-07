@@ -8,11 +8,11 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#AFE2FF",
-  "theme_color": "#AFE2FF",
+  "theme_color": "#F5FBFF",
   "categories": ["productivity"],
   "lang": "vi",
   "dir": "ltr",
   "icons": [
-    { "src": "brand/rootwork-icon.png?v=20260907-brand-r7", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "brand/rootwork-icon.png?v=20260907-brand-r8", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
