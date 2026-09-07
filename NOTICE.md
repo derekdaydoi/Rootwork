@@ -1,7 +1,12 @@
-# Rootwork brand notice
+# Rootwork notice
 
-Rootwork product name, approved bullseye-and-arrow logo, wordmark treatment, and associated visual identity are copyright © 2026 Rootwork / @derekdaydoi. All rights reserved.
+© 2026 Rootwork / @derekdaydoi.
 
-The runtime app uses the approved raster logo in `brand/rootwork-logo.png`. The logo is not reconstructed from vector paths or CSS geometry.
+Rootwork, the target-and-arrow mark, product identity and associated brand assets are part of the Rootwork project.
 
-Open-source runtime dependencies retain their respective licenses and ownership. This notice applies to the Rootwork brand identity and original product presentation, not to third-party libraries.
+Brand usage in the app is split deliberately:
+
+- `brand/rootwork-mark.png` — transparent runtime mark for splash/topbar/UI
+- `brand/rootwork-icon.png` — homescreen/PWA install icon with `#AFE2FF` background
+
+Open Sans is loaded from Google Fonts under its applicable open-source license. React and ReactDOM runtime files in `vendor/` retain their upstream licenses and notices.
