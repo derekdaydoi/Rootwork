@@ -1,5 +1,5 @@
 (function(g){'use strict';
-var U=g.RootworkUI,R=U.R,D=U.D,h=U.h,I=U.I,pct=U.pct,ymd=U.ymd,pd=U.pd,mi=U.mi,tasks=U.tasks,ts=U.targetStats,rs=U.routineStats,rc=U.consistency,Bar=U.Bar,Ring=U.Ring,Head=U.Head,Task=U.Task,goalMeta=U.goalMeta,routineMeta=U.routineMeta;
+var U=g.RootworkUI,R=U.R,D=U.D,h=U.h,I=U.I,pct=U.pct,ymd=U.ymd,pd=U.pd,mi=U.mi,tasks=U.tasks,ts=U.targetStats,rs=U.routineStats,rc=U.consistency,Bar=U.Bar,Ring=U.Ring,Head=U.Head,Task=U.Task,goalMeta=U.goalMeta,routineMeta=U.routineMeta,taskMeta=U.taskMeta;
 
 function toneIcon(meta,size){return h('span',{className:'tile-icon '+meta.tone},I(meta.icon,size||22))}
 function segmented(items,value,set){return h('div',{className:'segmented'},items.map(function(x){return h('button',{key:x[0],className:value===x[0]?'active':'',onClick:function(){set(x[0])}},x[1])}))}
@@ -32,7 +32,7 @@ function Goals(q){
       h('header',null,toneIcon(meta,22),h('div',null,h('strong',null,x.title),h('small',null,x.description||'Mục tiêu tuần')),h('b',null,s.done+'/'+s.total)),
       Bar(s.percent,true),
       h('div',{className:'goal-task-label'},h('span',null,'Tác vụ tuần ('+(x.tasks||[]).length+')')),
-      h('div',{className:'task-list'},(x.tasks||[]).map(function(t){return h(Task,{key:t.id,x:Object.assign({},t,{weekId:q.w.id,targetId:x.id}),toggle:q.toggleTask})})),
+      h('div',{className:'task-list'},(x.tasks||[]).map(function(t){return h(Task,{key:t.id,x:Object.assign({},t,{weekId:q.w.id,targetId:x.id}),toggle:q.toggleTask,edit:q.editTask})})),
       h('button',{className:'add-row',onClick:function(){q.addTask(x.id)}},I('plus',17),'Thêm tác vụ tuần')
     )})):h('section',{className:'empty card'},h('h3',null,'Chưa có mục tiêu phù hợp'),h('p',null,'Tạo mục tiêu rồi chia thành tác vụ tuần.'),h('button',{className:'primary',onClick:q.addGoal},'Thêm mục tiêu'))
   )
@@ -52,7 +52,7 @@ function Calendar(q){
     ),
     h('section',{className:'day-caption'},h('strong',null,pd(pick).toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'long'})),h('span',null,picked.length+' tác vụ')),
     h('section',{className:'card day-detail'},
-      picked.length?picked.map(function(x){return h('div',{className:'cal-row',key:x.weekId+x.id},h('button',{className:'check '+(x.done?'checked':''),disabled:x.readonly,onClick:function(){if(!x.readonly)q.toggleTask(x)}},x.done&&I('check',14,2.7)),h('div',null,h('strong',null,x.title),h('small',null,(x.time||'Linh hoạt')+(x.targetTitle?' · '+x.targetTitle:''))))}):h('p',{className:'empty-day'},'Ngày này chưa có tác vụ.'),
+      picked.length?picked.map(function(x){var meta=taskMeta(x);return h('div',{className:'cal-row',key:x.weekId+x.id},h('button',{className:'check '+(x.done?'checked':''),disabled:x.readonly,onClick:function(){if(!x.readonly)q.toggleTask(x)}},x.done&&I('check',14,2.7)),h('span',{className:'task-icon '+meta.tone},I('briefcase',15,1.9)),h('div',null,h('strong',null,x.title),h('small',null,(x.time||'Linh hoạt')+(x.targetTitle?' · '+x.targetTitle:''))),!x.readonly&&h('button',{className:'edit-btn',onClick:function(){q.editTask(x)},'aria-label':'Sửa tác vụ'},I('edit',15,1.9)))}):h('p',{className:'empty-day'},'Ngày này chưa có tác vụ.'),
       pick>=q.w.startDate&&pick<=q.w.endDate&&h('button',{className:'add-row',onClick:function(){q.addTask('',pick)}},I('plus',17),'Thêm tác vụ vào ngày này')
     )
   )
@@ -64,7 +64,7 @@ function Routines(q){
     Head('Routine',h('button',{className:'circle',onClick:q.addRoutine,'aria-label':'Thêm routine'},I('plus',24))),
     segmented([['all','Tất cả'],['daily','Hàng ngày'],['weekly','Hàng tuần']],filter,setFilter),
     a.length?h('div',{className:'routine-list'},a.map(function(r,i){var s=rs(r,q.w.startDate),meta=routineMeta(r,i);return h('article',{className:'card routine-card',key:r.id},
-      h('header',null,toneIcon(meta,22),h('div',null,h('strong',null,r.name),h('small',null,s.hits+' / '+s.target+' lần tuần')),Ring(s.percent,46)),
+      h('header',null,toneIcon(meta,22),h('div',null,h('strong',null,r.name),h('small',null,s.hits+' / '+s.target+' lần tuần')),h('div',{className:'routine-tools'},Ring(s.percent,46),h('button',{className:'edit-btn routine-edit',onClick:function(){q.editRoutine(r)},'aria-label':'Sửa routine'},I('edit',15,1.9)))),
       h('div',{className:'routine-days'},dates.map(function(d,j){var checked=!!(r.log&&r.log[d]);return h('button',{key:d,className:checked?'checked':'',onClick:function(){q.toggleRoutine(r.id,d)}},h('span',null,['T2','T3','T4','T5','T6','T7','CN'][j]),h('b',null,checked?I('check',12,2.8):pd(d).getDate()))}))
     )})):h('section',{className:'empty card'},h('h3',null,'Chưa có routine'),h('p',null,'Tạo thói quen lặp lại và ghi nhận theo ngày.'),h('button',{className:'primary',onClick:q.addRoutine},'Thêm routine'))
   )
