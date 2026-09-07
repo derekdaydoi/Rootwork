@@ -1,0 +1,26 @@
+/* Rootwork flat-color override — canonical brand colors, no blended gradients. */
+:root{
+  --primary:#1800AD;
+  --primary-2:#1800AD;
+}
+
+/* Primary brand surfaces use the original Rootwork indigo directly. */
+.circle,
+.bar i,
+.daily-bars i,
+.segmented button.active,
+.primary,
+.calendar-day.selected,
+.weekly-chart i{
+  background:#1800AD;
+}
+
+/* Semantic accents stay solid as well — no mixed shades. */
+.tile-icon.teal,
+.achievement>span{background:#16B99A}
+.tile-icon.blue{background:#3478F6}
+.tile-icon.violet{background:#6F43E6}
+
+/* Splash: clean mark + copy + loader only. */
+.splash-rings{display:none!important}
+.splash-logo{width:132px;height:132px}
