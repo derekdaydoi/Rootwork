@@ -2,23 +2,26 @@
 
 ## Identity
 
-Rootwork uses the approved target-and-arrow mark. The canonical palette is:
+Rootwork uses the approved target-and-arrow mark. Canonical palette:
 
 - Indigo `#1800AD` — primary brand/action color
 - Light blue `#AFE2FF` — launch and homescreen icon background
 - White — surfaces
 
-The product remains light-only. Open Sans is the primary UI and wordmark typeface with system fallbacks.
+The product is light-only. Open Sans is the primary UI and wordmark typeface with system fallbacks.
 
-## Brand asset
+## Brand assets
 
-The app uses `brand/rootwork-logo.png`, a 512×512 raster with the approved `#AFE2FF` background and safe padding for homescreen/maskable crops. The same file is used in the splash and top bar so the runtime has one canonical binary brand source.
+Runtime and install assets are intentionally separated:
 
-Do not apply SVG drawing, CSS `content:url`, image replacement hacks, blur or drop-shadow filters to the raster logo.
+- `brand/rootwork-mark.png` — transparent 512×512 runtime mark used by splash, top bar and empty states. It is tightly framed so the symbol remains legible at small UI sizes.
+- `brand/rootwork-icon.png` — 512×512 homescreen/PWA icon with `#AFE2FF` background and safe padding for iOS/Android masking.
+
+Do not use the homescreen icon inside the app UI. Do not apply SVG drawing, CSS `content:url`, image-replacement hacks, blur or drop-shadow filters to the runtime mark.
 
 ## Launch motion
 
-The opening screen is one transition, not onboarding. The raster logo is fully opaque from its first rendered frame. A separate ring layer expands behind it, the logo settles from 94% to 100% scale, then the Open Sans wordmark, tagline and copyright fade upward before the screen exits.
+The opening screen is one transition, not onboarding. The runtime mark is fully opaque from the first rendered frame. A separate ring layer expands behind it, the mark settles from 94% to 100% scale, then the Open Sans wordmark, tagline and copyright fade upward before the screen exits.
 
 The splash is fixed to `100dvh` with overflow locked to prevent iOS Safari scroll indicators during launch. Reduced-motion preferences disable decorative motion.
 

@@ -13,6 +13,6 @@
   "lang": "vi",
   "dir": "ltr",
   "icons": [
-    { "src": "brand/rootwork-logo.png?v=20260907-final-r6", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "brand/rootwork-icon.png?v=20260907-brand-r7", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

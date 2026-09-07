@@ -1,4 +1,4 @@
-/* Rootwork Target brand — final iOS-safe implementation. */
+/* Rootwork Target brand — final runtime/install asset split. */
 :root{
   --bg:#f2faff;
   --surface:#fff;
@@ -14,7 +14,7 @@
 html,body,#root{background:var(--bg)}
 body{color:var(--ink)}
 .top{background:rgba(242,250,255,.96)}
-.brand-logo{background:#afe2ff;padding:5px;border:1px solid #b9def4;box-shadow:0 4px 14px rgba(24,0,173,.10);object-fit:contain}
+.brand-logo{background:#afe2ff;padding:3px;border:1px solid #b9def4;box-shadow:0 4px 14px rgba(24,0,173,.10);object-fit:contain}
 .brand strong{color:#1800ad}
 .top-btn{color:#30275f}
 .avatar{background:linear-gradient(145deg,#1800ad,#4736dc);box-shadow:inset 0 0 0 2px #fff,0 4px 12px rgba(24,0,173,.16)}
@@ -44,7 +44,6 @@ body{color:var(--ink)}
 .choice{background:#e5f1f8}.choice button.active{color:#1800ad}
 .quick button{background:#f5fbff;color:#1800ad;border-color:#cfe5f4}
 
-/* Opening screen: keep the raster mark fully opaque; animate surrounding layers only. */
 html:has(.splash),body:has(.splash){overflow:hidden;overscroll-behavior:none}
 .splash{position:fixed;inset:0;width:100%;height:100dvh;min-height:100dvh;overflow:hidden;overscroll-behavior:none;touch-action:none;background:#afe2ff;display:grid;place-items:center;animation:target-splash-out .42s 1.68s cubic-bezier(.2,.7,.2,1) forwards}
 .splash-lock{display:grid;justify-items:center;gap:10px;transform:translateY(-1.5vh)}
@@ -58,7 +57,6 @@ html:has(.splash),body:has(.splash){overflow:hidden;overscroll-behavior:none}
 @keyframes target-ring{0%{opacity:0;transform:scale(.62);box-shadow:0 0 0 0 rgba(255,255,255,.48)}30%{opacity:1}100%{opacity:0;transform:scale(1.38);box-shadow:0 0 0 22px rgba(255,255,255,0)}}
 @keyframes target-copy-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes target-splash-out{to{opacity:0;visibility:hidden;pointer-events:none}}
-
-.empty-logo{background:#afe2ff;padding:7px;object-fit:contain}
+.empty-logo{background:#afe2ff;padding:5px;object-fit:contain}
 @media (min-width:700px){body{background:#e4f5ff}.shell{box-shadow:0 0 0 1px rgba(24,0,173,.05),0 18px 60px rgba(24,0,173,.08)}}
 @media (prefers-reduced-motion:reduce){.splash{animation-delay:.65s!important}.splash-logo{animation:none!important}.halo{animation:none!important;opacity:0!important}.splash-lock>strong,.splash-lock>p,.splash-lock:after{animation:none!important}}
