@@ -2,34 +2,26 @@
 
 ## Canonical asset
 
-`brand/rootwork-logo.png` is the only runtime logo/mark asset. It is a raster PNG intentionally used as a real image element; no SVG drawing animation, CSS pseudo-element logo, runtime image replacement, or duplicate legacy marks are part of the final UI.
+`brand/rootwork-logo.png` là brand asset raster duy nhất ở runtime. Không dùng SVG brand, line-drawing logo, pseudo-element logo, `content:url` hoặc duplicate legacy marks.
 
 ## Wordmark
 
-`Rootwork` is rendered as text in Open Sans 800 so the name remains sharp at every device density. The supporting line is `Small steps. A better you.` / `Nhỏ hôm nay, lớn ngày mai`.
+`Rootwork` render bằng Open Sans 800 để chữ luôn sắc nét. Tagline: `Small steps. A better you.` / `Nhỏ hôm nay, lớn ngày mai`.
 
-## Palette
+## UI
 
-- App background: `#F5F6F2`
-- Surface: `#FFFFFF`
-- Primary text: `#162019`
-- Secondary text: `#5E685F`
-- Primary green: `#176B45`
-- Progress green: `#2F8A59`
-- Soft green: `#E8F3EC`
-- Border: `#DDE3DD`
-- Warning text: `#8A5A12`
-- Warning surface: `#FFF4DF`
-
-The interface is light-only. Primary and secondary text colors were chosen to retain readable contrast on white and the off-white app background.
+- Light theme only.
+- Background `#F5F6F2`, surface `#FFFFFF`, text `#162019`, muted `#5E685F`.
+- Primary green `#176B45`, progress green `#2F8A59`, soft green `#E8F3EC`.
+- Navigation icon đủ lớn và touch target tối thiểu khoảng 44 px.
+- Inline SVG chỉ dùng cho icon UI; không dùng để dựng brand mark.
 
 ## Launch motion
 
-The opening sequence is one screen only:
+Một splash duy nhất:
+1. raster logo scale/fade vào;
+2. halo xanh nhẹ mở rộng phía sau;
+3. wordmark/tagline fade-rise;
+4. splash fade ra và vào thẳng app.
 
-1. real raster logo scales/fades in;
-2. a soft green halo expands behind it;
-3. the Rootwork wordmark and subtitle rise/fade in;
-4. the splash fades out directly into the app.
-
-Reduced-motion preferences are respected.
+`prefers-reduced-motion` phải rút ngắn animation.

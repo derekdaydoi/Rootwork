@@ -1,7 +1,7 @@
 {
   "name": "Rootwork",
   "short_name": "Rootwork",
-  "description": "A local-first weekly execution system: goals, weekly tasks, calendar, and progress.",
+  "description": "Local-first weekly execution: goals, weekly tasks, routines, calendar, and progress.",
   "start_url": "./",
   "scope": "./",
   "id": "./",

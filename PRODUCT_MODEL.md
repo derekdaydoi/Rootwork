@@ -1,34 +1,34 @@
 # Rootwork product model
 
-## Core loop
+## Core model
 
-Rootwork treats the week as the operating unit. The visible planning hierarchy is intentionally shallow:
+Rootwork coi tuần là operating unit. Hai loại đối tượng người dùng trực tiếp quản lý là:
 
 ```text
 Goal
 └── Weekly task
+
+Routine
+└── repeated check-ins by date
 ```
 
-There is no visible Key Result layer. A task may be flexible, dated, or dated with a valid time in the persisted schema. Routines remain preserved in the data model for migration/backward compatibility but are not a primary navigation surface in this UI.
+Goal trả lời **tuần này cần tiến tới kết quả gì**. Weekly task trả lời **hành động cụ thể nào tạo ra tiến độ**. Routine trả lời **hành vi lặp lại nào cần giữ nhịp**. Routine không bị biến thành task để tránh trộn “việc phải hoàn thành” với “hành vi cần duy trì”.
 
 ## Primary surfaces
 
-- Dashboard — completion, execution pace, daily progress and goals in motion
-- Weekly goals — goals with their weekly tasks directly underneath
-- Calendar — square monthly grid plus selected-day task list
-- Progress — weekly execution trend and progress by goal
-- Add — direct creation of a goal or weekly task
+- Dashboard — execution snapshot + routine consistency.
+- Goals — Goal → Weekly task trực tiếp.
+- Calendar — square month grid trên cùng task/routine data.
+- Routine — target/tuần, day check-ins, weekly consistency, streak.
+- Progress — execution trend, goal progress, routine consistency.
+- Add FAB — Goal / Weekly task / Routine.
 
 ## Architecture
 
-`app.js` owns rendering and interaction. `domain.js` owns dates, weekly lifecycle, metrics, XP and domain rules. `store.js` owns persistence, migration and backups. Existing schema guards and migration behavior are kept intact so older local data is not discarded.
+`app.js` giữ state/mutations/bootstrap. `ui-core.js` chứa UI primitive dùng chung. `ui-views.js` chứa các screen. `domain.js` giữ business rules; `store.js` giữ persistence/migration/backup.
 
-## Local-first behavior
+Schema hiện tại đã có `routines[]` với recurrence và date log, nên việc đưa Routine trở lại UI không cần migration mới và không làm mất dữ liệu cũ.
 
-Rootwork has no server or account dependency. Data is stored in browser localStorage and is origin-specific. Backup export remains the explicit portability mechanism.
+## Local-first
 
-## UI rules
-
-The final interface is light-only. Open Sans is the primary UI typeface with system fallbacks. Navigation symbols use inline UI SVG paths for crisp controls, while the brand itself uses only the canonical raster asset `brand/rootwork-logo.png`.
-
-The launch sequence is not onboarding. It is a short brand transition on app open and requires no user action.
+Không có server hoặc account dependency. Data ở browser localStorage và gắn với origin. Backup export là cơ chế portability chính thức.

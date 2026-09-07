@@ -1,43 +1,42 @@
 # Rootwork
 
-Rootwork is a local-first weekly execution app. The product model is deliberately simple:
+Rootwork là ứng dụng local-first cho thực thi theo tuần. Cấu trúc lập kế hoạch được giữ nông và rõ:
 
 ```text
 Goal → Weekly task
+Routine → repeated weekly behavior
 ```
 
-The primary surfaces are Dashboard, Weekly goals, Calendar, Progress, and Add. Dashboard tracks weekly completion and execution pace. Goals contain weekly tasks directly. Calendar is a square month grid over the same dated tasks. Progress summarizes execution rather than adding another planning layer.
+## Bề mặt chính
+
+- **Dashboard** — tỷ lệ hoàn thành tuần, khả năng hoàn thành, tiến độ theo ngày và consistency của Routine.
+- **Mục tiêu** — mục tiêu đi thẳng xuống tác vụ tuần, không có tầng Key Result ở UI.
+- **Lịch** — calendar tháng dạng ô vuông, hiển thị tác vụ có ngày và trạng thái Routine theo ngày.
+- **Routine** — target số lần/tuần, check-in từng ngày, weekly consistency và streak.
+- **Thống kê** — tiến độ theo tuần, mục tiêu và Routine.
+- **FAB Thêm** — tạo Goal, Weekly task hoặc Routine mà không chiếm thêm một tab navigation.
 
 ## Runtime
 
-- `index.html` — light-only PWA shell and first splash frame
-- `app.js` — React UI and interaction
-- `domain.js` — dates, week lifecycle, metrics, XP and business rules
-- `store.js` — localStorage, migration and backup
-- `styles.css` — the complete visual system and launch motion
-- `sw.js` — offline shell
-- `brand/rootwork-logo.png` — the single canonical raster brand asset
+- `index.html` — light-only PWA shell và splash frame đầu tiên.
+- `ui-core.js` — UI primitives, icons, helpers và component dùng chung.
+- `ui-views.js` — Dashboard, Goals, Calendar, Routine, Progress và navigation.
+- `app.js` — state, mutations, modal và bootstrap React.
+- `domain.js` — date/week lifecycle, target/routine metrics, XP và business rules.
+- `store.js` — localStorage, schema migration và backup.
+- `styles.css` — Open Sans, visual system, responsive layout và launch motion.
+- `sw.js` — offline application shell.
+- `brand/rootwork-logo.png` — asset raster brand duy nhất ở runtime.
 
-There is no account, server, analytics or tracking. User data stays in this browser's localStorage. Existing schema migrations and backup compatibility remain in `store.js`.
+Không có account, server, analytics hay tracking. Dữ liệu nằm trong localStorage của origin hiện tại. Trước khi xoá browser data hoặc đổi domain, hãy export backup.
 
-## Brand and launch
+## Brand & launch
 
-Rootwork uses one raster logo asset only. The splash renders that real `<img>` immediately, then applies a short scale/fade/halo transition before entering the app. The wordmark is text so it stays sharp at every density. The interface is light-only and uses Open Sans with system fallbacks.
+Rootwork dùng đúng một raster logo. Splash render `<img>` thật ngay từ frame đầu, chạy scale/fade + halo nhẹ, sau đó đi thẳng vào app. Wordmark `Rootwork` là text Open Sans 800 để luôn sắc nét ở mọi mật độ màn hình. Theme chỉ có light mode.
 
-## Run
+## Run & test
 
 ```sh
 python -m http.server 4173
-```
-
-Open `http://127.0.0.1:4173/`.
-
-## Tests
-
-```sh
 node tests/run-tests.js
 ```
-
-## Deployment
-
-Deploy the repository root to any static HTTPS host. The service worker caches the current shell and removes previous cache versions on activation. Before clearing browser data or changing domains, export a backup from Settings & data.
