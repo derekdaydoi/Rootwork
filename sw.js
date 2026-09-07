@@ -1,4 +1,4 @@
-var CACHE='rootwork-ui-2026-09-07-r9';
+var CACHE='rootwork-ui-2026-09-07-r10';
 var ASSETS=['./','./index.html','./styles.css','./flat-theme.css','./domain.js','./store.js','./ui-core.js','./ui-views.js','./app.js','./manifest.json','./vendor/react.production.min.js','./vendor/react-dom.production.min.js','./brand/rootwork-mark.png','./brand/rootwork-icon.png'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(ASSETS)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}).then(function(){return self.clients.claim()}))});
