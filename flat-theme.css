@@ -2,7 +2,11 @@
 :root{
   --primary:#1800AD;
   --primary-2:#1800AD;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
+html,body,#root{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior:none}
+body,button,input,textarea,select{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-weight:400}
+.shell{max-width:430px;overflow-x:clip}
 
 /* Primary brand surfaces use the original Rootwork indigo directly. */
 .circle,
@@ -21,17 +25,29 @@
 .tile-icon.blue{background:#3478F6}
 .tile-icon.violet{background:#6F43E6}
 
+/* Typography: system app font, fewer heavy weights. */
+strong,b{font-weight:600!important}
+h1,.greeting h1,.screen-head h1,.brand strong,.splash-lock>strong{font-weight:700!important}
+h2,h3,.section-title h2,.recent-title h2,.modal h2{font-weight:600!important}
+button,.segmented button,.today-chip,.period-chip,.nav span,.field>span,.goal-task-label span,.weekdays span,.routine-days button span{font-weight:500!important}
+small,.greeting p,.week-progress-copy small,.goal-card header small,.routine-card header small,.activity-card small,.achievement small{font-weight:400!important}
+.week-progress-copy span,.mini-stat span,.daily-bars small{font-weight:500!important}
+
 /* Splash: clean mark + copy + loader only. */
 .splash-rings{display:none!important}
 .splash-logo{width:132px;height:132px}
 
 /* Tasks: one canonical briefcase glyph with stable color variants. */
-.task{min-height:48px;grid-template-columns:20px 30px minmax(0,1fr) auto 30px;gap:7px}
+.task{min-height:50px;grid-template-columns:20px 30px minmax(0,1fr) auto 30px;gap:7px}
 .task-icon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff!important;flex:0 0 30px}
 .task-icon.blue{background:#3478F6}
 .task-icon.teal{background:#16B99A}
 .task-icon.violet{background:#6F43E6}
 .task-time{font-size:8.5px!important;color:#657184!important;white-space:nowrap}
+.task-copy{min-width:0;padding:0;border:0;background:transparent;display:grid;text-align:left;justify-items:start;align-content:center}
+.task-copy strong,.task-copy small{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-copy strong{font-size:10.5px}
+.task-copy small{font-size:8.5px;color:var(--muted)}
 .edit-btn{width:30px;height:30px;padding:0;border:0;border-radius:9px;background:#EEF3F8;color:#1800AD;display:grid;place-items:center;cursor:pointer}
 .edit-btn:active{transform:scale(.96)}
 
@@ -42,6 +58,16 @@
 .routine-card header{grid-template-columns:40px minmax(0,1fr) auto}
 .routine-tools{display:flex!important;align-items:center;gap:7px;min-width:auto!important}
 .routine-edit{width:28px;height:28px;border-radius:8px}
+
+/* Static period label: no fake dropdown affordance. */
+.period-chip{font-size:0!important;pointer-events:none}
+.period-chip::after{content:"4 tuần qua";font-size:11px;font-weight:500}
+
+/* Prevent iOS focus zoom, pinch wobble and modal overscroll. */
+.modal-bg{overscroll-behavior:none;touch-action:pan-y}
+.modal{max-width:100%;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.field input,.field textarea,.field select{font-size:16px!important;line-height:1.35}
+.form{overscroll-behavior:contain}
 
 @media(max-width:355px){
   .task{grid-template-columns:19px 28px minmax(0,1fr) 28px}
