@@ -1,42 +1,44 @@
 # Rootwork
 
-Rootwork là ứng dụng local-first cho thực thi theo tuần. Cấu trúc lập kế hoạch được giữ nông và rõ:
+Rootwork là PWA local-first để biến mục tiêu thành tác vụ tuần, duy trì routine và theo dõi khả năng hoàn thành bằng dashboard, calendar và thống kê.
 
-```text
-Goal → Weekly task
-Routine → repeated weekly behavior
-```
+## Cấu trúc sản phẩm
 
-## Bề mặt chính
+- Dashboard — theo dõi tiến độ tuần, rủi ro và routine consistency
+- Mục tiêu — đi thẳng từ mục tiêu xuống tác vụ tuần
+- Lịch — calendar tháng dạng ô vuông, theo dõi task và routine theo ngày
+- Routine — target theo tuần, check-in từng ngày, consistency và streak
+- Thống kê — KPI hoàn thành, routine và tiến độ theo mục tiêu
+- FAB `+` — thêm Mục tiêu / Tác vụ tuần / Routine
 
-- **Dashboard** — tỷ lệ hoàn thành tuần, khả năng hoàn thành, tiến độ theo ngày và consistency của Routine.
-- **Mục tiêu** — mục tiêu đi thẳng xuống tác vụ tuần, không có tầng Key Result ở UI.
-- **Lịch** — calendar tháng dạng ô vuông, hiển thị tác vụ có ngày và trạng thái Routine theo ngày.
-- **Routine** — target số lần/tuần, check-in từng ngày, weekly consistency và streak.
-- **Thống kê** — tiến độ theo tuần, mục tiêu và Routine.
-- **FAB Thêm** — tạo Goal, Weekly task hoặc Routine mà không chiếm thêm một tab navigation.
+## Kiến trúc
 
-## Runtime
+- `domain.js` — business/domain logic
+- `store.js` — local persistence, migration, backup
+- `ui-core.js` — primitive UI và shared helpers
+- `ui-views.js` — các màn hình chính
+- `app.js` — app state, modal flow và mutations
+- `styles.css` — layout/component base
+- `brand-theme.css` — brand palette và launch treatment
+- `sw.js` — PWA/offline cache
 
-- `index.html` — light-only PWA shell và splash frame đầu tiên.
-- `ui-core.js` — UI primitives, icons, helpers và component dùng chung.
-- `ui-views.js` — Dashboard, Goals, Calendar, Routine, Progress và navigation.
-- `app.js` — state, mutations, modal và bootstrap React.
-- `domain.js` — date/week lifecycle, target/routine metrics, XP và business rules.
-- `store.js` — localStorage, schema migration và backup.
-- `styles.css` — Open Sans, visual system, responsive layout và launch motion.
-- `sw.js` — offline application shell.
-- `brand/rootwork-logo.png` — asset raster brand duy nhất ở runtime.
+## Brand assets
 
-Không có account, server, analytics hay tracking. Dữ liệu nằm trong localStorage của origin hiện tại. Trước khi xoá browser data hoặc đổi domain, hãy export backup.
+Rootwork tách rõ runtime mark và install icon:
 
-## Brand & launch
+- `brand/rootwork-mark.png` — nền trong suốt, chỉ dùng trong UI/splash
+- `brand/rootwork-icon.png` — nền `#AFE2FF`, chỉ dùng cho favicon/homescreen/PWA install
 
-Rootwork dùng đúng một raster logo. Splash render `<img>` thật ngay từ frame đầu, chạy scale/fade + halo nhẹ, sau đó đi thẳng vào app. Wordmark `Rootwork` là text Open Sans 800 để luôn sắc nét ở mọi mật độ màn hình. Theme chỉ có light mode.
+Không dùng homescreen icon trong UI runtime.
 
-## Run & test
+## Theme
 
-```sh
-python -m http.server 4173
-node tests/run-tests.js
-```
+Light-only. Font chính: Open Sans. Màu chủ đạo: Indigo `#1800AD` và Light Blue `#AFE2FF`.
+
+## Dữ liệu
+
+Rootwork là local-first: dữ liệu được lưu trong browser storage. Hãy export backup trước khi xoá dữ liệu trình duyệt hoặc đổi domain.
+
+## Copyright
+
+© 2026 Rootwork / @derekdaydoi. Xem `NOTICE.md` và `BRAND_SPEC.md`.
