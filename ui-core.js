@@ -13,10 +13,13 @@ check:['M5 12.5l4.2 4.2L19 7.5'],
 left:['M14.5 5.5 8 12l6.5 6.5'],
 right:['M9.5 5.5 16 12l-6.5 6.5'],
 close:['M6.5 6.5l11 11','M17.5 6.5l-11 11'],
+edit:['M4 20h4l11-11-4-4L4 16v4z','M13.5 6.5l4 4'],
 heart:['M20.8 4.8a5.4 5.4 0 0 0-7.7 0L12 5.9l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.5a5.4 5.4 0 0 0 0-7.7z'],
 briefcase:['M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7','M4 7h16v12H4z','M4 12h16','M10 12v2h4v-2'],
 book:['M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5z','M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z'],
 dumbbell:['M6 9v6','M3.5 10.5v3','M18 9v6','M20.5 10.5v3','M6 12h12'],
+runner:['M14.2 5.1a1.8 1.8 0 1 1-3.6 0 1.8 1.8 0 0 1 3.6 0z','M11.8 8.2l3.3 2.2 3.1-1.3','M15.1 10.4l-2.2 3.4-3.8-1.2','M12.9 13.8l3.2 2.4 1.9 3.2','M10 12.8l-2.1 3.1-3.4 1.8'],
+badminton:['M15.8 4.3a5.1 5.1 0 1 1-7.2 7.2 5.1 5.1 0 0 1 7.2-7.2z','M8.7 11.3L4.3 15.7','M3.3 16.7l4 4','M17.6 13.4l2.6 1.1-1.1 2.6','M18.5 14.6l-1.7 1.7','M19.6 15.7l-1.7 1.7'],
 leaf:['M20 4c-7 0-12 3.8-12 9.2 0 3.4 2.6 5.8 6 5.8 5.2 0 7-5.2 6-15z','M4 20c3.2-5.6 7.2-8.7 12.3-10.7'],
 drop:['M12 3s6 6.6 6 11a6 6 0 1 1-12 0c0-4.4 6-11 6-11z'],
 moon:['M19.5 15.2A8 8 0 0 1 8.8 4.5 8 8 0 1 0 19.5 15.2z'],
@@ -38,11 +41,13 @@ function Bar(v,small){return h('div',{className:'bar '+(small?'small':'')},h('i'
 function Ring(v,size){var p=Math.max(0,Math.min(100,Math.round(v||0)));return h('div',{className:'progress-ring',style:{'--ring-angle':(p*3.6)+'deg','--ring-size':(size||62)+'px'}},h('div',null,h('strong',null,p+'%')))}
 function Head(title,action){return h('div',{className:'screen-head'},h('h1',null,title),action||null)}
 function Sec(title,action,cb){return h('div',{className:'sec'},h('h2',null,title),cb&&h('button',{onClick:cb},action))}
-function Task(q){var m=q.x.time||'Linh hoạt';return h('div',{className:'task '+(q.x.done?'done':'')},h('button',{className:'check '+(q.x.done?'checked':''),onClick:function(){q.toggle(q.x)},'aria-label':q.x.done?'Đánh dấu chưa xong':'Hoàn thành'},q.x.done&&I('check',14,2.6)),h('div',null,h('strong',null,q.x.title),q.x.note&&h('small',null,q.x.note)),h('span',null,m))}
+function stableTone(value){var s=String(value||''),n=0;for(var i=0;i<s.length;i++)n=(n+s.charCodeAt(i)*(i+1))%997;return['blue','teal','violet'][n%3]}
+function taskMeta(t){return{icon:'briefcase',tone:stableTone((t&&t.id)||(t&&t.title))}}
+function Task(q){var m=q.x.time||'Linh hoạt',meta=taskMeta(q.x);return h('div',{className:'task '+(q.x.done?'done':'')},h('button',{className:'check '+(q.x.done?'checked':''),onClick:function(){q.toggle(q.x)},'aria-label':q.x.done?'Đánh dấu chưa xong':'Hoàn thành'},q.x.done&&I('check',14,2.6)),h('span',{className:'task-icon '+meta.tone},I('briefcase',15,1.9)),h('div',null,h('strong',null,q.x.title),q.x.note&&h('small',null,q.x.note)),h('span',{className:'task-time'},m),q.edit&&h('button',{className:'edit-btn',onClick:function(){q.edit(q.x)},'aria-label':'Sửa tác vụ'},I('edit',15,1.9)))}
 function Frame(q){return h('div',{className:'modal-bg',onMouseDown:function(e){if(e.target===e.currentTarget)q.close()}},h('section',{className:'modal'},h('header',null,h('h2',null,q.title),h('button',{onClick:q.close,'aria-label':'Đóng'},I('close',20))),q.children))}
 function Field(l,c){return h('label',{className:'field'},h('span',null,l),c)}
 function goalMeta(x,i){var t=((x&&x.title)||'').toLowerCase(),icon='goal',tone='blue';if(/sức|khoẻ|health|fitness|thể dục/.test(t)){icon='heart';tone='teal'}else if(/công|work|việc|nghề|career/.test(t)){icon='briefcase';tone='blue'}else if(/học|study|đọc|learn|book/.test(t)){icon='book';tone='violet'}else if(i%3===0){icon='heart';tone='teal'}else if(i%3===1){icon='briefcase';tone='blue'}else{icon='book';tone='violet'}return{icon:icon,tone:tone}}
-function routineMeta(r,i){var t=((r&&r.name)||'').toLowerCase();if(/tập|gym|exercise|workout/.test(t))return{icon:'dumbbell',tone:'blue'};if(/đọc|read|book/.test(t))return{icon:'book',tone:'violet'};if(/thiền|medit|zen/.test(t))return{icon:'leaf',tone:'teal'};if(/nước|water|uống/.test(t))return{icon:'drop',tone:'blue'};if(/ngủ|sleep/.test(t))return{icon:'moon',tone:'violet'};return{icon:'routine',tone:['blue','teal','violet'][i%3]}}
+function routineMeta(r,i){var t=((r&&r.name)||'').toLowerCase();if(/cầu lông|badminton/.test(t))return{icon:'badminton',tone:'violet'};if(/chạy|run|running|jog/.test(t))return{icon:'runner',tone:'teal'};if(/gym|tạ|weight|workout|thể hình|tập thể dục/.test(t))return{icon:'dumbbell',tone:'blue'};if(/đọc|read|book/.test(t))return{icon:'book',tone:'violet'};if(/thiền|medit|zen/.test(t))return{icon:'leaf',tone:'teal'};if(/nước|water|uống/.test(t))return{icon:'drop',tone:'blue'};if(/ngủ|sleep/.test(t))return{icon:'moon',tone:'violet'};return{icon:'routine',tone:['blue','teal','violet'][i%3]}}
 function greeting(){var h0=new Date().getHours();return h0<11?'Chào buổi sáng! 👋':h0<18?'Chào buổi chiều! 👋':'Chào buổi tối! 👋'}
-Object.assign(U,{I:I,Logo:Logo,pct:pct,pad:pad,ymd:ymd,pd:pd,mi:mi,tasks:tasks,targetStats:targetStats,routineStats:routineStats,consistency:consistency,Bar:Bar,Ring:Ring,Head:Head,Sec:Sec,Task:Task,Frame:Frame,Field:Field,goalMeta:goalMeta,routineMeta:routineMeta,greeting:greeting});
+Object.assign(U,{I:I,Logo:Logo,pct:pct,pad:pad,ymd:ymd,pd:pd,mi:mi,tasks:tasks,targetStats:targetStats,routineStats:routineStats,consistency:consistency,Bar:Bar,Ring:Ring,Head:Head,Sec:Sec,Task:Task,Frame:Frame,Field:Field,goalMeta:goalMeta,routineMeta:routineMeta,taskMeta:taskMeta,greeting:greeting});
 })(window);
