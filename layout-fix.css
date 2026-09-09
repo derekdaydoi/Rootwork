@@ -1,0 +1,116 @@
+/* Rootwork layout correction — shared navigation/header alignment. */
+
+/* Header: keep brand and Settings on the same optical axis. */
+.top{
+  height:calc(72px + var(--safe-top));
+  padding:calc(var(--safe-top) + 14px) 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:44px;
+}
+.icon-btn{
+  width:44px;
+  height:44px;
+  min-width:44px;
+  min-height:44px;
+  padding:0;
+  margin:0;
+  border:0;
+  border-radius:14px;
+  background:#eef7ff;
+  color:var(--primary);
+  display:grid;
+  place-items:center;
+  align-self:center;
+  line-height:0;
+}
+.icon-btn svg{
+  width:25px;
+  height:25px;
+  display:block;
+  margin:0;
+}
+
+/* Bottom navigation: each destination owns one equal-width centered cell. */
+.nav.nav-v2{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  align-items:stretch;
+  width:min(430px,100%);
+  height:calc(78px + var(--safe-bottom));
+  padding:4px 6px var(--safe-bottom);
+  background:rgba(255,255,255,.97);
+  border-top:1px solid #e5eef5;
+  box-shadow:0 -4px 18px rgba(44,70,95,.05);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.nav.nav-v2 button{
+  position:relative;
+  width:100%;
+  min-width:0;
+  height:70px;
+  margin:0;
+  padding:9px 1px 7px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#728598;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  line-height:1;
+  text-align:center;
+}
+.nav.nav-v2 button svg{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:block;
+  margin:0 auto;
+}
+.nav.nav-v2 button span{
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  font-size:8px;
+  font-weight:700;
+  line-height:1.1;
+  text-align:center;
+  white-space:nowrap;
+}
+.nav.nav-v2 button.active{
+  color:var(--artifact-indigo);
+}
+.nav.nav-v2 button.active span{
+  font-weight:800;
+}
+.nav.nav-v2 button.active:before{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:50%;
+  width:28px;
+  height:3px;
+  border-radius:999px;
+  background:var(--artifact-indigo);
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+
+/* Small phones: retain centering and readability without shrinking icons again. */
+@media (max-width:360px){
+  .nav.nav-v2{padding-left:3px;padding-right:3px}
+  .nav.nav-v2 button{gap:4px;padding-left:0;padding-right:0}
+  .nav.nav-v2 button svg{width:23px;height:23px;flex-basis:23px}
+  .nav.nav-v2 button span{font-size:6.8px}
+}
