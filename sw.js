@@ -1,6 +1,1 @@
-var CACHE='rootwork-ui-2026-09-09-layout-r4';
-var ASSETS=['./','./index.html','./styles.css','./flat-theme.css','./artifact.css','./layout-fix.css','./interaction-fix.js','./domain.js','./store.js','./artifact-model.js','./ui-core.js','./ui-patch.js','./ui-views.js','./goal-edit-patch.js','./artifact-safety.js','./artifact-ui.js','./app.js','./manifest.json','./vendor/react.production.min.js','./vendor/react-dom.production.min.js','./brand/rootwork-mark.png','./brand/rootwork-icon.png'];
-self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(ASSETS)}).then(function(){return self.skipWaiting()}))});
-self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}).then(function(){return self.clients.claim()}))});
-function ok(r){return r&&r.ok&&r.type==='basic'}
-self.addEventListener('fetch',function(e){var r=e.request;if(r.method!=='GET')return;var u=new URL(r.url);if(u.origin!==self.location.origin)return;if(r.mode==='navigate'){e.respondWith(fetch(r).then(function(x){if(ok(x)){var y=x.clone();caches.open(CACHE).then(function(c){c.put('./index.html',y)})}return x}).catch(function(){return caches.match('./index.html')}));return}e.respondWith(caches.match(r).then(function(cached){if(cached)return cached;return fetch(r).then(function(x){if(ok(x)){var y=x.clone();caches.open(CACHE).then(function(c){c.put(r,y)})}return x})}))});
+noop
