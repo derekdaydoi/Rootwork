@@ -42,8 +42,7 @@ html{
   flex:0 0 25px;
   display:block;
   margin:0;
-  /* The settings path is mathematically centered but reads slightly low/right optically. */
-  transform:translate(-.6px,-.4px);
+  transform:translate(-.8px,-.6px);
   transform-origin:center;
 }
 
@@ -118,12 +117,8 @@ html{
   text-align:center;
   white-space:nowrap;
 }
-.nav.nav-v2 button.active{
-  color:var(--artifact-indigo);
-}
-.nav.nav-v2 button.active span{
-  font-weight:800;
-}
+.nav.nav-v2 button.active{color:var(--artifact-indigo)}
+.nav.nav-v2 button.active span{font-weight:800}
 .nav.nav-v2 button.active:before{
   content:"";
   position:absolute;
@@ -137,7 +132,7 @@ html{
   pointer-events:none;
 }
 
-/* Shared modal system. This applies to Goal, Task, Artifact, Routine and Settings. */
+/* Shared modal system. Header is fixed in layout; form/settings own scrolling. */
 .modal-bg{
   padding:10px 12px calc(10px + var(--safe-bottom));
   overflow:hidden;
@@ -147,19 +142,24 @@ html{
 .modal{
   width:min(404px,calc(100vw - 24px));
   max-width:404px;
-  max-height:min(84dvh,760px);
+  max-height:min(86dvh,780px);
   margin:0 auto;
   border-radius:20px;
-  overflow-x:hidden;
-  overflow-y:auto;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
   overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-y;
 }
 .modal>header{
-  min-height:58px;
+  position:relative!important;
+  top:auto!important;
+  z-index:3;
+  flex:0 0 60px;
+  min-height:60px;
   padding:0 14px 0 16px;
   gap:12px;
+  background:#fff;
+  border-bottom:1px solid #edf3f8;
 }
 .modal h2{
   margin:0;
@@ -176,19 +176,24 @@ html{
   display:grid;
   place-items:center;
 }
-.modal>header button svg{
-  width:21px;
-  height:21px;
+.modal>header button svg{width:21px;height:21px}
+
+.modal>form,
+.modal>.settings{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
 }
 .form,.settings{
   min-width:0;
-  padding:14px 14px 16px;
-  gap:11px;
+  padding:16px 14px 18px;
+  gap:12px;
 }
-.field{
-  min-width:0;
-  gap:6px;
-}
+.field{min-width:0;gap:6px}
 .field>span{
   font-size:12px;
   line-height:1.25;
@@ -201,43 +206,63 @@ html{
   width:100%;
   min-width:0;
   max-width:100%;
+  box-sizing:border-box;
   border-radius:12px;
   padding:10px 12px;
   font-size:16px!important;
   line-height:1.3;
 }
-.field input,
-.field select{
-  min-height:46px;
-}
-.field textarea{
-  min-height:78px;
-  resize:vertical;
-}
+.field input:not([type="date"]):not([type="time"]),
+.field select{min-height:48px}
+.field textarea{min-height:92px;resize:vertical}
+
+/* iOS Safari native date/time controls require hard normalization. */
 .field input[type="date"],
 .field input[type="time"]{
-  height:48px;
-  min-height:48px;
-  padding-top:8px;
-  padding-bottom:8px;
+  -webkit-appearance:none;
+  appearance:none;
+  display:block;
+  width:100%;
+  height:50px!important;
+  min-height:50px!important;
+  max-height:50px!important;
+  padding:0 12px!important;
+  margin:0;
+  line-height:50px!important;
+  text-align:left;
+  background:#fff;
 }
+.field input[type="date"]::-webkit-date-and-time-value,
+.field input[type="time"]::-webkit-date-and-time-value{
+  min-height:50px;
+  line-height:50px;
+  text-align:left;
+  margin:0;
+}
+.field input[type="date"]::-webkit-datetime-edit,
+.field input[type="time"]::-webkit-datetime-edit{
+  display:flex;
+  align-items:center;
+  min-height:50px;
+  line-height:50px;
+  padding:0;
+}
+.field input[type="date"]::-webkit-calendar-picker-indicator,
+.field input[type="time"]::-webkit-calendar-picker-indicator{
+  margin:0;
+  padding:0;
+}
+
 .date-pair{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:8px;
   min-width:0;
+  align-items:start;
 }
-.date-pair>.field{
-  min-width:0;
-}
-.choice{
-  min-height:42px;
-  padding:3px;
-}
-.choice button{
-  min-height:36px;
-  font-size:13px;
-}
+.date-pair>.field{min-width:0}
+.choice{min-height:42px;padding:3px}
+.choice button{min-height:36px;font-size:13px}
 .form .primary,
 .settings .primary,
 .settings .secondary,
@@ -247,29 +272,23 @@ html{
   font-size:14px;
   line-height:1.2;
 }
-.form .danger-button{
-  margin-top:2px;
-}
-.settings p{
-  font-size:11px;
-  line-height:1.45;
+.form .danger-button{margin-top:2px}
+.settings p{font-size:11px;line-height:1.45}
+
+/* Prevent accidental intrinsic overflow from cards and form controls. */
+.card,.task,.goal-card,.routine-card,.artifact-card,.calendar-v2-panel{min-width:0}
+button,input,textarea,select{max-width:100%}
+
+/* Narrow iPhones: use a single-column date layout; Safari date controls stay compact. */
+@media (max-width:390px){
+  .modal-bg{padding-left:10px;padding-right:10px}
+  .modal{width:calc(100vw - 20px);max-width:none}
+  .date-pair{grid-template-columns:1fr}
 }
 
-/* Prevent controls from growing wider than their cards and causing accidental scale/overflow. */
-.card,.task,.goal-card,.routine-card,.artifact-card,.calendar-v2-panel{
-  min-width:0;
-}
-button,input,textarea,select{
-  max-width:100%;
-}
-
-/* Small phones: retain centering/readability and only stack date controls when necessary. */
 @media (max-width:360px){
   .nav.nav-v2{padding-left:3px;padding-right:3px}
   .nav.nav-v2 button{gap:4px;padding-left:0;padding-right:0}
   .nav.nav-v2 button svg{width:23px;height:23px;flex-basis:23px}
   .nav.nav-v2 button span{font-size:6.8px}
-  .modal-bg{padding-left:8px;padding-right:8px}
-  .modal{width:calc(100vw - 16px)}
-  .date-pair{grid-template-columns:1fr}
 }
