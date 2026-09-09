@@ -47,6 +47,26 @@ html{
   transform-origin:center;
 }
 
+/* Normalize every icon-only button so glyphs do not inherit baseline offsets. */
+.icon-btn,
+.circle,
+.edit-btn,
+.modal>header button,
+.artifact-detail-nav button,
+.month-nav button{
+  line-height:0;
+}
+.icon-btn svg,
+.circle svg,
+.edit-btn svg,
+.modal>header button svg,
+.artifact-detail-nav button svg,
+.month-nav button svg{
+  display:block;
+  margin:auto;
+  pointer-events:none;
+}
+
 /* Bottom navigation: each destination owns one equal-width centered cell. */
 .nav.nav-v2{
   display:grid!important;
