@@ -313,7 +313,15 @@
         var index = (w.targets || []).findIndex(function (item) { return item.id === id; });
         if (index < 0) return;
         var goal = w.targets[index];
+        var roadmapId = goal.roadmapId || null;
         addTrash(n, 'target', goal.title, goal, w.id, goal.id);
+        if (roadmapId) {
+          (n.weeks || []).forEach(function (week) {
+            (week.targets || []).forEach(function (target) {
+              if (target.roadmapId === roadmapId) target.roadmapDate = null;
+            });
+          });
+        }
         w.targets.splice(index, 1);
       });
     }

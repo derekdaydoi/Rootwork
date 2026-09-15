@@ -186,7 +186,8 @@
         ),
         years.map(function (year) {
           var yearItems = visible.filter(function (item) {
-            return D.parseYmd(item.roadmapDate).getFullYear() === year;
+            var itemYear = D.parseYmd(item.roadmapDate).getFullYear();
+            return year === currentYear ? itemYear <= currentYear : itemYear === year;
           });
           return h('div', { className: 'roadmap-year', key: year },
             h('div', { className: 'roadmap-year-label' }, h('i'), h('strong', null, String(year))),
