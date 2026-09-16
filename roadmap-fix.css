@@ -123,6 +123,27 @@
   letter-spacing:-.55px;
 }
 
+/* Routine progress: keep only the percentage, remove the circular decoration. */
+.routine-card .progress-ring{
+  width:auto!important;
+  height:auto!important;
+  min-width:34px;
+  min-height:28px;
+  border-radius:0!important;
+  background:transparent!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.routine-card .progress-ring:after{display:none!important}
+.routine-card .progress-ring>div{position:static!important}
+.routine-card .progress-ring strong{
+  font-size:13px!important;
+  line-height:1!important;
+  color:#596b80;
+  font-weight:600!important;
+}
+
 @media(max-width:370px){
   .roadmap-year{grid-template-columns:64px minmax(0,1fr);column-gap:10px}
   .roadmap-year-label strong{margin-left:29px;font-size:13px}
