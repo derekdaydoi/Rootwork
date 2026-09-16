@@ -1,0 +1,90 @@
+/* Roadmap visual correction — fix year-label collision and refine timeline/nav balance. */
+.roadmap-canvas:before{
+  width:2px;
+  left:31px;
+  background:linear-gradient(180deg,#78b8fb 0%,#cfe5f8 82%,#e7f2fb 100%);
+}
+.roadmap-now-star{
+  width:32px;
+  height:32px;
+  margin-left:-2px;
+  background:linear-gradient(145deg,#438fff,#2877e8);
+  box-shadow:0 0 0 6px #edf6ff,0 5px 14px rgba(52,120,246,.18);
+}
+.roadmap-now-star svg{width:17px;height:17px;stroke-width:1.9}
+
+/* Reserve a real column for the year so it can never collide with status/cards. */
+.roadmap-year{
+  grid-template-columns:68px minmax(0,1fr);
+  column-gap:12px;
+  margin:12px 0 18px;
+  min-width:0;
+}
+.roadmap-year-label{
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  overflow:visible;
+  white-space:nowrap;
+}
+.roadmap-year-label i{
+  left:6px;
+  width:12px;
+  height:12px;
+  border:2px solid #3382f2;
+  box-shadow:0 0 0 4px #f0f7ff;
+}
+.roadmap-year-label strong{
+  margin-left:30px;
+  font-size:13.5px;
+  line-height:1;
+  letter-spacing:-.2px;
+  color:#17315c;
+  white-space:nowrap;
+}
+.roadmap-year-cards{
+  min-width:0;
+  gap:9px;
+}
+.roadmap-year-empty{
+  min-height:38px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  color:#aab7c5;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:650;
+  white-space:nowrap;
+}
+.roadmap-year:has(.roadmap-target-card):after{
+  content:"";
+  position:absolute;
+  left:31px;
+  top:18px;
+  width:49px;
+  height:2px;
+  border-radius:99px;
+  background:#d7e9f9;
+  z-index:0;
+}
+.roadmap-target-card{position:relative;z-index:1}
+
+/* The Roadmap nav glyph should match the rounded outline language of the other tabs. */
+.nav.nav-v2.roadmap-nav .roadmap-nav-icon{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:block;
+  margin:0 auto;
+  overflow:visible;
+}
+.nav.nav-v2.roadmap-nav button.active .roadmap-nav-icon{
+  filter:drop-shadow(0 2px 4px rgba(24,0,173,.08));
+}
+
+@media(max-width:370px){
+  .roadmap-year{grid-template-columns:64px minmax(0,1fr);column-gap:10px}
+  .roadmap-year-label strong{margin-left:29px;font-size:13px}
+  .roadmap-year:has(.roadmap-target-card):after{width:43px}
+}
