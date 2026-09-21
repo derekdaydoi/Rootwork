@@ -3,26 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Rootwork Desktop Local — local-first weekly execution workspace." />
-  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Rootwork Desktop Local — desktop-first local workspace." />
   <meta name="theme-color" content="#F5FBFF" />
+  <meta name="color-scheme" content="light" />
   <link rel="icon" href="../brand/rootwork-icon.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="../flat-theme.css" />
+  <link rel="stylesheet" href="../artifact.css" />
+  <link rel="stylesheet" href="../layout-fix.css" />
+  <link rel="stylesheet" href="../roadmap.css" />
+  <link rel="stylesheet" href="../roadmap-fix.css" />
   <link rel="stylesheet" href="desktop.css" />
   <title>Rootwork · Desktop Local</title>
 </head>
 <body>
+  <aside class="desktop-brand" aria-label="Rootwork Desktop Local">
+    <img src="../brand/rootwork-mark.png" alt="" draggable="false" />
+    <div><strong>Rootwork</strong><span>Desktop Local</span></div>
+  </aside>
   <div id="root">
-    <div class="boot" role="status" aria-label="Rootwork đang khởi động">
-      <img src="../brand/rootwork-mark.png" alt="" draggable="false" />
-      <strong>Rootwork</strong>
-      <span>Desktop Local</span>
+    <div class="splash" role="status" aria-label="Rootwork đang khởi động">
+      <div class="splash-lock">
+        <img src="../brand/rootwork-mark.png" alt="" class="splash-logo" draggable="false" />
+        <strong>Rootwork</strong>
+        <p>Nhỏ hôm nay, lớn ngày mai</p>
+        <div class="splash-loader" aria-hidden="true"><span><i></i></span><small>Đang khởi động...</small></div>
+      </div>
+      <small class="splash-copyright">© 2026 Rootwork · @derekdaydoi</small>
     </div>
   </div>
   <script src="../vendor/react.production.min.js"></script>
   <script src="../vendor/react-dom.production.min.js"></script>
   <script src="../domain.js"></script>
   <script src="../store.js"></script>
+  <script src="../artifact-model.js"></script>
   <script src="../roadmap-model.js"></script>
-  <script src="desktop.js"></script>
+  <script src="../ui-core.js"></script>
+  <script src="../ui-patch.js"></script>
+  <script src="../ui-views.js"></script>
+  <script src="../goal-edit-patch.js"></script>
+  <script src="../artifact-safety.js"></script>
+  <script src="../artifact-ui.js"></script>
+  <script src="../roadmap-ui.js"></script>
+  <script src="../roadmap-icons.js"></script>
+  <script src="../interaction-fix.js"></script>
+  <script src="../app-roadmap.js"></script>
 </body>
 </html>
