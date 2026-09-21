@@ -2,7 +2,7 @@
    Business/domain/storage code is shared with the production PWA. */
 :root{--desktop-nav:248px;--desktop-max:1180px;font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
 html,body,#root{min-height:100%;background:#f5fbff}
-body{overflow-x:hidden}
+body{overflow-x:hidden}\nbody,button,input,textarea,select{font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
 .desktop-brand{position:fixed;z-index:70;left:0;top:0;width:var(--desktop-nav);height:94px;padding:23px 22px;display:flex;align-items:center;gap:11px;background:#fff;border-right:1px solid #e3eef6}
 .desktop-brand img{width:42px;height:42px;object-fit:contain}
 .desktop-brand div{display:grid;gap:3px}.desktop-brand strong{font-size:22px;line-height:1;color:#1800ad;letter-spacing:-.55px}.desktop-brand span{font-size:9px;color:#8b9bad;letter-spacing:.09em;text-transform:uppercase;font-weight:600}
