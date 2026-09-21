@@ -1,0 +1,69 @@
+/* Rootwork Desktop Local — presentation-only desktop layer.
+   Business/domain/storage code is shared with the production PWA. */
+:root{--desktop-nav:248px;--desktop-max:1180px;font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+html,body,#root{min-height:100%;background:#f5fbff}
+body{overflow-x:hidden}\nbody,button,input,textarea,select{font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.desktop-brand{position:fixed;z-index:70;left:0;top:0;width:var(--desktop-nav);height:94px;padding:23px 22px;display:flex;align-items:center;gap:11px;background:#fff;border-right:1px solid #e3eef6}
+.desktop-brand img{width:42px;height:42px;object-fit:contain}
+.desktop-brand div{display:grid;gap:3px}.desktop-brand strong{font-size:22px;line-height:1;color:#1800ad;letter-spacing:-.55px}.desktop-brand span{font-size:9px;color:#8b9bad;letter-spacing:.09em;text-transform:uppercase;font-weight:600}
+
+/* Turn the mobile bottom navigation into real desktop navigation. */
+.nav.nav-v2.roadmap-nav{position:fixed!important;z-index:65!important;left:0!important;top:94px!important;bottom:0!important;transform:none!important;width:var(--desktop-nav)!important;height:auto!important;padding:12px 16px 22px!important;grid-template-columns:1fr!important;grid-auto-rows:48px!important;align-content:start!important;gap:5px!important;background:#fff!important;border:0!important;border-right:1px solid #e3eef6!important;box-shadow:none!important;backdrop-filter:none!important}
+.nav.nav-v2.roadmap-nav button{height:48px!important;width:100%!important;padding:0 13px!important;border-radius:12px!important;display:grid!important;grid-template-columns:29px minmax(0,1fr)!important;justify-items:start!important;align-items:center!important;align-content:center!important;gap:10px!important;text-align:left!important;color:#63768a!important}
+.nav.nav-v2.roadmap-nav button:hover{background:#f3f7fb!important;color:#3e5065!important}.nav.nav-v2.roadmap-nav button.active{background:#eef0ff!important;color:#1800ad!important}
+.nav.nav-v2.roadmap-nav button svg,.nav.nav-v2.roadmap-nav .roadmap-nav-icon{width:22px!important;height:22px!important;flex:0 0 22px!important;margin:0!important}
+.nav.nav-v2.roadmap-nav button span{display:block!important;width:auto!important;font-size:12px!important;line-height:1!important;font-weight:600!important;text-align:left!important}
+
+/* Main shell is no longer a 430px mobile column. */
+.shell{width:auto!important;max-width:none!important;min-height:100vh!important;margin:0 0 0 var(--desktop-nav)!important;padding:22px 34px 56px!important;background:#f5fbff!important;overflow:visible!important}
+.shell>.page,.shell>.top{width:min(var(--desktop-max),calc(100vw - var(--desktop-nav) - 68px));margin-left:auto;margin-right:auto}
+.page{padding-top:0!important}.dashboard-page{padding-top:0!important}
+.top{height:62px!important;padding:0!important;margin-bottom:16px!important}.top .brand{visibility:hidden}.top .icon-btn{width:42px!important;height:42px!important;border:1px solid #e0eaf2!important;background:#fff!important}
+.greeting{padding:5px 0 15px!important}.greeting h1{font-size:30px!important;letter-spacing:-.9px!important}.greeting p{font-size:12px!important}
+.screen-head{height:60px!important;margin-bottom:14px!important}.screen-head h1{font-size:31px!important;letter-spacing:-1px!important}.circle{width:42px!important;height:42px!important}
+.card{border-radius:18px!important;box-shadow:0 8px 28px rgba(32,61,88,.055)!important}
+
+/* Dashboard: execution surface first, supporting context second. */
+.roadmap-dashboard{display:grid!important;grid-template-columns:minmax(0,1.55fr) minmax(300px,.72fr)!important;gap:16px 18px!important;align-items:start!important}
+.roadmap-dashboard>.greeting{grid-column:1/-1!important}
+.roadmap-dashboard>.roadmap-progress{grid-column:2!important;grid-row:2!important;margin:0!important;min-height:126px!important;padding:18px!important;grid-template-columns:88px minmax(0,1fr)!important}
+.roadmap-dashboard>.focus-goal-card{grid-column:2!important;grid-row:3!important;margin:0!important;min-height:112px!important;padding:18px!important}
+.roadmap-dashboard>.weekly-work-head{grid-column:1!important;grid-row:2!important;margin:0 2px!important;align-self:end!important;min-height:38px!important}
+.roadmap-dashboard>.weekly-work-list{grid-column:1!important;grid-row:3 / span 3!important;gap:9px!important}
+.roadmap-progress strong{font-size:17px!important}.roadmap-progress span{font-size:12px!important}.roadmap-progress small{font-size:11px!important}
+.weekly-work-head h2{font-size:20px!important}.weekly-work-head span,.weekly-work-head>b{font-size:11px!important}
+.week-task-row{min-height:74px!important;padding:11px 14px!important;grid-template-columns:42px minmax(0,1fr) 38px!important;gap:13px!important}.week-check{width:38px!important;height:38px!important}.week-task-copy strong{font-size:14.5px!important}.week-task-copy small{font-size:11px!important}
+.week-task-fab{position:static!important;justify-self:end!important;margin:5px 3px 0 0!important}
+
+/* Goals and routines exploit horizontal desktop space. */
+.goal-list,.routine-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+.goal-card header{min-height:80px!important;padding:17px!important}.goal-card>.bar{margin:0 17px 13px!important}.goal-task-label{padding:10px 17px!important}.task{min-height:64px!important;padding:9px 15px!important}.add-row{height:46px!important}
+.routine-card{padding:17px!important}.routine-card header{min-height:52px!important}.routine-days button{height:54px!important}
+.segmented{max-width:460px!important;margin-bottom:16px!important}.segmented button{height:38px!important;font-size:11px!important}
+
+/* Calendar becomes a readable desktop month grid. */
+.calendar-panel{padding:18px!important;background:#fff!important;border:1px solid #e3eef6!important;border-radius:18px!important;box-shadow:0 8px 28px rgba(32,61,88,.045)!important}
+.month-nav{height:50px!important}.month-nav strong{font-size:16px!important}.weekdays{height:38px!important}.weekdays span{font-size:10px!important}
+.calendar-grid{gap:6px!important}.calendar-day{height:78px!important;border:1px solid #edf2f6!important;border-radius:11px!important;background:#fbfdff!important;align-content:start!important;justify-content:start!important;padding:10px!important}.calendar-day:hover{border-color:#cad9e7!important;background:#fff!important}.calendar-day span{font-size:11px!important}.calendar-day.selected{background:#eef0ff!important;border-color:#c8c2ff!important;color:#1800ad!important;box-shadow:none!important}.calendar-day i{left:11px!important;bottom:9px!important;transform:none!important}
+.day-caption{margin:18px 2px 9px!important}.day-caption strong{font-size:13px!important}.day-detail{max-width:780px!important}.cal-row{min-height:62px!important;padding:9px 14px!important}
+
+/* Roadmap: preserve the mockup treatment but increase canvas and card density. */
+.roadmap-page{padding-top:0!important}.roadmap-head h1{font-size:31px!important}.roadmap-head p{font-size:12px!important}.roadmap-switch{max-width:430px!important}.roadmap-canvas{min-height:720px!important;padding:25px 30px 135px 31px!important}.roadmap-canvas:before{left:43px!important}.roadmap-now,.roadmap-year{grid-template-columns:92px minmax(0,1fr)!important;gap:17px!important}.roadmap-year{margin:14px 0 20px!important}.roadmap-year:has(.roadmap-target-card):after{left:43px!important;width:67px!important}.roadmap-year-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.roadmap-target-card{min-height:78px!important;padding:12px!important}.roadmap-target-card strong{font-size:13.5px!important}.roadmap-target-card small{font-size:10px!important}
+
+/* Statistics: cards become a compact desktop report. */
+.progress-kpis{grid-template-columns:repeat(3,1fr)!important;gap:14px!important}.progress-kpis article{min-height:96px!important;padding:18px!important}.progress-kpis strong{font-size:25px!important}.progress-kpis small{font-size:10px!important}.goal-progress-list{padding:8px 18px!important}.goal-progress-list>div{min-height:58px!important}.weekly-chart{padding:18px!important}.weekly-chart>div{height:190px!important}.activity-card{max-width:620px!important}
+
+/* Desktop modals, inputs and edit controls. */
+.modal-bg{align-items:center!important;padding:30px!important}.modal{width:min(620px,calc(100vw - 90px))!important;max-height:88vh!important;border-radius:21px!important}.modal>header{min-height:64px!important}.form,.settings{padding:19px!important}.field>span{font-size:12px!important}.field input,.field textarea,.field select{font-size:15px!important}.form .primary,.settings .primary,.settings .secondary,.form .danger-button{min-height:48px!important;font-size:13px!important}
+
+/* Splash stays canonical; desktop chrome must not bleed through it. */
+body:has(.splash) .desktop-brand{visibility:hidden}.splash-logo{width:132px!important;height:132px!important}
+
+@media(max-width:1120px){
+  :root{--desktop-nav:86px}.desktop-brand{width:86px;padding:22px;justify-content:center}.desktop-brand img{width:42px;height:42px}.desktop-brand div{display:none}
+  .nav.nav-v2.roadmap-nav{width:86px!important;padding:10px!important}.nav.nav-v2.roadmap-nav button{grid-template-columns:1fr!important;justify-items:center!important;padding:0!important}.nav.nav-v2.roadmap-nav button span{display:none!important}
+  .shell{padding-left:24px!important;padding-right:24px!important}.shell>.page,.shell>.top{width:min(100%,calc(100vw - var(--desktop-nav) - 48px))}
+  .roadmap-dashboard{grid-template-columns:1fr!important}.roadmap-dashboard>*{grid-column:1!important;grid-row:auto!important}.roadmap-dashboard>.roadmap-progress,.roadmap-dashboard>.focus-goal-card{margin:0!important}.goal-list,.routine-list{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  .desktop-brand{display:none}.shell{margin:0!important;padding:0 18px calc(88px + env(safe-area-inset-bottom,0px))!important}.shell>.page,.shell>.top{width:100%!important}.nav.nav-v2.roadmap-nav{left:50%!important;top:auto!important;bottom:0!important;transform:translateX(-50%)!important;width:min(430px,100%)!important;height:calc(78px + env(safe-area-inset-bottom,0px))!important;padding:4px 6px env(safe-area-inset-bottom,0px)!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-auto-rows:auto!important;border-right:0!important;border-top:1px solid #e5eef5!important}.nav.nav-v2.roadmap-nav button{height:70px!important;display:flex!important;flex-direction:column!important;gap:5px!important}.nav.nav-v2.roadmap-nav button span{display:block!important;font-size:7.7px!important}.roadmap-dashboard{display:block!important}.roadmap-dashboard>.roadmap-progress,.roadmap-dashboard>.focus-goal-card{margin-bottom:14px!important}.calendar-panel{padding:2px 0 4px!important;border:0!important;box-shadow:none!important;background:transparent!important}.calendar-grid{gap:0!important}.calendar-day{height:46px!important;border:0!important;background:transparent!important;padding:0!important;place-items:center!important}.calendar-day i{left:50%!important;bottom:5px!important;transform:translateX(-50%)!important}.roadmap-year-cards{grid-template-columns:1fr!important}.progress-kpis{grid-template-columns:repeat(3,1fr)!important}}
